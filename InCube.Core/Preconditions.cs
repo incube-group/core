@@ -14,17 +14,6 @@ namespace InCube.Core
             return obj?.ToString() ?? "null";
         }
 
-        /**
-         * Substitutes each {@code {}} in {@code template} with an argument. These are matched by
-         * position: the first {@code {}} gets {@code args[0]}, etc. If there are more arguments than
-         * placeholders, the unmatched arguments will be appended to the end of the formatted message in
-         * square braces.
-         *
-         * @param template a non-null string containing 0 or more {@code {}} placeholders.
-         * @param args the arguments to be substituted into the message template. Arguments are converted
-         *     to strings using {@link string#valueOf(object)}. Arguments can be null.
-         */
-        // Note that this is somewhat-improperly used from Verify.java as well.
         private static string Format(string template, params object[] args)
         {
             template = StringValue(template); // null -> "null"
@@ -62,12 +51,11 @@ namespace InCube.Core
             return builder.ToString();
         }
 
-        /**
-         * Ensures the truth of an expression involving one or more parameters to the calling method.
-         *
-         * @param expression a bool expression
-         * @throws ArgumentException if {@code expression} is false
-         */
+        /// <summary>
+        /// Ensures the truth of an expression involving one or more parameters to the calling method.
+        /// </summary>
+        /// <param name="expression">if set to <c>true</c> [expression].</param>
+        /// <exception cref="ArgumentException"></exception>
         public static void CheckArgument(bool expression)
         {
             if (!expression)
@@ -76,14 +64,12 @@ namespace InCube.Core
             }
         }
 
-        /**
-         * Ensures the truth of an expression involving one or more parameters to the calling method.
-         *
-         * @param expression a bool expression
-         * @param errorMessage the exception message to use if the check fails; will be converted to a
-         *     string using {@link string#valueOf(object)}
-         * @throws ArgumentException if {@code expression} is false
-         */
+        /// <summary>
+        /// Ensures the truth of an expression involving one or more parameters to the calling method.
+        /// </summary>
+        /// <param name="expression">if set to <c>true</c> [expression].</param>
+        /// <param name="errorMessage">The error message.</param>
+        /// <exception cref="ArgumentException"></exception>
         public static void CheckArgument(bool expression, object errorMessage)
         {
             if (!expression)
@@ -92,21 +78,13 @@ namespace InCube.Core
             }
         }
 
-        /**
-         * Ensures the truth of an expression involving one or more parameters to the calling method.
-         *
-         * @param expression a bool expression
-         * @param errorMessageTemplate a template for the exception message should the check fail. The
-         *     message is formed by replacing each {@code {}} placeholder in the template with an
-         *     argument. These are matched by position - the first {@code {}} gets {@code
-         *     errorMessageArgs[0]}, etc. Unmatched arguments will be appended to the formatted message in
-         *     square braces. Unmatched placeholders will be left as-is.
-         * @param errorMessageArgs the arguments to be substituted into the message template. Arguments
-         *     are converted to strings using {@link string#valueOf(object)}.
-         * @throws ArgumentException if {@code expression} is false
-         * @throws ArgumentNullException if the check fails and either {@code errorMessageTemplate} or
-         *     {@code errorMessageArgs} is null (don't let this happen)
-         */
+        /// <summary>
+        /// Ensures the truth of an expression involving one or more parameters to the calling method.
+        /// </summary>
+        /// <param name="expression">if set to <c>true</c> [expression].</param>
+        /// <param name="errorMessageTemplate">The error message template.</param>
+        /// <param name="errorMessageArgs">The error message arguments.</param>
+        /// <exception cref="ArgumentException"></exception>
         public static void CheckArgument(
             bool expression,
             [CanBeNull] string errorMessageTemplate,
@@ -118,11 +96,14 @@ namespace InCube.Core
             }
         }
 
-        /**
-         * Ensures the truth of an expression involving one or more parameters to the calling method.
-         *
-         * <p>See {@link #CheckArgument(bool, string, params object[])} for details.
-         */
+        /// <summary>
+        /// Ensures the truth of an expression involving one or more parameters to the calling method.
+        /// </summary>
+        /// <typeparam name="T1">The type of the 1.</typeparam>
+        /// <param name="b">if set to <c>true</c> [b].</param>
+        /// <param name="errorMessageTemplate">The error message template.</param>
+        /// <param name="p1">The p1.</param>
+        /// <exception cref="ArgumentException"></exception>
         public static void CheckArgument<T1>(bool b, [CanBeNull] string errorMessageTemplate, T1 p1)
         {
             if (!b)
@@ -131,11 +112,16 @@ namespace InCube.Core
             }
         }
 
-        /**
-         * Ensures the truth of an expression involving one or more parameters to the calling method.
-         *
-         * <p>See {@link #CheckArgument(bool, string, params object[])} for details.
-         */
+        /// <summary>
+        /// Ensures the truth of an expression involving one or more parameters to the calling method.
+        /// </summary>
+        /// <typeparam name="T1">The type of the 1.</typeparam>
+        /// <typeparam name="T2">The type of the 2.</typeparam>
+        /// <param name="b">if set to <c>true</c> [b].</param>
+        /// <param name="errorMessageTemplate">The error message template.</param>
+        /// <param name="p1">The p1.</param>
+        /// <param name="p2">The p2.</param>
+        /// <exception cref="ArgumentException"></exception>
         public static void CheckArgument<T1, T2>(bool b, [CanBeNull] string errorMessageTemplate, T1 p1, T2 p2)
         {
             if (!b)
@@ -144,11 +130,18 @@ namespace InCube.Core
             }
         }
 
-        /**
-         * Ensures the truth of an expression involving one or more parameters to the calling method.
-         *
-         * <p>See {@link #CheckArgument(bool, string, params object[])} for details.
-         */
+        /// <summary>
+        /// Ensures the truth of an expression involving one or more parameters to the calling method.
+        /// </summary>
+        /// <typeparam name="T1">The type of the 1.</typeparam>
+        /// <typeparam name="T2">The type of the 2.</typeparam>
+        /// <typeparam name="T3">The type of the 3.</typeparam>
+        /// <param name="b">if set to <c>true</c> [b].</param>
+        /// <param name="errorMessageTemplate">The error message template.</param>
+        /// <param name="p1">The p1.</param>
+        /// <param name="p2">The p2.</param>
+        /// <param name="p3">The p3.</param>
+        /// <exception cref="ArgumentException"></exception>
         public static void CheckArgument<T1, T2, T3>(bool b, [CanBeNull] string errorMessageTemplate, T1 p1, T2 p2, T3 p3)
         {
             if (!b)
@@ -157,11 +150,20 @@ namespace InCube.Core
             }
         }
 
-        /**
-         * Ensures the truth of an expression involving one or more parameters to the calling method.
-         *
-         * <p>See {@link #CheckArgument(bool, string, params object[])} for details.
-         */
+        /// <summary>
+        /// Ensures the truth of an expression involving one or more parameters to the calling method.
+        /// </summary>
+        /// <typeparam name="T1">The type of the 1.</typeparam>
+        /// <typeparam name="T2">The type of the 2.</typeparam>
+        /// <typeparam name="T3">The type of the 3.</typeparam>
+        /// <typeparam name="T4">The type of the 4.</typeparam>
+        /// <param name="b">if set to <c>true</c> [b].</param>
+        /// <param name="errorMessageTemplate">The error message template.</param>
+        /// <param name="p1">The p1.</param>
+        /// <param name="p2">The p2.</param>
+        /// <param name="p3">The p3.</param>
+        /// <param name="p4">The p4.</param>
+        /// <exception cref="ArgumentException"></exception>
         public static void CheckArgument<T1, T2, T3, T4>(bool b, [CanBeNull] string errorMessageTemplate, T1 p1, T2 p2, T3 p3, T4 p4)
         {
             if (!b)
@@ -181,15 +183,14 @@ namespace InCube.Core
             return reference;
         }
 
-        /**
-         * Ensures that an object reference passed as a parameter to the calling method is not null.
-         *
-         * @param reference an object reference
-         * @param errorMessage the exception message to use if the check fails; will be converted to a
-         *     string using {@link String#valueOf(object)}
-         * @return the non-null reference that was validated
-         * @throws ArgumentNullException if {@code reference} is null
-         */
+        /// <summary>
+        /// Ensures that an object reference passed as a parameter to the calling method is not null.
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="reference">The reference.</param>
+        /// <param name="errorMessage">The error message.</param>
+        /// <returns></returns>
+        /// <exception cref="ArgumentNullException"></exception>
         public static T CheckNotNull<T>(T reference, [CanBeNull] object errorMessage)
         {
             if (reference == null)
@@ -199,20 +200,15 @@ namespace InCube.Core
             return reference;
         }
 
-        /**
-         * Ensures that an object reference passed as a parameter to the calling method is not null.
-         *
-         * @param reference an object reference
-         * @param errorMessageTemplate a template for the exception message should the check fail. The
-         *     message is formed by replacing each {@code %s} placeholder in the template with an
-         *     argument. These are matched by position - the first {@code %s} gets {@code
-         *     errorMessageArgs[0]}, etc. Unmatched arguments will be appended to the formatted message in
-         *     square braces. Unmatched placeholders will be left as-is.
-         * @param errorMessageArgs the arguments to be substituted into the message template. Arguments
-         *     are converted to strings using {@link String#valueOf(object)}.
-         * @return the non-null reference that was validated
-         * @throws ArgumentNullException if {@code reference} is null
-         */
+        /// <summary>
+        /// Ensures that an object reference passed as a parameter to the calling method is not null.
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="reference">The reference.</param>
+        /// <param name="errorMessageTemplate">The error message template.</param>
+        /// <param name="errorMessageArgs">The error message arguments.</param>
+        /// <returns></returns>
+        /// <exception cref="ArgumentNullException"></exception>
         public static T CheckNotNull<T>(
             T reference, [CanBeNull] String errorMessageTemplate, [CanBeNull] params object[] errorMessageArgs)
         {
@@ -224,11 +220,16 @@ namespace InCube.Core
             return reference;
         }
 
-        /**
-         * Ensures that an object reference passed as a parameter to the calling method is not null.
-         *
-         * <p>See {@link #checkNotNull(object, String, params object[])} for details.
-         */
+        /// <summary>
+        /// Ensures that an object reference passed as a parameter to the calling method is not null.
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <typeparam name="T1">The type of the 1.</typeparam>
+        /// <param name="obj">The object.</param>
+        /// <param name="errorMessageTemplate">The error message template.</param>
+        /// <param name="p1">The p1.</param>
+        /// <returns></returns>
+        /// <exception cref="ArgumentNullException"></exception>
         public static T CheckNotNull<T, T1>(T obj, [CanBeNull] String errorMessageTemplate, T1 p1)
         {
             if (obj == null)
@@ -238,11 +239,18 @@ namespace InCube.Core
             return obj;
         }
 
-        /**
-         * Ensures that an object reference passed as a parameter to the calling method is not null.
-         *
-         * <p>See {@link #checkNotNull(object, String, params object[])} for details.
-         */
+        /// <summary>
+        /// Ensures that an object reference passed as a parameter to the calling method is not null.
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <typeparam name="T1">The type of the 1.</typeparam>
+        /// <typeparam name="T2">The type of the 2.</typeparam>
+        /// <param name="obj">The object.</param>
+        /// <param name="errorMessageTemplate">The error message template.</param>
+        /// <param name="p1">The p1.</param>
+        /// <param name="p2">The p2.</param>
+        /// <returns></returns>
+        /// <exception cref="ArgumentNullException"></exception>
         public static T CheckNotNull<T, T1, T2>(T obj, [CanBeNull] String errorMessageTemplate, T1 p1, T2 p2)
         {
             if (obj == null)
@@ -252,11 +260,20 @@ namespace InCube.Core
             return obj;
         }
 
-        /**
-         * Ensures that an object reference passed as a parameter to the calling method is not null.
-         *
-         * <p>See {@link #checkNotNull(object, String, params object[])} for details.
-         */
+        /// <summary>
+        /// Ensures that an object reference passed as a parameter to the calling method is not null.
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <typeparam name="T1">The type of the 1.</typeparam>
+        /// <typeparam name="T2">The type of the 2.</typeparam>
+        /// <typeparam name="T3">The type of the 3.</typeparam>
+        /// <param name="obj">The object.</param>
+        /// <param name="errorMessageTemplate">The error message template.</param>
+        /// <param name="p1">The p1.</param>
+        /// <param name="p2">The p2.</param>
+        /// <param name="p3">The p3.</param>
+        /// <returns></returns>
+        /// <exception cref="ArgumentNullException"></exception>
         public static T CheckNotNull<T, T1, T2, T3>(T obj, [CanBeNull] String errorMessageTemplate, T1 p1, T2 p2, T3 p3)
         {
             if (obj == null)
@@ -266,11 +283,22 @@ namespace InCube.Core
             return obj;
         }
 
-        /**
-         * Ensures that an object reference passed as a parameter to the calling method is not null.
-         *
-         * <p>See {@link #checkNotNull(object, String, params object[])} for details.
-         */
+        /// <summary>
+        /// Ensures that an object reference passed as a parameter to the calling method is not null.
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <typeparam name="T1">The type of the 1.</typeparam>
+        /// <typeparam name="T2">The type of the 2.</typeparam>
+        /// <typeparam name="T3">The type of the 3.</typeparam>
+        /// <typeparam name="T4">The type of the 4.</typeparam>
+        /// <param name="obj">The object.</param>
+        /// <param name="errorMessageTemplate">The error message template.</param>
+        /// <param name="p1">The p1.</param>
+        /// <param name="p2">The p2.</param>
+        /// <param name="p3">The p3.</param>
+        /// <param name="p4">The p4.</param>
+        /// <returns></returns>
+        /// <exception cref="ArgumentNullException"></exception>
         public static T CheckNotNull<T, T1, T2, T3, T4>(T obj, [CanBeNull] String errorMessageTemplate, T1 p1, T2 p2, T3 p3, T4 p4)
         {
             if (obj == null)
