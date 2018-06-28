@@ -7,7 +7,6 @@ using System.Threading.Tasks;
 
 namespace InCube.Core
 {
-
     public struct ReadOnlyList<T> : IReadOnlyList<T>
     {
         private readonly IList<T> _wrapped;
@@ -65,7 +64,5 @@ namespace InCube.Core
         public static IReadOnlyList<T> AsReadOnly<T>(this List<T> list) => list;
 
         public static IReadOnlyList<T> AsReadOnly<T>(this T[] list) => list;
-
     }
-
 }

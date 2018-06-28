@@ -13,7 +13,11 @@ namespace InCube.Core
         /// </summary>
         /// <typeparam name="T">The type of enum to parse to.</typeparam>
         /// <param name="value">The value to parse.</param>
-        /// <returns>The parsed enum.</returns>
+        /// <returns>
+        /// The parsed enum.
+        /// </returns>
+        /// <exception cref="InvalidOperationException">
+        /// </exception>
         public static T ParseEnum<T>(this string value) where T : struct
         {
             var enumType = typeof(T);
@@ -23,16 +27,14 @@ namespace InCube.Core
                 throw new InvalidOperationException($"Attempted to parse '{value}' to type '{enumType.Name}', which is not an enum type!");
             }
 
-            int dummy;
-            var isAnInteger = int.TryParse(value, out dummy);
+            var isAnInteger = int.TryParse(value, out var dummy);
 
-            T parsed;
-            var parsedSuccessfully = Enum.TryParse(value, true, out parsed);
+            var parsedSuccessfully = Enum.TryParse<T>(value, true, out var parsed);
 
             if (isAnInteger || !parsedSuccessfully)
             {
                 var enumValues = (T[])enumType.GetEnumValues();
-                string validOptions = string.Join(", ", enumValues.Select(x => $"'{x.ToString()}'"));
+                var validOptions = string.Join(", ", enumValues.Select(x => $"'{x.ToString()}'"));
                 throw new InvalidOperationException($"Could not parse string '{value}' as enum value of '{enumType.Name}'. Valid options would be {validOptions}.");
             }
 
