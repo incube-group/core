@@ -1,0 +1,46 @@
+﻿using System;
+using InCube.Core.Functional;
+using NUnit.Framework;
+using static InCube.Core.Functional.Tries;
+
+namespace InCube.Core.Test.Functional
+{
+    public class TryTest
+    {
+        [Test]
+        public void TestSuccess()
+        {
+            const int value = 1;
+            var t = Try(() => value);
+            Assert.True(t.HasValue);
+            Assert.AreEqual(value, t.Value);
+            Assert.Throws<InvalidOperationException>(() =>
+            {
+                var _ = t.Exception;
+            });
+            Assert.AreEqual(value, t.GetValueOrDefault(value - 1));
+            Assert.AreEqual(value + 1, t.Match(failure: ex => value - 1, success: v => v + 1));
+            Assert.False(t.Failed().HasValue);
+        }
+
+        [Test]
+        public void TestFailure()
+        {
+            const int value = 1;
+            var t = Try(() =>
+            {
+                Preconditions.CheckArgument(value <= 0, "value is positive: {}", value);
+                return value;
+            });
+            Assert.False(t.HasValue);
+            Assert.Throws<ArgumentException>(() =>
+            {
+                var _ = t.Value;
+            });
+            Assert.AreEqual("value is positive: " + value, t.Exception.Message);
+            Assert.AreEqual(value - 1, t.GetValueOrDefault(value - 1));
+            Assert.AreEqual(value - 1, t.Match(failure: ex => value - 1, success: v => v + 1));
+            Assert.True(t.Failed().HasValue);
+        }
+    }
+}

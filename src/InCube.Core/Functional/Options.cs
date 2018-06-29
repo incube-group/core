@@ -2,9 +2,9 @@
 using System.Collections;
 using System.Collections.Generic;
 
-namespace InCube.Core
+namespace InCube.Core.Functional
 {
-   /// <summary>
+    /// <summary>
     /// Defines utility operations on instances of <see cref="IOption{T}"/> and <see cref="Option{T}"/>. The
     /// duplication of methods for both types aims at avoiding unnecessary boxing where possible. 
     /// </summary>
@@ -29,8 +29,8 @@ namespace InCube.Core
         public static TOut Match<TOut, TIn>(this IOption<TIn> self, Func<TOut> noneCallback, Func<TIn, TOut> someCallback) =>
             self.HasValue ? someCallback(self.Value) : noneCallback();
 
-        public static TOut Match<TOut, TIn>(this Option<TIn> self, Func<TOut> noneCallback, Func<TIn, TOut> someCallback) =>
-            self.HasValue ? someCallback(self.Value) : noneCallback();
+        public static TOut Match<TOut, TIn>(this Option<TIn> self, Func<TOut> none, Func<TIn, TOut> some) =>
+            self.HasValue ? some(self.Value) : none();
 
         public static TOut Match<TOut, TIn>(this TIn? self, Func<TOut> none, Func<TIn, TOut> some) where TIn: struct =>
             self.HasValue ? some(self.Value) : none();
@@ -206,7 +206,7 @@ namespace InCube.Core
         }
     }
 
-        public interface IHasValue
+    public interface IHasValue
     {
         bool HasValue { get; }
     }
@@ -222,7 +222,7 @@ namespace InCube.Core
     }
 
     /// <summary>
-    /// Represents the Bottom type, i.e., the type of the noneCallback option.
+    /// Represents the Bottom type, i.e., the type of the none option.
     /// </summary>
     // ReSharper disable once ConvertToStaticClass
     public sealed class Nothing

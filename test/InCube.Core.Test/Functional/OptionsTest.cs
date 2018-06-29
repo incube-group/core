@@ -2,9 +2,10 @@
 using System.Collections.Generic;
 using System.Linq;
 using NUnit.Framework;
-using static InCube.Core.Options;
+using InCube.Core.Functional;
+using static InCube.Core.Functional.Options;
 
-namespace InCube.Core.Test
+namespace InCube.Core.Test.Functional
 {
     public class OptionsTest
     {
@@ -18,7 +19,7 @@ namespace InCube.Core.Test
                 var _ = none.Value;
             });
             Assert.AreEqual(null, none.OrNull());
-            //Assert.AreEqual(noneCallback.As<int>() is IOption<T>);
+            //Assert.AreEqual(none.As<int>() is IOption<T>);
         }
 
         [Test]
@@ -48,7 +49,7 @@ namespace InCube.Core.Test
             var nullNone = (IOption<Nothing>) null;
             Assert.True(none != nullNone);
             Assert.True(nullNone != none);
-            //Assert.True(noneCallback.As<long>() == None.As<int>());
+            //Assert.True(none.As<long>() == None.As<int>());
 
             // ReSharper disable once SuspiciousTypeConversion.Global
             Assert.True(Equals(none, intNone));
@@ -76,7 +77,7 @@ namespace InCube.Core.Test
         [Test]
         public void TestMatch()
         {
-            string MatchToString<T>(Option<T> opt) => opt.Match(noneCallback: () => "None", someCallback: i => $"Some({i})");
+            string MatchToString<T>(Option<T> opt) => opt.Match(none: () => "None", some: i => $"Some({i})");
 
             Assert.AreEqual("Some(1)", MatchToString(Some(1)));
             Assert.AreEqual("None", MatchToString(None));

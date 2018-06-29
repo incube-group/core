@@ -2,9 +2,9 @@
 using System.Collections.Generic;
 using System.Text;
 
-namespace InCube.Core
+namespace InCube.Core.Format
 {
-    public static class StringFormattingExtensionMethods
+    public static class ArrayFormatter
     {
         public static string ToMatrixString(this double[,] matrix, string stringFormat = "e2")
         {
@@ -25,7 +25,7 @@ namespace InCube.Core
             return sb.ToString();
         }
 
-        public static string ToArrayString(this double[] array, string stringFormat = "e2")
+        public static string ToArrayString(this IReadOnlyList<double> array, string stringFormat = "e2")
         {
             var sb = new StringBuilder();
             foreach (var d in array)
@@ -38,7 +38,7 @@ namespace InCube.Core
             return sb.ToString();
         }
 
-        public static string ToArrayString(this int[] array, string stringFormat = "######")
+        public static string ToArrayString(this IReadOnlyList<int> array, string stringFormat = "######")
         {
             var sb = new StringBuilder();
             foreach (var d in array)

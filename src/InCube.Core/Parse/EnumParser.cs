@@ -1,12 +1,12 @@
 ﻿using System;
 using System.Linq;
 
-namespace InCube.Core
+namespace InCube.Core.Parse
 {
     /// <summary>
     /// Utilities to handle enums.
     /// </summary>
-    public static class EnumUtils
+    public static class EnumParser
     {
         /// <summary>
         /// Parses a string to an enum value. If unsuccessful, an exception is thrown.
