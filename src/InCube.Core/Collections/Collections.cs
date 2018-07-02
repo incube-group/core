@@ -103,9 +103,6 @@ namespace InCube.Core.Collections
         public static double[] VectorRelativeRank<T>(this IReadOnlyCollection<T> values, IReadOnlyList<T> elements) where T : IComparable<T> =>
             values.VectorRank(elements).Select(x => x / (double)values.Count).ToArray();
 
-        public static IEnumerable<(T value, int index)> ZipWithIndex<T>(this IEnumerable<T> enumerable) =>
-            enumerable.Select(Tuples.MakeValueTuple);
-
         /// <summary>
         /// Joins the strings in the enumerable with the specified separator (default: ", ").
         /// </summary>
@@ -121,57 +118,6 @@ namespace InCube.Core.Collections
         /// <param name="end">The string to place at the end of the joined output.</param>
         public static String MkString<T>(this IEnumerable<T> enumerable, string start, string separator, string end) =>
             $"{start}{enumerable.MkString(separator)}{end}";
-
-        public static IEnumerable<KeyValuePair<T, V>> MapValues<T, U, V>(
-            this IEnumerable<KeyValuePair<T, U>> enumerable, Func<U, V> mapper) =>
-            enumerable.Select(keyValue => Tuples.MakePair(keyValue.Key, mapper(keyValue.Value)));
-
-        public static IEnumerable<(T Key, V Value)> MapValues<T, U, V>(this IEnumerable<(T Key, U Value)> enumerable,
-            Func<U, V> mapper) =>
-            enumerable.Select(kv => (kv.Key, mapper(kv.Value)));
-
-        public static Dictionary<T, V> ToDictionary<T, V>(this IEnumerable<KeyValuePair<T, V>> enumerable)
-        {
-            return enumerable.ToDictionary(kv => kv.Key, kv => kv.Value);
-        }
-
-        public static Dictionary<T, V> ToDictionary<T, V>(this IEnumerable<(T key, V value)> enumerable)
-        {
-            return enumerable.ToDictionary(kv => kv.key, kv => kv.value);
-        }
-
-        public static IReadOnlyDictionary<T, V> ToReadOnlyDictionary<T, V>(this IEnumerable<(T key, V value)> enumerable)
-        {
-            return enumerable.ToDictionary(kv => kv.key, kv => kv.value);
-        }
-
-        public static IEnumerable<(T, V)> AsTuple<T, V>(this IEnumerable<KeyValuePair<T, V>> enumerable)
-        {
-            return enumerable.Select(kv => (kv.Key, kv.Value));
-        }
-
-        public static IReadOnlyDictionary<T, V> AsReadOnly<T, V>(this IDictionary<T, V> dict)
-        {
-            switch (dict)
-            {
-                case Dictionary<T, V> d:
-                    return d;
-                case ConcurrentDictionary<T, V> d:
-                    return d;
-                case SortedDictionary<T, V> d:
-                    return d;
-                case SortedList<T, V> d:
-                    return d;
-                default:
-                    return new ReadOnlyDictionary<T, V>(dict);
-            }
-        }
-
-        /// <summary>
-        /// The purpose of this method is to issue a compiler warning if someone calls this by mistake.
-        /// </summary>
-        [Obsolete("unnecessary call")]
-        public static IReadOnlyDictionary<T, V> AsReadOnly<T, V>(this IReadOnlyDictionary<T, V> dict) => dict;
 
         public static IReadOnlyCollection<T> AsReadOnly<T>(this ICollection<T> col)
         {
@@ -211,31 +157,6 @@ namespace InCube.Core.Collections
         [Obsolete("unnecessary call")]
         public static IReadOnlyList<T> AsReadOnly<T>(this IReadOnlyList<T> list) => list;
 
-        public static SortedDictionary<T, V> AsSorted<T, V>(this Dictionary<T, V> dict, IComparer<T> comparer = null) => 
-            new SortedDictionary<T, V>(dict, comparer);
-
-        public static SortedDictionary<T, V> AsSorted<T, V>(this IReadOnlyDictionary<T, V> dict, IComparer<T> comparer = null)
-        {
-            return dict is SortedDictionary<T, V> sorted && comparer == null
-                ? sorted
-                : new SortedDictionary<T, V>(dict.ToDictionary());
-        }
-
-        public static V GetOrDefault<K, V>(this IReadOnlyDictionary<K, V> dict, K key, V @default) => 
-            dict.TryGetValue(key, out var value) ? value : @default;
-
-        public static V GetOrDefault<K, V>(this IReadOnlyDictionary<K, V> dict, K key, Func<V> supplier) =>
-            dict.TryGetValue(key, out var value) ? value : supplier();
-
-        public static Option<V> GetOption<K, V>(this IReadOnlyDictionary<K, V> dict, K key) =>
-            dict.TryGetValue(key, out var value) ? Options.Some(value) : Options.None;
-
-        public static System.Collections.Generic.HashSet<T> ToHashSet<T>(this IEnumerable<T> source,
-            IEqualityComparer<T> comparer = null)
-        {
-            return new System.Collections.Generic.HashSet<T>(source, comparer);
-        }
-
         public static U[] ParallelMap<T, U>(this IReadOnlyList<T> list, Func<T, U> map) =>
             list.ParallelMap(map, list.Count);
 
@@ -272,103 +193,38 @@ namespace InCube.Core.Collections
             using (var iterator = source.GetEnumerator())
             {
                 if (!iterator.MoveNext())
-                    throw new InvalidOperationException();
+                    throw new InvalidOperationException("sequence contains no elements");
 
-                var max = iterator.Current;
-                var maxValue = selector(max);
+                var opt = iterator.Current;
+                var optValue = selector(opt);
 
                 while (iterator.MoveNext())
                 {
                     var current = iterator.Current;
                     var currentValue = selector(current);
 
-                    if (comparer.Compare(currentValue, maxValue) > 0)
+                    if (comparer.Compare(currentValue, optValue) > 0)
                     {
-                        max = current;
-                        maxValue = currentValue;
+                        opt = current;
+                        optValue = currentValue;
                     }
                 }
 
-                return max;
+                return opt;
             }
         }
 
-        public static TSource MinBy<TSource, TKey>(this IEnumerable<TSource> source, Func<TSource, TKey> selector)
-        {
-            return source.MinBy(selector, null);
-        }
+        public static TSource MinBy<TSource, TKey>(this IEnumerable<TSource> source, Func<TSource, TKey> selector) => 
+            source.MinBy(selector, Comparer<TKey>.Default);
 
-        public static TSource MinBy<TSource, TKey>(
-            this IEnumerable<TSource> source,
-            Func<TSource, TKey> selector, 
-            IComparer<TKey> comparer)
-        {
-            if (source == null) throw new ArgumentNullException("source");
-            if (selector == null) throw new ArgumentNullException("selector");
-            comparer = comparer ?? Comparer<TKey>.Default;
-
-            using (var sourceIterator = source.GetEnumerator())
-            {
-                if (!sourceIterator.MoveNext())
-                {
-                    throw new InvalidOperationException("Sequence contains no elements");
-                }
-                var min = sourceIterator.Current;
-                var minKey = selector(min);
-                while (sourceIterator.MoveNext())
-                {
-                    var candidate = sourceIterator.Current;
-                    var candidateProjected = selector(candidate);
-                    if (comparer.Compare(candidateProjected, minKey) < 0)
-                    {
-                        min = candidate;
-                        minKey = candidateProjected;
-                    }
-                }
-                return min;
-            }
-        }
+        public static TSource MinBy<TSource, TKey>(this IEnumerable<TSource> source, Func<TSource, TKey> selector,
+            IComparer<TKey> comparer) => source.MaxBy(selector, Comparer<TKey>.Create((x, y) => comparer.Compare(y, x)));
 
         public static IEnumerable<T> Get<T>(this IReadOnlyList<T> list, IEnumerable<int> indices) =>
             indices.Select(i => list[i]);
 
         public static IEnumerable<IEnumerable<T>> GetCols<T>(this IEnumerable<IReadOnlyList<T>> enumerable, IEnumerable<int> indices) =>
             enumerable.Select(list => indices.Select(i => list[i]));
-
-        public static IEnumerable<T> Flatten<T>(this IEnumerable<IEnumerable<T>> enumerable) =>
-            enumerable.SelectMany(list => list);
-
-        public static bool IsEmpty<T>(this IEnumerable<T> col) => !col.Any();
-
-        public static IEnumerable<T> GenFilter<T, U>(this IEnumerable<T> list, Func<U, bool> predicate) where T : U
-        {
-            foreach (var l in list)
-            {
-                if (predicate.Invoke(l)) yield return l;
-            }
-        }
-
-        public static void ForEach<T>(this IEnumerable<T> list, Action<T> action)
-        {
-            foreach (var l in list)
-            {
-                action.Invoke(l);
-            }
-        }
-
-        public static ArraySegment<T> Slice<T>(this T[] elems, int startInclusive, int stopExclusive) => 
-            new ArraySegment<T>(elems, startInclusive, stopExclusive - startInclusive);
-
-        public static ArraySegment<T> Slice<T>(this ArraySegment<T> elems, int startInclusive, int stopExclusive) => 
-            new ArraySegment<T>(elems.Array, elems.Offset + startInclusive, stopExclusive - startInclusive);
-
-        public static Option<T> FirstOption<T>(this IEnumerable<T> self)
-        {
-            using (var enumerator = self.GetEnumerator())
-            {
-                return enumerator.MoveNext() ? Options.Some(enumerator.Current) : Options.None;
-            }
-        }
 
         /// <summary>
         /// An adaptation of <see cref="List{T}.RemoveAll"/> by shifting all elements matching the 

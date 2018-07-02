@@ -2,6 +2,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using InCube.Core.Functional;
 
 namespace InCube.Core.Collections
 {
@@ -96,14 +97,6 @@ namespace InCube.Core.Collections
         public static EnumerableCollection<T> ToCollection<T>(this IEnumerable<T> enumerable, int count) =>
             new EnumerableCollection<T>(enumerable, count);
 
-        public static IEnumerable<U> TupleSelect<K, V, U>(this IEnumerable<(K Key, V Value)> enumerable,
-            Func<K, V, U> mapper) =>
-            enumerable.Select(kv => mapper(kv.Key, kv.Value));
-
-        public static IEnumerable<U> TupleSelect<K, V, U>(this IEnumerable<KeyValuePair<K, V>> enumerable,
-            Func<K, V, U> mapper) =>
-            enumerable.Select(kv => mapper(kv.Key, kv.Value));
-
         public static IEnumerable<T> Iterate<T>(T start, Func<T, T> f)
         {
             T next = start;
@@ -141,10 +134,49 @@ namespace InCube.Core.Collections
             switch (elems)
             {
                 case IReadOnlyList<T> list:
-                    return IntRange(startInclusive, stopExclusive).Select(i => list[i]);
+                    return list.Slice(startInclusive, stopExclusive);
                 default:
                     return elems.Skip(startInclusive).Take(stopExclusive - startInclusive);
             }
         }
+
+        public static IEnumerable<T> Slice<T>(this IReadOnlyList<T> list, int startInclusive, int stopExclusive) =>
+            IntRange(startInclusive, stopExclusive).Select(i => list[i]);
+
+        public static ArraySegment<T> Slice<T>(this T[] elems, int startInclusive, int stopExclusive) =>
+            new ArraySegment<T>(elems, startInclusive, stopExclusive - startInclusive);
+
+        public static ArraySegment<T> Slice<T>(this ArraySegment<T> elems, int startInclusive, int stopExclusive) =>
+            new ArraySegment<T>(elems.Array, elems.Offset + startInclusive, stopExclusive - startInclusive);
+
+        public static IEnumerable<T> Flatten<T>(this IEnumerable<IEnumerable<T>> enumerable) =>
+            enumerable.SelectMany(list => list);
+
+        public static bool IsEmpty<T>(this IEnumerable<T> col) => !col.Any();
+
+        public static IEnumerable<T> GenFilter<T, U>(this IEnumerable<T> list, Func<U, bool> predicate) where T : U
+        {
+            foreach (var l in list)
+            {
+                if (predicate.Invoke(l)) yield return l;
+            }
+        }
+
+        public static void ForEach<T>(this IEnumerable<T> list, Action<T> action)
+        {
+            foreach (var l in list)
+            {
+                action.Invoke(l);
+            }
+        }
+
+        public static Option<T> FirstOption<T>(this IEnumerable<T> self)
+        {
+            using (var enumerator = self.GetEnumerator())
+            {
+                return enumerator.MoveNext() ? Options.Some(enumerator.Current) : Options.None;
+            }
+        }
+
     }
 }

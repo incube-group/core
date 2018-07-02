@@ -52,5 +52,29 @@ namespace InCube.Core.Collections
             return e1.ZipAsTuple(e2, e3, e4).Zip(e5, (x, y) => (x.Item1, x.Item2, x.Item3, x.Item4, y));
         }
 
+        public static IEnumerable<U> TupleSelect<K, V, U>(this IEnumerable<(K Key, V Value)> enumerable,
+            Func<K, V, U> mapper) =>
+            enumerable.Select(kv => mapper(kv.Key, kv.Value));
+
+        public static IEnumerable<U> TupleSelect<K, V, U>(this IEnumerable<KeyValuePair<K, V>> enumerable,
+            Func<K, V, U> mapper) =>
+            enumerable.Select(kv => mapper(kv.Key, kv.Value));
+
+        public static IEnumerable<(T value, int index)> ZipWithIndex<T>(this IEnumerable<T> enumerable) =>
+            enumerable.Select(MakeValueTuple);
+
+        public static IEnumerable<KeyValuePair<T, V>> MapValues<T, U, V>(
+            this IEnumerable<KeyValuePair<T, U>> enumerable, Func<U, V> mapper) =>
+            enumerable.Select(keyValue => Tuples.MakePair(keyValue.Key, mapper(keyValue.Value)));
+
+        public static IEnumerable<(T Key, V Value)> MapValues<T, U, V>(this IEnumerable<(T Key, U Value)> enumerable,
+            Func<U, V> mapper) =>
+            enumerable.Select(kv => (kv.Key, mapper(kv.Value)));
+
+        public static IEnumerable<(T, V)> AsTuple<T, V>(this IEnumerable<KeyValuePair<T, V>> enumerable)
+        {
+            return enumerable.Select(kv => (kv.Key, kv.Value));
+        }
+
     }
 }
