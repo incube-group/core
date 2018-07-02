@@ -184,8 +184,9 @@ namespace InCube.Core.Collections
             return result;
         }
 
-        public static TSource MaxBy<TSource, TKey>(this IEnumerable<TSource> source, Func<TSource, TKey> selector) =>
-            source.MaxBy(selector, Comparer<TKey>.Default);
+        public static TSource MaxBy<TSource, TKey>(this IEnumerable<TSource> source, Func<TSource, TKey> selector)
+            where TKey : IComparable<TKey> =>
+            source.MaxBy(selector, DefaultComparer<TKey>());
 
         public static TSource MaxBy<TSource, TKey>(this IEnumerable<TSource> source, Func<TSource, TKey> selector,
             IComparer<TKey> comparer)
@@ -193,7 +194,7 @@ namespace InCube.Core.Collections
             using (var iterator = source.GetEnumerator())
             {
                 if (!iterator.MoveNext())
-                    throw new InvalidOperationException("sequence contains no elements");
+                    throw new InvalidOperationException("empty source sequence");
 
                 var opt = iterator.Current;
                 var optValue = selector(opt);
@@ -214,11 +215,24 @@ namespace InCube.Core.Collections
             }
         }
 
-        public static TSource MinBy<TSource, TKey>(this IEnumerable<TSource> source, Func<TSource, TKey> selector) => 
-            source.MinBy(selector, Comparer<TKey>.Default);
+        public static TSource MinBy<TSource, TKey>(this IEnumerable<TSource> source, Func<TSource, TKey> selector)
+            where TKey : IComparable<TKey> =>
+            source.MinBy(selector, DefaultComparer<TKey>());
 
         public static TSource MinBy<TSource, TKey>(this IEnumerable<TSource> source, Func<TSource, TKey> selector,
             IComparer<TKey> comparer) => source.MaxBy(selector, Comparer<TKey>.Create((x, y) => comparer.Compare(y, x)));
+
+        public static int ArgMax<T>(this IEnumerable<T> source, IComparer<T> comparer) =>
+            source.ZipWithIndex().MaxBy(x => x.value, comparer).index;
+
+        public static int ArgMax<T>(this IEnumerable<T> source) where T : IComparable<T> =>
+            source.ArgMax(DefaultComparer<T>());
+
+        public static int ArgMin<T>(this IEnumerable<T> source, IComparer<T> comparer) =>
+            source.ZipWithIndex().MinBy(x => x.value, comparer).index;
+
+        public static int ArgMin<T>(this IEnumerable<T> source) where T : IComparable<T> =>
+            source.ArgMax(DefaultComparer<T>());
 
         public static IEnumerable<T> Get<T>(this IReadOnlyList<T> list, IEnumerable<int> indices) =>
             indices.Select(i => list[i]);
