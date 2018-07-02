@@ -37,8 +37,8 @@ namespace InCube.Core.Test.Collections
         [Test]
         public void TestMinBy()
         {
-            var maxIdx = ShuffledList.ZipWithIndex().MinBy(x => x.value).index;
-            Assert.AreEqual(0, ShuffledList[maxIdx]);
+            var minId = ShuffledList.ZipWithIndex().MinBy(x => x.value).index;
+            Assert.AreEqual(0, ShuffledList[minId]);
         }
     }
 }
