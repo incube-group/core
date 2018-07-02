@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 using InCube.Core.Collections;
+using InCube.Core.Functional;
 using NUnit.Framework;
 
 namespace InCube.Core.Test.Collections

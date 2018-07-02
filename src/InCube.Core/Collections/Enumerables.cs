@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 
@@ -145,6 +146,5 @@ namespace InCube.Core.Collections
                     return elems.Skip(startInclusive).Take(stopExclusive - startInclusive);
             }
         }
-
     }
 }

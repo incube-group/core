@@ -329,32 +329,6 @@ namespace InCube.Core.Collections
             }
         }
 
-        public sealed class ReverseComparer<T> : IComparer<T>
-        {
-            private readonly IComparer<T> _inner;
-
-            public static ReverseComparer<T> Default => new ReverseComparer<T>();
-
-            public ReverseComparer() : this(null)
-            {
-            }
-
-            public ReverseComparer(IComparer<T> inner)
-            {
-                this._inner = inner ?? Comparer<T>.Default;
-            }
-
-            int IComparer<T>.Compare(T x, T y)
-            {
-                return _inner.Compare(y, x);
-            }
-        }
-
-        public static ReverseComparer<T> Reverse<T>(this IComparer<T> comparer)
-        {
-            return new ReverseComparer<T>(comparer);
-        }
-
         public static IEnumerable<T> Get<T>(this IReadOnlyList<T> list, IEnumerable<int> indices) =>
             indices.Select(i => list[i]);
 
@@ -380,33 +354,6 @@ namespace InCube.Core.Collections
             {
                 action.Invoke(l);
             }
-        }
-
-        public delegate IEnumerator<T> EnumeratorGenerator<out T>();
-
-        private class WrappedEnumerable<T>: IEnumerable<T>
-        {
-            private readonly EnumeratorGenerator<T> _generator;
-
-            public WrappedEnumerable(EnumeratorGenerator<T> generator)
-            {
-                this._generator = generator;
-            }
-
-            public IEnumerator<T> GetEnumerator()
-            {
-                return _generator.Invoke();
-            }
-
-            IEnumerator IEnumerable.GetEnumerator()
-            {
-                return GetEnumerator();
-            }
-        }
-
-        public static IEnumerable<T> MakeEnumerable<T>(EnumeratorGenerator<T> generator)
-        {
-            return new WrappedEnumerable<T>(generator);
         }
 
         public static ArraySegment<T> Slice<T>(this T[] elems, int startInclusive, int stopExclusive) => 
