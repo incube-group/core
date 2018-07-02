@@ -272,23 +272,6 @@ namespace InCube.Core.Collections
             return e1.ZipAsTuple(e2, e3, e4).Zip(e5, (x, y) => (x.Item1, x.Item2, x.Item3, x.Item4, y));
         }
 
-        public static (List<T1>, List<T2>) Unzip<T1, T2>(this IEnumerable<(T1, T2)> zipped)
-        {
-            var capacity = 16;
-            if (zipped is IReadOnlyCollection<(T1, T2)> col)
-            {
-                capacity = col.Count;
-            }
-            var l1 = new List<T1>(capacity);
-            var l2 = new List<T2>(capacity);
-            foreach (var (t1, t2) in zipped)
-            {
-                l1.Add(t1);
-                l2.Add(t2);
-            }
-            return (l1, l2);
-        }
-
         public static System.Collections.Generic.HashSet<T> ToHashSet<T>(this IEnumerable<T> source,
             IEqualityComparer<T> comparer = null)
         {

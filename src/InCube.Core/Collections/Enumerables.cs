@@ -32,21 +32,16 @@ namespace InCube.Core.Collections
         /// <remarks>This method is very expensive since all elements need to be cached in temporary lists.</remarks>
         public static (IEnumerable<T1>, IEnumerable<T2>) Unzip<T, T1, T2>(this IEnumerable<T> zipped, Func<T, T1> selector1, Func<T, T2> selector2)
         {
-            if (zipped.IsEmpty())
+            if (zipped is IReadOnlyCollection<T> col)
             {
-                return (Enumerable.Empty<T1>(), Enumerable.Empty<T2>());
+                return col.Unzip(selector1, selector2);
             }
 
-            var l1 = new List<T1>();
-            var l2 = new List<T2>();
-            foreach (var t in zipped)
-            {
-                l1.Add(selector1(t));
-                l2.Add(selector2(t));
-            }
-
-            return (l1, l2);
+            return zipped.ToList().Unzip(selector1, selector2);
         }
+
+        public static (IEnumerable<T1>, IEnumerable<T2>) Unzip<T, T1, T2>(this IReadOnlyCollection<T> zipped,
+            Func<T, T1> selector1, Func<T, T2> selector2) => (zipped.Select(selector1), zipped.Select(selector2));
 
         /// <summary>
         /// Selects three enumerables while iterating over <paramref name="zipped" /> only once.
@@ -68,23 +63,29 @@ namespace InCube.Core.Collections
             Func<T, T2> selector2,
             Func<T, T3> selector3)
         {
-            if (zipped.IsEmpty())
+            if (zipped is IReadOnlyCollection<T> col)
             {
-                return (Enumerable.Empty<T1>(), Enumerable.Empty<T2>(), Enumerable.Empty<T3>());
+                return col.Unzip(selector1, selector2, selector3);
             }
 
-            var l1 = new List<T1>();
-            var l2 = new List<T2>();
-            var l3 = new List<T3>();
-            foreach (var t in zipped)
-            {
-                l1.Add(selector1(t));
-                l2.Add(selector2(t));
-                l3.Add(selector3(t));
-            }
-
-            return (l1, l2, l3);
+            return zipped.ToList().Unzip(selector1, selector2, selector3);
         }
+
+        public static (IEnumerable<T1>, IEnumerable<T2>, IEnumerable<T3>) Unzip<T, T1, T2, T3>(this IReadOnlyCollection<T> zipped,
+            Func<T, T1> selector1, Func<T, T2> selector2, Func<T, T3> selector3) => 
+            (zipped.Select(selector1), zipped.Select(selector2), zipped.Select(selector3));
+
+        public static (IEnumerable<T1>, IEnumerable<T2>) Unzip<T1, T2>(this IEnumerable<(T1, T2)> zipped) =>
+            zipped.Unzip(t => t.Item1, t => t.Item2);
+
+        public static (IEnumerable<T1>, IEnumerable<T2>) Unzip<T1, T2>(this IReadOnlyCollection<(T1, T2)> zipped) =>
+            zipped.Unzip(t => t.Item1, t => t.Item2);
+
+        public static (IEnumerable<T1>, IEnumerable<T2>, IEnumerable<T3>) Unzip<T1, T2, T3>(this IEnumerable<(T1, T2, T3)> zipped) =>
+            zipped.Unzip(t => t.Item1, t => t.Item2, t => t.Item3);
+
+        public static (IEnumerable<T1>, IEnumerable<T2>, IEnumerable<T3>) Unzip<T1, T2, T3>(this IReadOnlyCollection<(T1, T2, T3)> zipped) =>
+            zipped.Unzip(t => t.Item1, t => t.Item2, t => t.Item3);
 
         public static IEnumerable<T> ToEnumerable<T>(T t)
         {
