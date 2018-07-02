@@ -104,7 +104,7 @@ namespace InCube.Core.Collections
             values.VectorRank(elements).Select(x => x / (double)values.Count).ToArray();
 
         public static IEnumerable<(T value, int index)> ZipWithIndex<T>(this IEnumerable<T> enumerable) =>
-            enumerable.Select(MakeValueTuple);
+            enumerable.Select(Tuples.MakeValueTuple);
 
         /// <summary>
         /// Joins the strings in the enumerable with the specified separator (default: ", ").
@@ -124,7 +124,7 @@ namespace InCube.Core.Collections
 
         public static IEnumerable<KeyValuePair<T, V>> MapValues<T, U, V>(
             this IEnumerable<KeyValuePair<T, U>> enumerable, Func<U, V> mapper) =>
-            enumerable.Select(keyValue => MakePair(keyValue.Key, mapper(keyValue.Value)));
+            enumerable.Select(keyValue => Tuples.MakePair(keyValue.Key, mapper(keyValue.Value)));
 
         public static IEnumerable<(T Key, V Value)> MapValues<T, U, V>(this IEnumerable<(T Key, U Value)> enumerable,
             Func<U, V> mapper) =>
@@ -229,48 +229,6 @@ namespace InCube.Core.Collections
 
         public static Option<V> GetOption<K, V>(this IReadOnlyDictionary<K, V> dict, K key) =>
             dict.TryGetValue(key, out var value) ? Options.Some(value) : Options.None;
-
-        public static KeyValuePair<T, V> MakePair<T, V>(T key, V value) => 
-            new KeyValuePair<T, V>(key, value);
-
-        public static (T Key, V Value) Unpack<T, V>(this KeyValuePair<T, V> keyValue) => (keyValue.Key, keyValue.Value);
-
-        public static Tuple<T1, T2> MakeTuple<T1, T2>(T1 item1, T2 item2) 
-            => new Tuple<T1, T2>(item1, item2);
-
-        public static (T1 Item1, T2 Item2) Unpack<T1, T2>(this Tuple<T1, T2> tuple) => (tuple.Item1, tuple.Item2);
-
-
-        public static (T1, T2) MakeValueTuple<T1, T2>(T1 item1, T2 item2) 
-            => (item1, item2);
-
-        public static IEnumerable<(T1, T2)> ZipAsTuple<T1, T2>(this IEnumerable<T1> left, IEnumerable<T2> right)
-        {
-            return left.Zip(right, MakeValueTuple);
-        }
-
-        public static IEnumerable<(T1, T2, T3)> ZipAsTuple<T1, T2, T3>(this IEnumerable<T1> e1, IEnumerable<T2> e2,
-            IEnumerable<T3> e3)
-        {
-            return e1.ZipAsTuple(e2).Zip(e3, (x, y) => (x.Item1, x.Item2, y));
-        }
-
-        public static IEnumerable<(T1, T2, T3, T4)> ZipAsTuple<T1, T2, T3, T4>(this IEnumerable<T1> e1, 
-            IEnumerable<T2> e2,
-            IEnumerable<T3> e3,
-            IEnumerable<T4> e4)
-        {
-            return e1.ZipAsTuple(e2, e3).Zip(e4, (x, y) => (x.Item1, x.Item2, x.Item3, y));
-        }
-
-        public static IEnumerable<(T1, T2, T3, T4, T5)> ZipAsTuple<T1, T2, T3, T4, T5>(this IEnumerable<T1> e1,
-            IEnumerable<T2> e2,
-            IEnumerable<T3> e3,
-            IEnumerable<T4> e4,
-            IEnumerable<T5> e5)
-        {
-            return e1.ZipAsTuple(e2, e3, e4).Zip(e5, (x, y) => (x.Item1, x.Item2, x.Item3, x.Item4, y));
-        }
 
         public static System.Collections.Generic.HashSet<T> ToHashSet<T>(this IEnumerable<T> source,
             IEqualityComparer<T> comparer = null)
