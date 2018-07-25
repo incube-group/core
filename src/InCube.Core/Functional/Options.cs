@@ -26,8 +26,8 @@ namespace InCube.Core.Functional
 
         public static Option<T> Empty<T>() => None;
 
-        public static TOut Match<TOut, TIn>(this IOption<TIn> self, Func<TOut> noneCallback, Func<TIn, TOut> someCallback) =>
-            self.HasValue ? someCallback(self.Value) : noneCallback();
+        public static TOut Match<TOut, TIn>(this IOption<TIn> self, Func<TOut> none, Func<TIn, TOut> some) =>
+            self.HasValue ? some(self.Value) : none();
 
         public static TOut Match<TOut, TIn>(this Option<TIn> self, Func<TOut> none, Func<TIn, TOut> some) =>
             self.HasValue ? some(self.Value) : none();
