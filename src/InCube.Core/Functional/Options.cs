@@ -204,6 +204,12 @@ namespace InCube.Core.Functional
             if (self.HasValue) some(self.Value);
             else none();
         }
+
+        public static T ApplyOpt<T>(this T self, Func<T, Option<T>> f) => f(self).GetValueOrDefault(self);
+
+        public static T ApplyOpt<T>(this T self, Func<T, IOption<T>> f) => f(self).GetValueOrDefault(self);
+
+        public static T ApplyOpt<T>(this T self, Func<T, T?> f) where T : struct => f(self).GetValueOrDefault(self);
     }
 
     public interface IHasValue
@@ -225,6 +231,7 @@ namespace InCube.Core.Functional
     /// Represents the Bottom type, i.e., the type of the none option.
     /// </summary>
     // ReSharper disable once ConvertToStaticClass
+    // ReSharper disable once ClassNeverInstantiated.Global
     public sealed class Nothing
     {
         private Nothing()
@@ -301,7 +308,7 @@ namespace InCube.Core.Functional
 
         public static bool operator !=(IOption<T> c1, Option<T> c2) => !(c1 == c2);
 
-        public static implicit operator Option<T>(Option<Nothing> none) => default;
+        public static implicit operator Option<T>(Option<Nothing> _) => default;
 
         public override string ToString() => HasValue ? $"Some({Value})" : "None";
     }
