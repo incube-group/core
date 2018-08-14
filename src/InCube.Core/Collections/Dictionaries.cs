@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
@@ -61,5 +62,33 @@ namespace InCube.Core.Collections
         [Obsolete("unnecessary call")]
         public static IReadOnlyDictionary<T, V> AsReadOnly<T, V>(this IReadOnlyDictionary<T, V> dict) => dict;
 
+        private class EmptyDictionary<TKey, TValue> : IReadOnlyDictionary<TKey, TValue>
+        {
+            public IEnumerator<KeyValuePair<TKey, TValue>> GetEnumerator()
+            {
+                return Enumerable.Empty<KeyValuePair<TKey, TValue>>().GetEnumerator();
+            }
+
+            IEnumerator IEnumerable.GetEnumerator()
+            {
+                return GetEnumerator();
+            }
+
+            public int Count => 0;
+            public bool ContainsKey(TKey key) => false;
+
+            public bool TryGetValue(TKey key, out TValue value)
+            {
+                value = default;
+                return false;
+            }
+
+            public TValue this[TKey key] => throw new KeyNotFoundException();
+
+            public IEnumerable<TKey> Keys => Enumerable.Empty<TKey>();
+            public IEnumerable<TValue> Values => Enumerable.Empty<TValue>();
+        }
+
+        public static IReadOnlyDictionary<TKey, TValue> Empty<TKey, TValue>() => new EmptyDictionary<TKey, TValue>();
     }
 }

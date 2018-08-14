@@ -177,5 +177,26 @@ namespace InCube.Core.Collections
             }
         }
 
+        public static bool IsSorted<T>(this IEnumerable<T> self, Comparer<T> comparer = null, bool strict = false)
+        {
+            comparer = comparer ?? Comparer<T>.Default;
+            var outOfOrder = strict ? (Func<T, T, bool>)
+                ((x, y) => comparer.Compare(x, y) >= 0) : 
+                ((x, y) => comparer.Compare(x, y) >  0);
+            using (var enumerator = self.GetEnumerator())
+            {
+                if (!enumerator.MoveNext()) return true;
+                var current = enumerator.Current;
+                while (enumerator.MoveNext())
+                {
+                    var next = enumerator.Current;
+                    if (outOfOrder(current, next)) return false;
+                    current = next;
+                }
+
+                return true;
+            }
+        }
+
     }
 }

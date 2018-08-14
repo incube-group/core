@@ -40,5 +40,20 @@ namespace InCube.Core.Test.Collections
             var minId = ShuffledList.ZipWithIndex().MinBy(x => x.value).index;
             Assert.AreEqual(0, ShuffledList[minId]);
         }
+
+        [Test]
+        public void TestIsSorted()
+        {
+            var range = Enumerable.Range(0, 100).ToArray();
+            Assert.True(range.IsSorted(strict: false));
+            Assert.True(range.IsSorted(strict: true));
+            var reverse = range.Reverse().ToArray();
+            Assert.False(reverse.IsSorted(strict: false));
+            Assert.False(reverse.IsSorted(strict: true));
+            var constant = Enumerables.Repeat(1).Take(100).ToArray();
+            Assert.True(constant.IsSorted(strict: false));
+            Assert.True(constant.Reverse().IsSorted(strict: false));
+            Assert.False(constant.IsSorted(strict: true));
+        }
     }
 }
