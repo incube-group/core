@@ -10,7 +10,7 @@ namespace InCube.Core.Functional
     }
 
     [Serializable]
-    public struct Try<T> : ITry<T>
+    public readonly struct Try<T> : ITry<T>
     {
         private readonly T _value;
         private readonly Option<Exception> _exception;

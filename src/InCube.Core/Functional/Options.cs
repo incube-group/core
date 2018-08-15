@@ -246,7 +246,7 @@ namespace InCube.Core.Functional
     /// </summary>
     /// <typeparam name="T"></typeparam>
     [Serializable]
-    public struct Option<T>: IOption<T>, IEquatable<Option<T>>, IEquatable<IOption<T>>
+    public readonly struct Option<T>: IOption<T>, IEquatable<Option<T>>, IEquatable<IOption<T>>
     {
         private readonly T _value;
 
