@@ -1,8 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
-using static InCube.Core.Preconditions;
 
-namespace InCube.DigitalAdvisory.Pso.util
+namespace InCube.Core
 {
     /// <summary>
     /// Helper class for dealing with many <see cref="IDisposable"/>s.
@@ -17,15 +16,15 @@ namespace InCube.DigitalAdvisory.Pso.util
 
         public void Add(Disposer disposer)
         {
-            CheckArgument(!_disposed, "disposed");
-            CheckNotNull(disposer);
+            Preconditions.CheckArgument(!_disposed, "disposed");
+            Preconditions.CheckNotNull(disposer);
             _unmanaged.Push(disposer);
         }
 
         public T Add<T>(T disposable) where T : IDisposable
         {
-            CheckArgument(!_disposed, "disposed");
-            CheckNotNull(disposable);
+            Preconditions.CheckArgument(!_disposed, "disposed");
+            Preconditions.CheckNotNull(disposable);
             _managed.Push(disposable);
             return disposable;
         }

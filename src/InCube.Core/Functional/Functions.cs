@@ -16,5 +16,23 @@ namespace InCube.Core.Functional
         /// <returns></returns>
         [PublicAPI]
         public static T Invoke<T>(Func<T> func) => func();
+
+        [PublicAPI]
+        public static T WithDisposables<T>(Func<Disposables, T> func)
+        {
+            using (var disposables = new Disposables())
+            {
+                return func(disposables);
+            }
+        }
+
+        [PublicAPI]
+        public static T ApplyOpt<T>(this T self, Func<T, Option<T>> f) => f(self).GetValueOrDefault(self);
+
+        [PublicAPI]
+        public static T ApplyOpt<T>(this T self, Func<T, IOption<T>> f) => f(self).GetValueOrDefault(self);
+
+        [PublicAPI]
+        public static T ApplyOpt<T>(this T self, Func<T, T?> f) where T : struct => f(self).GetValueOrDefault(self);
     }
 }

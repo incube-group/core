@@ -204,12 +204,6 @@ namespace InCube.Core.Functional
             if (self.HasValue) some(self.Value);
             else none();
         }
-
-        public static T ApplyOpt<T>(this T self, Func<T, Option<T>> f) => f(self).GetValueOrDefault(self);
-
-        public static T ApplyOpt<T>(this T self, Func<T, IOption<T>> f) => f(self).GetValueOrDefault(self);
-
-        public static T ApplyOpt<T>(this T self, Func<T, T?> f) where T : struct => f(self).GetValueOrDefault(self);
     }
 
     public interface IHasValue
