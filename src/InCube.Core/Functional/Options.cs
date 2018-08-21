@@ -56,7 +56,7 @@ namespace InCube.Core.Functional
         public static IOption<T> OrElse<T>(this IOption<T> self, Func<Option<T>> @default) =>
             self.HasValue ? self : @default();
 
-        public static IOption<T> OrElse<T>(this IOption<T> self, Option<T> @default) =>
+        public static IOption<T> OrElse<T>(this IOption<T> self, in Option<T> @default) =>
             self.HasValue ? self : @default;
 
         public static IOption<T> OrElse<T>(this Option<T> self, Func<IOption<T>> @default) =>
@@ -68,7 +68,7 @@ namespace InCube.Core.Functional
         public static Option<T> OrElse<T>(this Option<T> self, Func<Option<T>> @default) =>
             self.HasValue ? self : @default();
 
-        public static Option<T> OrElse<T>(this Option<T> self, Option<T> @default) =>
+        public static Option<T> OrElse<T>(this Option<T> self, in Option<T> @default) =>
             self.HasValue ? self : @default;
 
         public static T? OrElse<T>(this T? self, Func<T?> @default) where T : struct =>

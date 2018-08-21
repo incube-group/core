@@ -1,11 +1,8 @@
 ﻿using System;
-using System.Collections;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
-using System.Collections.ObjectModel;
 using System.Linq;
 using System.Threading.Tasks;
-using InCube.Core.Functional;
 using static InCube.Core.Preconditions;
 
 namespace InCube.Core.Collections
@@ -239,6 +236,12 @@ namespace InCube.Core.Collections
 
         public static IEnumerable<IEnumerable<T>> GetCols<T>(this IEnumerable<IReadOnlyList<T>> enumerable, IEnumerable<int> indices) =>
             enumerable.Select(list => indices.Select(i => list[i]));
+
+        public static bool CollectionEqual<T>(this IReadOnlyCollection<T> x, IReadOnlyCollection<T> y, IEqualityComparer<T> comparer) =>
+            x.Count == y.Count && x.SequenceEqual(y, comparer);
+
+        public static bool CollectionEqual<T>(this IReadOnlyCollection<T> x, IReadOnlyCollection<T> y) =>
+            x.Count == y.Count && x.SequenceEqual(y);
 
         /// <summary>
         /// An adaptation of <see cref="List{T}.RemoveAll"/> by shifting all elements matching the 
