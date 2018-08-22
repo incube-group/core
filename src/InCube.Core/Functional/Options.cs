@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Diagnostics;
+using JetBrains.Annotations;
 
 namespace InCube.Core.Functional
 {
@@ -20,7 +22,8 @@ namespace InCube.Core.Functional
         public static Option<T> ToOption<T>(this T? value) where T : struct =>
             value.HasValue ? Some(value.Value) : None;
 
-        public static Option<T> ToOption<T>(this IOption<T> self) => self.HasValue ? Some(self.Value) : None;
+        public static Option<T> ToOption<T>(this IOption<T> self) =>
+            self != null && self.HasValue ? Some(self.Value) : None;
 
         public static Option<T> ToOption<T>(this Option<T> self) => self;
 
@@ -46,6 +49,13 @@ namespace InCube.Core.Functional
 
         public static T GetValueOrDefault<T>(this Option<T> self, T @default) =>
             self.HasValue ? self.Value : @default;
+
+        public static T GetValueOrDefault<T>(this T? self, Func<T> @default) where T : struct =>
+            self ?? @default();
+
+        public static T GetValueOrDefault<T>(this IOption<T> self) => self.GetValueOrDefault(default(T));
+
+        public static T GetValueOrDefault<T>(this Option<T> self) => self.GetValueOrDefault(default(T));
 
         public static IOption<T> OrElse<T>(this IOption<T> self, Func<IOption<T>> @default) =>
             self.HasValue ? self : @default();
@@ -76,10 +86,6 @@ namespace InCube.Core.Functional
 
         public static T? OrElse<T>(this T? self, T? @default) where T : struct =>
             self ?? @default;
-
-        public static T OrNull<T>(this IOption<T> self) where T : class => self.GetValueOrDefault(default(T));
-
-        public static T OrNull<T>(this Option<T> self) where T : class => self.GetValueOrDefault(default(T));
 
         public static T? ToNullable<T>(this IOption<T> self) where T : struct =>
             self.HasValue ? new T?(self.Value) : null;
@@ -244,8 +250,9 @@ namespace InCube.Core.Functional
     {
         private readonly T _value;
 
-        internal Option(T value)
+        internal Option([NotNull] T value)
         {
+            Debug.Assert(value != null, nameof(value) + " is null");
             HasValue = true;
             _value = value;
         }
@@ -253,11 +260,6 @@ namespace InCube.Core.Functional
         public bool HasValue { get; }
         
         public T Value => HasValue ? _value : throw new InvalidOperationException("None.Get");
-
-        public static explicit operator T(Option<T> value)
-        {
-            return value.Value;
-        }
 
         public IEnumerator<T> GetEnumerator()
         {
@@ -271,13 +273,13 @@ namespace InCube.Core.Functional
 
         public bool Equals(Option<T> that) =>
             !HasValue && !that.HasValue || 
-            HasValue && that.HasValue && EqualityComparer<T>.Default.Equals(Value, that.Value);
+            HasValue && that.HasValue && EqualityComparer<T>.Default.Equals(_value, that._value);
 
         public bool Equals(IOption<T> that) => Equals(that.ToOption());
 
         public override bool Equals(object obj)
         {
-            if (obj is null) return false;
+            if (obj is null) return !HasValue;
 
             if (obj is Option<T> option) return Equals(option);
 
@@ -290,20 +292,26 @@ namespace InCube.Core.Functional
 
         public override int GetHashCode() => HasValue ? EqualityComparer<T>.Default.GetHashCode(_value) : 0;
 
+        public override string ToString() => HasValue ? $"Some({Value})" : "None";
+
         public static bool operator ==(Option<T> c1, Option<T> c2) => c1.Equals(c2);
 
         public static bool operator !=(Option<T> c1, Option<T> c2) => !(c1 == c2);
 
-        public static bool operator ==(Option<T> c1, IOption<T> c2) => c2 != null && c1.Equals(c2);
+        public static bool operator ==(Option<T> c1, IOption<T> c2) => c1.Equals(c2);
 
         public static bool operator !=(Option<T> c1, IOption<T> c2) => !(c1 == c2);
 
-        public static bool operator ==(IOption<T> c1, Option<T> c2) => c1 != null && c1.Equals(c2);
+        public static bool operator ==(IOption<T> c1, Option<T> c2) => 
+            c1 == null && !c2.HasValue || c1 != null && c1.Equals(c2);
 
         public static bool operator !=(IOption<T> c1, Option<T> c2) => !(c1 == c2);
 
-        public static implicit operator Option<T>(Option<Nothing> _) => default;
+        public static explicit operator T(Option<T> value) => value.Value;
 
-        public override string ToString() => HasValue ? $"Some({Value})" : "None";
+        public static implicit operator Option<T>(T value) => value != null ? new Option<T>(value) : default;
+
+        public static implicit operator Option<T>(Option<Nothing> _) => default;
     }
+
 }

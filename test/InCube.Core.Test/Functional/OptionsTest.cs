@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using InCube.Core.Collections;
 using NUnit.Framework;
 using InCube.Core.Functional;
 using static InCube.Core.Functional.Options;
@@ -18,7 +19,7 @@ namespace InCube.Core.Test.Functional
             {
                 var _ = none.Value;
             });
-            Assert.AreEqual(null, none.OrNull());
+            Assert.AreEqual(null, none.GetValueOrDefault());
             //Assert.AreEqual(none.As<int>() is IOption<T>);
         }
 
@@ -29,7 +30,8 @@ namespace InCube.Core.Test.Functional
             Assert.True(some.HasValue);
             Assert.AreEqual(some.Value, 1);
             Assert.AreEqual(1, some.GetValueOrDefault(0));
-            some.AsEnumerable().Select(x => x + 1);
+            Assert.AreEqual(1, some.GetValueOrDefault());
+            Assert.AreEqual(Some(2), some.AsEnumerable().Select(x => x + 1).FirstOption());
         }
 
         [Test]
@@ -43,12 +45,16 @@ namespace InCube.Core.Test.Functional
             var intNone = Empty<int>();
             Assert.True(none == intNone);
             Assert.True(intNone == none);
-            IOption<int> boxedNone = intNone;
-            Assert.True(none == Options.ToOption(boxedNone));
-            Assert.True(Options.ToOption(boxedNone) == none);
+            IOption<Nothing> boxedNone = none;
+            Assert.True(none == boxedNone.ToOption());
+            Assert.True(boxedNone.ToOption() == none);
             var nullNone = (IOption<Nothing>) null;
-            Assert.True(none != nullNone);
-            Assert.True(nullNone != none);
+            Assert.True(none == nullNone);
+            Assert.True(nullNone == none);
+            Assert.True(null == nullNone);
+            Assert.True(nullNone == null);
+            Assert.True(none == null);
+            Assert.True(null == none);
             //Assert.True(none.As<long>() == None.As<int>());
 
             // ReSharper disable once SuspiciousTypeConversion.Global
@@ -72,6 +78,22 @@ namespace InCube.Core.Test.Functional
 
             Assert.True(none != some);
             Assert.True(some != none);
+
+            var someArray = new[] {1}.ToOption();
+            Assert.True(someArray != new[] { 1 });
+            Assert.True(someArray != none);
+            Assert.True(none != someArray);
+            Assert.True(someArray != null);
+            Assert.True(null != someArray);
+        }
+
+        [Test]
+        public void TestImplicitConversion()
+        {
+            Option<int> Convert(Option<int> opt = default) => opt;
+
+            Assert.True(Convert() == None);
+            Assert.True(Convert(1) == Some(1));
         }
 
         [Test]
