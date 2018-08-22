@@ -30,9 +30,6 @@ namespace InCube.Core.Functional
         public static T ApplyOpt<T>(this T self, Func<T, Option<T>> f) => f(self).GetValueOrDefault(self);
 
         [PublicAPI]
-        public static T ApplyOpt<T>(this T self, Func<T, IOption<T>> f) => f(self).GetValueOrDefault(self);
-
-        [PublicAPI]
         public static T ApplyOpt<T>(this T self, Func<T, T?> f) where T : struct => f(self).GetValueOrDefault(self);
     }
 }

@@ -20,7 +20,6 @@ namespace InCube.Core.Test.Functional
                 var _ = none.Value;
             });
             Assert.AreEqual(null, none.GetValueOrDefault());
-            //Assert.AreEqual(none.As<int>() is IOption<T>);
         }
 
         [Test]
@@ -45,39 +44,34 @@ namespace InCube.Core.Test.Functional
             var intNone = Empty<int>();
             Assert.True(none == intNone);
             Assert.True(intNone == none);
-            IOption<Nothing> boxedNone = none;
-            Assert.True(none == boxedNone.ToOption());
-            Assert.True(boxedNone.ToOption() == none);
-            var nullNone = (IOption<Nothing>) null;
-            Assert.True(none == nullNone);
-            Assert.True(nullNone == none);
-            Assert.True(null == nullNone);
-            Assert.True(nullNone == null);
             Assert.True(none == null);
             Assert.True(null == none);
-            //Assert.True(none.As<long>() == None.As<int>());
 
-            // ReSharper disable once SuspiciousTypeConversion.Global
-            Assert.True(Equals(none, intNone));
-            // ReSharper disable once SuspiciousTypeConversion.Global
-            Assert.True(Equals(intNone, none));
+            var nullableOne = 1.ToNullable();
+            Assert.True(nullableOne.Equals(1));
+            Assert.True(nullableOne == 1);
+            Assert.True(1 == nullableOne);
 
-            var some = Some(1);
+            var optionOne = Some(1);
+            Assert.True(optionOne.Equals(1));
+            Assert.True(optionOne == 1);
+            Assert.True(1 == optionOne);
+            Assert.True(optionOne.Equals((object)optionOne));
+
+            Assert.True(intNone.Equals(none));
+
             // ReSharper disable once EqualExpressionComparison
 #pragma warning disable CS1718 // Comparison made to same variable
-            Assert.True(some == some);
+            Assert.True(optionOne == optionOne);
 #pragma warning restore CS1718 // Comparison made to same variable
-            Assert.True(some == Some(1));
-            Assert.True(some != Some(2));
-            var nullInt = (IOption<int>) null;
-            Assert.True(some != nullInt);
-            Assert.True(nullInt != some);
+            Assert.True(optionOne == Some(1));
+            Assert.True(optionOne != Some(2));
 
             // ReSharper disable once SuspiciousTypeConversion.Global
-            Assert.False(Equals(some, Some(1L)));
+            Assert.False(Equals(optionOne, Some(1L)));
 
-            Assert.True(none != some);
-            Assert.True(some != none);
+            Assert.True(none != optionOne);
+            Assert.True(optionOne != none);
 
             var someArray = new[] {1}.ToOption();
             Assert.True(someArray != new[] { 1 });
@@ -109,9 +103,9 @@ namespace InCube.Core.Test.Functional
         public void TestCovariance()
         {
             const int count = 10;
-            IOption<ICollection<int>> l1 = Some(Enumerable.Range(0, count).ToList());
-            IOption<ICollection<int>> l2 = Some(Enumerable.Range(0, count).ToArray());
-            Assert.AreEqual(l1.Value.Count, l2.Value.Count);
+            var l1 = Some(Enumerable.Range(0, count).ToList());
+            var l2 = Some(Enumerable.Range(0, count).ToArray());
+            Assert.AreEqual(l1.Value.Count, l2.Value.Length);
         }
     }
 }
