@@ -18,110 +18,110 @@ namespace InCube.Core.Functional
         public static Option<T> ToOption<T>(this T value) where T : class =>
             value != null ? Some(value) : None;
 
-        public static Option<T> ToOption<T>(this T? value) where T : struct =>
+        public static Option<T> ToOption<T>(this in T? value) where T : struct =>
             value.HasValue ? Some(value.Value) : None;
 
-        public static Option<T> ToOption<T>(this Option<T> self) => self;
+        public static Option<T> ToOption<T>(this in Option<T> self) => self;
 
         public static Option<T> Empty<T>() => None;
 
-        public static TOut Match<TOut, TIn>(this Option<TIn> self, Func<TOut> none, Func<TIn, TOut> some) =>
+        public static TOut Match<TOut, TIn>(this in Option<TIn> self, Func<TOut> none, Func<TIn, TOut> some) =>
             self.HasValue ? some(self.Value) : none();
 
-        public static TOut Match<TOut, TIn>(this TIn? self, Func<TOut> none, Func<TIn, TOut> some) where TIn: struct =>
+        public static TOut Match<TOut, TIn>(this in TIn? self, Func<TOut> none, Func<TIn, TOut> some) where TIn: struct =>
             self.HasValue ? some(self.Value) : none();
 
-        public static T GetValueOrDefault<T>(this Option<T> self, Func<T> @default) =>
+        public static T GetValueOrDefault<T>(this in Option<T> self, Func<T> @default) =>
             self.HasValue ? self.Value : @default();
 
-        public static T GetValueOrDefault<T>(this Option<T> self, T @default) =>
+        public static T GetValueOrDefault<T>(this in Option<T> self, T @default) =>
             self.HasValue ? self.Value : @default;
 
-        public static T GetValueOrDefault<T>(this T? self, Func<T> @default) where T : struct =>
+        public static T GetValueOrDefault<T>(this in T? self, Func<T> @default) where T : struct =>
             self ?? @default();
 
-        public static T GetValueOrDefault<T>(this Option<T> self) => self.GetValueOrDefault(default(T));
+        public static T GetValueOrDefault<T>(this in Option<T> self) => self.GetValueOrDefault(default(T));
 
-        public static Option<T> OrElse<T>(this Option<T> self, Func<Option<T>> @default) =>
+        public static Option<T> OrElse<T>(this in Option<T> self, Func<Option<T>> @default) =>
             self.HasValue ? self : @default();
 
-        public static Option<T> OrElse<T>(this Option<T> self, in Option<T> @default) =>
+        public static Option<T> OrElse<T>(this in Option<T> self, in Option<T> @default) =>
             self.HasValue ? self : @default;
 
-        public static T? OrElse<T>(this T? self, Func<T?> @default) where T : struct =>
+        public static T? OrElse<T>(this in T? self, Func<T?> @default) where T : struct =>
             self ?? @default();
 
-        public static T? OrElse<T>(this T? self, T? @default) where T : struct =>
+        public static T? OrElse<T>(this in T? self, T? @default) where T : struct =>
             self ?? @default;
 
         public static T? ToNullable<T>(this T self) where T : struct => self;
 
-        public static T? ToNullable<T>(this Option<T> self) where T : struct =>
+        public static T? ToNullable<T>(this in Option<T> self) where T : struct =>
             self.HasValue ? new T?(self.Value) : null;
 
-        public static Option<T> Flatten<T>(this Option<Option<T>> self) =>
+        public static Option<T> Flatten<T>(this in Option<Option<T>> self) =>
             self.HasValue ? self.Value : None;
 
-        public static bool Contains<T>(this Option<T> self, T elem) => 
+        public static bool Contains<T>(this in Option<T> self, T elem) => 
             self.Contains(elem, EqualityComparer<T>.Default);
 
-        public static bool Contains<T>(this T? self, T elem) where T: struct => 
+        public static bool Contains<T>(this in T? self, T elem) where T: struct => 
             self.Contains(elem, EqualityComparer<T>.Default);
 
-        public static bool Contains<T>(this Option<T> self, T elem, IEqualityComparer<T> comparer) => 
+        public static bool Contains<T>(this in Option<T> self, T elem, IEqualityComparer<T> comparer) => 
             self.HasValue && comparer.Equals(self.Value, elem);
 
-        public static bool Contains<T>(this T? self, T elem, IEqualityComparer<T> comparer) where T: struct => 
+        public static bool Contains<T>(this in T? self, T elem, IEqualityComparer<T> comparer) where T: struct => 
             self.HasValue && comparer.Equals(self.Value, elem);
 
-        public static Option<TOut> Select<TOut, TIn>(this Option<TIn> self, Func<TIn, TOut> f) =>
+        public static Option<TOut> Select<TOut, TIn>(this in Option<TIn> self, Func<TIn, TOut> f) =>
             self.HasValue ? Some(f(self.Value)) : None;
 
-        public static Option<TOut> Select<TOut, TIn>(this TIn? self, Func<TIn, TOut> f) where TIn : struct =>
+        public static Option<TOut> Select<TOut, TIn>(this in TIn? self, Func<TIn, TOut> f) where TIn : struct =>
             self.HasValue ? Some(f(self.Value)) : None;
 
-        public static Option<TOut> SelectMany<TOut, TIn>(this Option<TIn> self, Func<TIn, Option<TOut>> f) =>
+        public static Option<TOut> SelectMany<TOut, TIn>(this in Option<TIn> self, Func<TIn, Option<TOut>> f) =>
             self.HasValue ? f(self.Value): None;
 
-        public static Option<TOut> SelectMany<TOut, TIn>(this TIn? self, Func<TIn, Option<TOut>> f) where TIn : struct =>
+        public static Option<TOut> SelectMany<TOut, TIn>(this in TIn? self, Func<TIn, Option<TOut>> f) where TIn : struct =>
             self.HasValue ? f(self.Value): None;
 
-        public static TOut? SelectMany<TOut, TIn>(this TIn? self, Func<TIn, TOut?> f) where TIn : struct where TOut: struct =>
+        public static TOut? SelectMany<TOut, TIn>(this in TIn? self, Func<TIn, TOut?> f) where TIn : struct where TOut: struct =>
             self.HasValue ? f(self.Value): default;
 
-        public static Option<T> Where<T>(this Option<T> self, Func<T, bool> p) =>
+        public static Option<T> Where<T>(this in Option<T> self, Func<T, bool> p) =>
             !self.HasValue || p(self.Value) ? self : None;
 
-        public static T? Where<T>(this T? self, Func<T, bool> p) where T: struct =>
+        public static T? Where<T>(this in T? self, Func<T, bool> p) where T: struct =>
             !self.HasValue || p(self.Value) ? self : default;
 
-        public static bool Any<T>(this Option<T> self) => self.HasValue;
+        public static bool Any<T>(this in Option<T> self) => self.HasValue;
 
-        public static bool Any<T>(this T? self) where T : struct => self.HasValue;
+        public static bool Any<T>(this in T? self) where T : struct => self.HasValue;
 
-        public static bool Any<T>(this Option<T> self, Func<T, bool> p) => self.HasValue && p(self.Value);
+        public static bool Any<T>(this in Option<T> self, Func<T, bool> p) => self.HasValue && p(self.Value);
 
-        public static bool All<T>(this Option<T> self, Func<T, bool> p) => !self.HasValue || p(self.Value);
+        public static bool All<T>(this in Option<T> self, Func<T, bool> p) => !self.HasValue || p(self.Value);
 
-        public static bool All<T>(this T? self, Func<T, bool> p) where T : struct => !self.HasValue || p(self.Value);
+        public static bool All<T>(this in T? self, Func<T, bool> p) where T : struct => !self.HasValue || p(self.Value);
 
-        public static void ForEach<T>(this Option<T> self, Action<T> action)
+        public static void ForEach<T>(this in Option<T> self, Action<T> action)
         {
             if (self.HasValue) action(self.Value);
         }
 
-        public static void ForEach<T>(this T? self, Action<T> action) where T : struct
+        public static void ForEach<T>(this in T? self, Action<T> action) where T : struct
         {
             if (self.HasValue) action(self.Value);
         }
 
-        public static void ForEach<T>(this Option<T> self, Action none, Action<T> some)
+        public static void ForEach<T>(this in Option<T> self, Action none, Action<T> some)
         {
             if (self.HasValue) some(self.Value);
             else none();
         }
 
-        public static void ForEach<T>(this T? self, Action none, Action<T> some) where T : struct
+        public static void ForEach<T>(this in T? self, Action none, Action<T> some) where T : struct
         {
             if (self.HasValue) some(self.Value);
             else none();
@@ -137,7 +137,7 @@ namespace InCube.Core.Functional
         /// <param name="_">Helps the compiler to infer the type parameter<code>TU</code>. Clients will
         /// generally pass <code>default(TU)</code>.</param>
         /// <returns></returns>
-        public static Option<TU> Upcast<TU, T>(this Option<T> self, TU _ = default) where T : TU =>
+        public static Option<TU> Upcast<TU, T>(this in Option<T> self, TU _ = default) where T : TU =>
             self.HasValue ? Some<TU>(self.Value) : None;
     }
 
@@ -155,7 +155,7 @@ namespace InCube.Core.Functional
     }
 
     /// <summary>
-    /// Implements an option data type. This is essentially an extension of <see cref="Nullable{T}"/> that works for
+    /// Implements an option data type. this in is essentially an extension of <see cref="Nullable{T}"/> that works for
     /// both struct and class types.
     /// </summary>
     /// <typeparam name="T"></typeparam>
