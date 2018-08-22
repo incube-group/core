@@ -309,6 +309,10 @@ namespace InCube.Core.Functional
 
         public static explicit operator T(Option<T> value) => value.Value;
 
+        /// <summary>
+        /// Note that this operation involves boxing.
+        /// </summary>
+        /// <param name="value">The value to convert.</param>
         public static implicit operator Option<T>(T value) => value != null ? new Option<T>(value) : default;
 
         public static implicit operator Option<T>(Option<Nothing> _) => default;
