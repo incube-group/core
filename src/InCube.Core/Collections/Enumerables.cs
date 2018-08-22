@@ -169,6 +169,16 @@ namespace InCube.Core.Collections
             }
         }
 
+        public static void ForEach<T>(this IEnumerable<T> list, Action<T, int> action)
+        {
+            int index = 0;
+            foreach (var l in list)
+            {
+                action.Invoke(l, index);
+                index++;
+            }
+        }
+
         public static Option<T> FirstOption<T>(this IEnumerable<T> self)
         {
             using (var enumerator = self.GetEnumerator())
@@ -198,5 +208,18 @@ namespace InCube.Core.Collections
             }
         }
 
+        /// <summary>
+        /// Produces the union (duplicates removed) of the provided enumerables.
+        /// Items are considered equal when their keySelector return equal values (or objects which are equal).
+        /// </summary>
+        /// <typeparam name="T">The type of the enumerable.</typeparam>
+        /// <typeparam name="TKey">The type of the comparison value.</typeparam>
+        /// <param name="self">This enumerable.</param>
+        /// <param name="other">The enumerable to create the union with.</param>
+        /// <param name="keySelector">A function projecting each item to a value used for determining whether an item is present in both sets.</param>
+        public static IEnumerable<T> Union<T, TKey>(this IEnumerable<T> self, IEnumerable<T> other, Func<T, TKey> keySelector)
+        {
+            return self.Concat(other).GroupBy(keySelector, x => x, (key, group) => group.First());
+        }
     }
 }
