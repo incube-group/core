@@ -14,9 +14,9 @@ namespace InCube.Core.Functional
     {
         public static readonly Option<Nothing> None = default;
 
-        public static Option<T> Some<T>(T value) => new Option<T>(value);
+        public static Option<T> Some<T>([NotNull] T value) => new Option<T>(value);
 
-        public static Option<T> ToOption<T>(this T value) where T : class => 
+        public static Option<T> ToOption<T>(this T value) where T : class =>
             value != null ? Some(value) : None;
 
         public static Option<T> ToOption<T>(this T? value) where T : struct =>
@@ -86,6 +86,8 @@ namespace InCube.Core.Functional
 
         public static T? OrElse<T>(this T? self, T? @default) where T : struct =>
             self ?? @default;
+
+        public static T? ToNullable<T>(this T? self) where T : struct => self;
 
         public static T? ToNullable<T>(this IOption<T> self) where T : struct =>
             self.HasValue ? new T?(self.Value) : null;
