@@ -1,8 +1,11 @@
 ﻿using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Threading.Tasks;
+using InCube.Core.Functional;
+using JetBrains.Annotations;
 using static InCube.Core.Preconditions;
 
 namespace InCube.Core.Collections
@@ -10,100 +13,143 @@ namespace InCube.Core.Collections
 
     public static class Collections
     {
-        public static IEnumerable<U> Scan<T, U>(this IEnumerable<T> input, U state, Func<U, T, U> next)
-        {
-            yield return state;
-            foreach (var item in input)
-            {
-                state = next(state, item);
-                yield return state;
-            }
-        }
-
         /// <returns>the last element of a list</returns>
         public static T Last<T>(this IReadOnlyList<T> list) => list[list.Count - 1];
 
+        [PublicAPI]
         public static IComparer<T> DefaultComparer<T>() where T : IComparable<T> =>
             Comparer<T>.Create((x, y) => x.CompareTo(y));
 
         /// <summary>
         /// Sorts an item into a list of buckets. The method calls <see cref="List{T}.BinarySearch(T)"/> and makes
         /// sure to return the greatest boundary in case of ties.
+        ///
+        /// Corresponds to the <code>upper_bound</code> function of the STL.
         /// </summary>
         /// <typeparam name="T"></typeparam>
         /// <param name="input">buckets must be sorted in ascending order</param>
         /// <param name="item">the item to place into the buckets</param>
         /// <seealso cref="List{T}.BinarySearch(T)"/>
-        /// <seealso cref="Digitize{T}(T[],T)"/>
+        /// <seealso cref="UpperBound{T}(T[],T)"/>
         /// <returns>the last bucket of the element</returns>
-        public static int Digitize<T>(this List<T> input, T item) where T : IComparable<T>
+        public static int UpperBound<T>(this List<T> input, T item) where T : IComparable<T> =>
+            input.UpperBound(item, DefaultComparer<T>());
+
+        public static int UpperBound<T>(this List<T> input, T item, IComparer<T> comparer)
         {
-            var idx = input.BinarySearch(item, DefaultComparer<T>());
-            return IdxToBin(input, item, idx);
+            var idx = input.BinarySearch(item, comparer);
+            return UpperIdxToBin(input, item, idx, comparer);
         }
 
         /// <summary>
         /// Sorts an item into a list of buckets. The method calls <see cref="Array.BinarySearch(System.Array,int,int,object)"/> and makes
         /// sure to return the greatest boundary in case of ties.
+        /// 
+        /// Corresponds to the <code>upper_bound</code> function of the STL.
         /// </summary>
         /// <typeparam name="T"></typeparam>
         /// <param name="input">buckets must be sorted in ascending order</param>
         /// <param name="item">the item to place into the buckets</param>
         /// <seealso cref="Array.BinarySearch(System.Array,int,int,object)"/>
-        /// <seealso cref="Digitize{T}(System.Collections.Generic.List{T},T)"/>
+        /// <seealso cref="UpperBound{T}(System.Collections.Generic.List{T},T)"/>
         /// <returns>the last bucket of the element</returns>
-        public static int Digitize<T>(this T[] input, T item) where T : IComparable<T>
+        public static int UpperBound<T>(this T[] input, T item) where T : IComparable<T> =>
+            input.UpperBound(item, DefaultComparer<T>());
+
+        public static int UpperBound<T>(this T[] input, T item, IComparer<T> comparer)
         {
-            var idx = Array.BinarySearch(input, item, DefaultComparer<T>());
-            return IdxToBin(input, item, idx);
+            var idx = Array.BinarySearch(input, item, comparer);
+            return UpperIdxToBin(input, item, idx, comparer);
         }
 
-        private static int IdxToBin<T>(IReadOnlyList<T> input, T item, int idx) where T : IComparable<T>
+        private static int UpperIdxToBin<T>(IReadOnlyList<T> input, T item, int idx, IComparer<T> comparer)
         {
+            var count = input.Count;
             if (idx >= 0)
             {
-                var count = input.Count;
-                while (idx < count && input[idx].CompareTo(item) <= 0)
+                do
                 {
                     ++idx;
-                }
+                } while (idx < count && comparer.Compare(input[idx], item) == 0);
             }
-            return idx > 0 ? idx : ~idx;
-        }
-
-
-        public static int Rank<T>(this IEnumerable<T> values, T element) where T : IComparable<T> => 
-            values.Aggregate(0, (lesserCount, value) => value.CompareTo(element) <= 0 ? lesserCount + 1 : lesserCount);
-
-        public static int[] VectorRank<T>(this IEnumerable<T> values, IReadOnlyList<T> elements)
-            where T : IComparable<T>
-        {
-            var elementCount = elements.Count;
-            var result = new int[elementCount];
-            foreach (var value in values)
+            else
             {
-                for (var i = 0; i < elementCount; ++i)
-                {
-                    if (value.CompareTo(elements[i]) <= 0)
-                    {
-                        ++result[i];
-                    }
-                }
+                idx = ~idx;
             }
 
-            return result;
+            Debug.Assert(idx == count || comparer.Compare(input[idx], item) > 0);
+            Debug.Assert(idx == 0 || comparer.Compare(input[idx - 1], item) <= 0);
+
+            return idx;
         }
 
-        public static double RelativeRank<T>(this IReadOnlyCollection<T> values, T element) where T : IComparable<T> =>
-            values.Rank(element) / (double) values.Count;
+        /// <summary>
+        /// Sorts an item into a list of buckets. The method calls <see cref="List{T}.BinarySearch(T)"/> and makes
+        /// sure to return the greatest boundary in case of ties.
+        ///
+        /// Corresponds to the <code>lower_bound</code> function of the STL.
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="input">buckets must be sorted in ascending order</param>
+        /// <param name="item">the item to place into the buckets</param>
+        /// <seealso cref="List{T}.BinarySearch(T)"/>
+        /// <seealso cref="LowerBound{T}(T[],T)"/>
+        /// <returns>the last bucket of the element</returns>
+        public static int LowerBound<T>(this List<T> input, T item) where T : IComparable<T> =>
+            input.LowerBound(item, DefaultComparer<T>());
 
-        public static double[] VectorRelativeRank<T>(this IReadOnlyCollection<T> values, IReadOnlyList<T> elements) where T : IComparable<T> =>
-            values.VectorRank(elements).Select(x => x / (double)values.Count).ToArray();
+        public static int LowerBound<T>(this List<T> input, T item, IComparer<T> comparer)
+        {
+            var idx = input.BinarySearch(item, comparer);
+            return LowerIdxToBin(input, item, idx, comparer);
+        }
+
+        /// <summary>
+        /// Sorts an item into a list of buckets. The method calls <see cref="Array.BinarySearch(System.Array,int,int,object)"/> and makes
+        /// sure to return the greatest boundary in case of ties.
+        /// 
+        /// Corresponds to the <code>lower_bound</code> function of the STL.
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="input">buckets must be sorted in ascending order</param>
+        /// <param name="item">the item to place into the buckets</param>
+        /// <seealso cref="Array.BinarySearch(System.Array,int,int,object)"/>
+        /// <seealso cref="LowerBound{T}(System.Collections.Generic.List{T},T)"/>
+        /// <returns>the last bucket of the element</returns>
+        public static int LowerBound<T>(this T[] input, T item) where T : IComparable<T> =>
+            input.LowerBound(item, DefaultComparer<T>());
+
+        public static int LowerBound<T>(this T[] input, T item, IComparer<T> comparer)
+        {
+            var idx = Array.BinarySearch(input, item, comparer);
+            return LowerIdxToBin(input, item, idx, comparer);
+        }
+
+        private static int LowerIdxToBin<T>(IReadOnlyList<T> input, T item, int idx, IComparer<T> comparer)
+        {
+            var count = input.Count;
+            if (idx >= 0)
+            {
+                while (idx > 0 && comparer.Compare(input[idx - 1], item) == 0)
+                {
+                    --idx;
+                }
+            }
+            else
+            {
+                idx = ~idx;
+            }
+
+            Debug.Assert(idx == count || comparer.Compare(input[idx], item) >= 0);
+            Debug.Assert(idx == 0 || comparer.Compare(input[idx - 1], item) < 0);
+
+            return idx;
+        }
 
         /// <summary>
         /// Joins the strings in the enumerable with the specified separator (default: ", ").
         /// </summary>
-        public static String MkString<T>(this IEnumerable<T> enumerable, string separator = ", ") => 
+        public static String MkString<T>(this IEnumerable<T> enumerable, string separator = ", ") =>
             String.Join(separator, enumerable);
 
         /// <summary>
@@ -154,23 +200,25 @@ namespace InCube.Core.Collections
         [Obsolete("unnecessary call")]
         public static IReadOnlyList<T> AsReadOnly<T>(this IReadOnlyList<T> list) => list;
 
-        public static U[] ParallelMap<T, U>(this IReadOnlyList<T> list, Func<T, U> map) =>
-            list.ParallelMap(map, list.Count);
+        public static TU[] ParallelMap<T, TU>(this IReadOnlyList<T> list, Func<T, TU> map) =>
+            list.ParallelMap(map, 0, list.Count);
 
-        public static U[] ParallelMap<T, U>(this IReadOnlyList<T> list, Func<T, U> map, int count)
+        public static TU[] ParallelMap<T, TU>(this IReadOnlyList<T> list, Func<T, TU> map,
+            int fromInclusive, int toExclusive)
         {
-            var result = new U[count];
-            Parallel.For(0, count, i => result[i] = map(list[i]));
+            var result = new TU[toExclusive - fromInclusive];
+            Parallel.For(fromInclusive, toExclusive, i => result[i - fromInclusive] = map(list[i]));
             return result;
         }
 
-        public static U[] ParallelMapI<T, U>(this IReadOnlyList<T> list, Func<T, int, U> map) =>
-            list.ParallelMapI(map, list.Count);
+        public static TU[] ParallelMapI<T, TU>(this IReadOnlyList<T> list, Func<T, int, TU> map) =>
+            list.ParallelMapI(map, 0, list.Count);
 
-        public static U[] ParallelMapI<T, U>(this IReadOnlyList<T> list, Func<T, int, U> map, int count)
+        public static TU[] ParallelMapI<T, TU>(this IReadOnlyList<T> list, Func<T, int, TU> map, 
+            int fromInclusive, int toExclusive)
         {
-            var result = new U[count];
-            Parallel.For(0, count, i => result[i] = map(list[i], i));
+            var result = new TU[toExclusive - fromInclusive];
+            Parallel.For(fromInclusive, toExclusive, i => result[i - fromInclusive] = map(list[i], i));
             return result;
         }
 
@@ -256,7 +304,7 @@ namespace InCube.Core.Collections
         public static int RemoveSeq<T>(this IList<T> elems, Predicate<T> match, int startIdx = 0, int stopIdx = -1)
         {
             if (stopIdx < 0) stopIdx = elems.Count;
-            
+
             CheckNotNull(match, nameof(match));
 
             var freeIndex = startIdx;   // the first free slot in items array

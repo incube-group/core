@@ -179,6 +179,16 @@ namespace InCube.Core.Collections
             }
         }
 
+        public static IEnumerable<TU> Scan<T, TU>(this IEnumerable<T> input, TU state, Func<TU, T, TU> next)
+        {
+            yield return state;
+            foreach (var item in input)
+            {
+                state = next(state, item);
+                yield return state;
+            }
+        }
+
         public static Option<T> FirstOption<T>(this IEnumerable<T> self)
         {
             using (var enumerator = self.GetEnumerator())
@@ -187,7 +197,7 @@ namespace InCube.Core.Collections
             }
         }
 
-        public static bool IsSorted<T>(this IEnumerable<T> self, Comparer<T> comparer = null, bool strict = false)
+        public static bool IsSorted<T>(this IEnumerable<T> self, IComparer<T> comparer = null, bool strict = false)
         {
             comparer = comparer ?? Comparer<T>.Default;
             var outOfOrder = strict ? (Func<T, T, bool>)

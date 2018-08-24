@@ -17,6 +17,11 @@ namespace InCube.Core.Functional
         [PublicAPI]
         public static T Invoke<T>(Func<T> func) => func();
 
+        public static T If<T>(bool condition, Func<T> ifBranch, Func<T> elseBranch) =>
+            condition 
+                ? ifBranch() 
+                : elseBranch();
+
         [PublicAPI]
         public static T WithDisposables<T>(Func<Disposables, T> func)
         {

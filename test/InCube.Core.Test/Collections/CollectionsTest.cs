@@ -1,7 +1,8 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using InCube.Core.Collections;
-using InCube.Core.Functional;
+using InCube.Core.Numerics;
 using NUnit.Framework;
 
 namespace InCube.Core.Test.Collections
@@ -9,29 +10,104 @@ namespace InCube.Core.Test.Collections
     public class CollectionsTest
     {
         [Test]
-        public void TestDigitizeList()
+        public void TestUpperBoundList()
         {
             var bins = new List<int> {1, 3, 3, 5};
-            Assert.AreEqual(0, bins.Digitize(0));
-            Assert.AreEqual(1, bins.Digitize(1));
-            Assert.AreEqual(1, bins.Digitize(2));
-            Assert.AreEqual(3, bins.Digitize(3));
-            Assert.AreEqual(3, bins.Digitize(4));
-            Assert.AreEqual(4, bins.Digitize(5));
-            Assert.AreEqual(4, bins.Digitize(6));
+            Assert.AreEqual(0, bins.UpperBound(0));
+            Assert.AreEqual(1, bins.UpperBound(1));
+            Assert.AreEqual(1, bins.UpperBound(2));
+            Assert.AreEqual(3, bins.UpperBound(3));
+            Assert.AreEqual(3, bins.UpperBound(4));
+            Assert.AreEqual(4, bins.UpperBound(5));
+            Assert.AreEqual(4, bins.UpperBound(6));
         }
 
         [Test]
-        public void TestDigitizeArray()
+        public void TestUpperBoundArray()
         {
-            var bins = new int[] { 1, 3, 3, 5 };
-            Assert.AreEqual(0, bins.Digitize(0));
-            Assert.AreEqual(1, bins.Digitize(1));
-            Assert.AreEqual(1, bins.Digitize(2));
-            Assert.AreEqual(3, bins.Digitize(3));
-            Assert.AreEqual(3, bins.Digitize(4));
-            Assert.AreEqual(4, bins.Digitize(5));
-            Assert.AreEqual(4, bins.Digitize(6));
+            var bins = new [] { 1, 3, 3, 5 };
+            Assert.AreEqual(0, bins.UpperBound(0));
+            Assert.AreEqual(1, bins.UpperBound(1));
+            Assert.AreEqual(1, bins.UpperBound(2));
+            Assert.AreEqual(3, bins.UpperBound(3));
+            Assert.AreEqual(3, bins.UpperBound(4));
+            Assert.AreEqual(4, bins.UpperBound(5));
+            Assert.AreEqual(4, bins.UpperBound(6));
+        }
+
+        [Test]
+        public void TestLowerBoundList()
+        {
+            var bins = new List<int> { 1, 3, 3, 5 };
+            Assert.AreEqual(0, bins.LowerBound(0));
+            Assert.AreEqual(0, bins.LowerBound(1));
+            Assert.AreEqual(1, bins.LowerBound(2));
+            Assert.AreEqual(1, bins.LowerBound(3));
+            Assert.AreEqual(3, bins.LowerBound(4));
+            Assert.AreEqual(3, bins.LowerBound(5));
+            Assert.AreEqual(4, bins.LowerBound(6));
+        }
+
+        [Test]
+        public void TestLowerBoundArray()
+        {
+            var bins = new [] { 1, 3, 3, 5 };
+            Assert.AreEqual(0, bins.LowerBound(0));
+            Assert.AreEqual(0, bins.LowerBound(1));
+            Assert.AreEqual(1, bins.LowerBound(2));
+            Assert.AreEqual(1, bins.LowerBound(3));
+            Assert.AreEqual(3, bins.LowerBound(4));
+            Assert.AreEqual(3, bins.LowerBound(5));
+            Assert.AreEqual(4, bins.LowerBound(6));
+        }
+
+        [Test]
+        public void TestVectorRank()
+        {
+            var elements = Enumerable.Range(0, 100).ToArray();
+            var values = elements.ToArray().Shuffle(new Random(0));
+            var ranks = values.VectorRank(elements);
+            Assert.AreEqual(elements.Length, ranks.Length);
+            foreach (var (element, rank) in elements.ZipAsTuple(ranks))
+            {
+                Assert.AreEqual(element + 1, rank);
+            }
+
+            ranks = values.Concat(values).VectorRank(elements);
+            foreach (var (element, rank) in elements.ZipAsTuple(ranks))
+            {
+                Assert.AreEqual((element + 1) * 2, rank);
+            }
+        }
+
+        [Test]
+        public void TestHistogram()
+        {
+            const int count = 100;
+            var elements = Enumerable.Range(0, count).ToArray().Shuffle(new Random(0));
+            const int binSize = 10;
+            var binCount = count / binSize;
+            var edges = Enumerable.Range(0, binCount).Select(x => x * binSize).ToArray();
+            var lowerHist = elements.MakeHistogram(edges, lowerBoundEquals: true);
+            foreach (var counts in lowerHist.BinCounts)
+            {
+                Assert.AreEqual(binSize, counts);
+            }
+
+            var upperHist = elements.MakeHistogram(edges, lowerBoundEquals: false);
+            foreach (var counts in upperHist.BinCounts.Take(binCount - 1))
+            {
+                Assert.AreEqual(binSize, counts);
+            }
+
+            Assert.AreEqual(binSize - 1, upperHist.BinCounts.Last());
+
+            Assert.AreEqual(1, upperHist.DiscardedCount);
+
+            foreach (var (elem, index) in elements.ZipAsTuple(upperHist.BinIndices))
+            {
+                Assert.True(elem == 0 && index == -1 || index >= 0);
+            }
         }
 
         [Test]
