@@ -70,13 +70,13 @@ namespace InCube.Core.Test.Collections
             Assert.AreEqual(elements.Length, ranks.Length);
             foreach (var (element, rank) in elements.ZipAsTuple(ranks))
             {
-                Assert.AreEqual(element + 1, rank);
+                Assert.AreEqual(element, rank);
             }
 
             ranks = values.Concat(values).VectorRank(elements);
             foreach (var (element, rank) in elements.ZipAsTuple(ranks))
             {
-                Assert.AreEqual((element + 1) * 2, rank);
+                Assert.AreEqual(element * 2, rank);
             }
         }
 

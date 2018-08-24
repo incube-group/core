@@ -43,7 +43,7 @@ namespace InCube.Core.Numerics
             var ranks = new int[edgeCount];
             if (edgeCount == 0) return ranks;
 
-            var histogram = MakeHistogram(values, edges, comparer, lowerEdgeEquals: false);
+            var histogram = values.MakeHistogram(edges, comparer, lowerEdgeEquals: true);
             var binCounts = histogram.BinCounts;
 
             // reverse cumulative sum and inversion
