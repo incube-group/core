@@ -74,19 +74,19 @@ namespace InCube.Core.Functional
         public static bool Contains<T>(this in T? self, T elem, IEqualityComparer<T> comparer) where T: struct => 
             self.HasValue && comparer.Equals(self.Value, elem);
 
-        public static Option<TOut> Select<TOut, TIn>(this in Option<TIn> self, Func<TIn, TOut> f) =>
+        public static Option<TOut> Select<TIn, TOut>(this in Option<TIn> self, Func<TIn, TOut> f) =>
             self.HasValue ? Some(f(self.Value)) : None;
 
-        public static Option<TOut> Select<TOut, TIn>(this in TIn? self, Func<TIn, TOut> f) where TIn : struct =>
+        public static Option<TOut> Select<TIn, TOut>(this in TIn? self, Func<TIn, TOut> f) where TIn : struct =>
             self.HasValue ? Some(f(self.Value)) : None;
 
-        public static Option<TOut> SelectMany<TOut, TIn>(this in Option<TIn> self, Func<TIn, Option<TOut>> f) =>
+        public static Option<TOut> SelectMany<TIn, TOut>(this in Option<TIn> self, Func<TIn, Option<TOut>> f) =>
             self.HasValue ? f(self.Value): None;
 
-        public static Option<TOut> SelectMany<TOut, TIn>(this in TIn? self, Func<TIn, Option<TOut>> f) where TIn : struct =>
+        public static Option<TOut> SelectMany<TIn, TOut>(this in TIn? self, Func<TIn, Option<TOut>> f) where TIn : struct =>
             self.HasValue ? f(self.Value): None;
 
-        public static TOut? SelectMany<TOut, TIn>(this in TIn? self, Func<TIn, TOut?> f) where TIn : struct where TOut: struct =>
+        public static TOut? SelectMany<TIn, TOut>(this in TIn? self, Func<TIn, TOut?> f) where TIn : struct where TOut: struct =>
             self.HasValue ? f(self.Value): default;
 
         public static Option<T> Where<T>(this in Option<T> self, Func<T, bool> p) =>
