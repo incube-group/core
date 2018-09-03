@@ -21,8 +21,6 @@ namespace InCube.Core.Functional
         public static Option<T> ToOption<T>(this in T? value) where T : struct =>
             value.HasValue ? Some(value.Value) : None;
 
-        public static Option<T> ToOption<T>(this in Option<T> self) => self;
-
         public static Option<T> Empty<T>() => None;
 
         public static TOut Match<TOut, TIn>(this in Option<TIn> self, Func<TOut> none, Func<TIn, TOut> some) =>
@@ -128,7 +126,7 @@ namespace InCube.Core.Functional
         }
 
         /// <summary>
-        /// Compiler supported safe upcasting. Ideally, this should be implemented as an implicit conversion, but
+        /// Compiler supported safe up-casting. Ideally, this should be implemented as an implicit conversion, but
         /// this is currently not supported by the compiler (https://github.com/dotnet/csharplang/issues/534).
         /// </summary>
         /// <typeparam name="TU">The </typeparam>
@@ -139,6 +137,9 @@ namespace InCube.Core.Functional
         /// <returns></returns>
         public static Option<TU> Upcast<TU, T>(this in Option<T> self, TU _ = default) where T : TU =>
             self.HasValue ? Some<TU>(self.Value) : None;
+
+        public static Option<TD> Downcast<TD, T>(this in Option<T> self, TD _ = default) where TD : T =>
+            self.SelectMany(x => x is TD d ? Some(d) : None);
     }
 
     /// <summary>
