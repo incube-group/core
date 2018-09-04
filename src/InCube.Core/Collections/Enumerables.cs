@@ -231,5 +231,11 @@ namespace InCube.Core.Collections
         {
             return self.Concat(other).GroupBy(keySelector, x => x, (key, group) => group.First());
         }
+
+        public static IEnumerable<bool> And(this IEnumerable<bool> xs, IEnumerable<bool> ys) =>
+            xs.Zip(ys, (x, y) => x && y);
+
+        public static IEnumerable<bool> Or(this IEnumerable<bool> xs, IEnumerable<bool> ys) =>
+            xs.Zip(ys, (x, y) => x || y);
     }
 }
