@@ -189,6 +189,23 @@ namespace InCube.Core.Collections
             }
         }
 
+        public static IEnumerable<T> Scan<T>(this IEnumerable<T> input, Func<T, T, T> next)
+        {
+            using (var it = input.GetEnumerator())
+            {
+                if (it.MoveNext())
+                {
+                    var state = it.Current;
+                    yield return state;
+                    while (it.MoveNext())
+                    {
+                        state = next(state, it.Current);
+                        yield return state;
+                    }
+                }
+            }
+        }
+
         public static Option<T> FirstOption<T>(this IEnumerable<T> self)
         {
             using (var enumerator = self.GetEnumerator())
