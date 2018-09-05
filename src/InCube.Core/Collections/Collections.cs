@@ -4,7 +4,6 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
 using System.Threading.Tasks;
-using InCube.Core.Functional;
 using JetBrains.Annotations;
 using static InCube.Core.Preconditions;
 
@@ -200,24 +199,24 @@ namespace InCube.Core.Collections
         [Obsolete("unnecessary call")]
         public static IReadOnlyList<T> AsReadOnly<T>(this IReadOnlyList<T> list) => list;
 
-        public static TU[] ParallelMap<T, TU>(this IReadOnlyList<T> list, Func<T, TU> map) =>
-            list.ParallelMap(map, 0, list.Count);
+        public static TU[] ParallelMap<T, TU>(this IReadOnlyList<T> list, Func<T, TU> map, TU[] result = null) =>
+            list.ParallelMap(map, 0, list.Count, result);
 
         public static TU[] ParallelMap<T, TU>(this IReadOnlyList<T> list, Func<T, TU> map,
-            int fromInclusive, int toExclusive)
+            int fromInclusive, int toExclusive, TU[] result = null)
         {
-            var result = new TU[toExclusive - fromInclusive];
+            result = result ?? new TU[toExclusive - fromInclusive];
             Parallel.For(fromInclusive, toExclusive, i => result[i - fromInclusive] = map(list[i]));
             return result;
         }
 
-        public static TU[] ParallelMapI<T, TU>(this IReadOnlyList<T> list, Func<T, int, TU> map) =>
-            list.ParallelMapI(map, 0, list.Count);
+        public static TU[] ParallelMapI<T, TU>(this IReadOnlyList<T> list, Func<T, int, TU> map, TU[] result = null) =>
+            list.ParallelMapI(map, 0, list.Count, result);
 
         public static TU[] ParallelMapI<T, TU>(this IReadOnlyList<T> list, Func<T, int, TU> map, 
-            int fromInclusive, int toExclusive)
+            int fromInclusive, int toExclusive, TU[] result = null)
         {
-            var result = new TU[toExclusive - fromInclusive];
+            result = result ?? new TU[toExclusive - fromInclusive];
             Parallel.For(fromInclusive, toExclusive, i => result[i - fromInclusive] = map(list[i], i));
             return result;
         }
