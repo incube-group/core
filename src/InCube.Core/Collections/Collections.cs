@@ -149,7 +149,7 @@ namespace InCube.Core.Collections
         /// Joins the strings in the enumerable with the specified separator (default: ", ").
         /// </summary>
         public static String MkString<T>(this IEnumerable<T> enumerable, string separator = ", ") =>
-            String.Join(separator, enumerable);
+            string.Join(separator, enumerable);
 
         /// <summary>
         /// Joins the strings in the enumerable with the specified separator (default: ", "), wrapped by with a string in the beginning and the end.
