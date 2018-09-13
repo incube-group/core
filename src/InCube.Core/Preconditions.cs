@@ -81,24 +81,6 @@ namespace InCube.Core
         /// <summary>
         /// Ensures the truth of an expression involving one or more parameters to the calling method.
         /// </summary>
-        /// <param name="expression">if set to <c>true</c> [expression].</param>
-        /// <param name="errorMessageTemplate">The error message template.</param>
-        /// <param name="errorMessageArgs">The error message arguments.</param>
-        /// <exception cref="ArgumentException"></exception>
-        public static void CheckArgument(
-            bool expression,
-            [CanBeNull] string errorMessageTemplate,
-            [CanBeNull] params object[] errorMessageArgs)
-        {
-            if (!expression)
-            {
-                throw new ArgumentException(Format(errorMessageTemplate, errorMessageArgs));
-            }
-        }
-
-        /// <summary>
-        /// Ensures the truth of an expression involving one or more parameters to the calling method.
-        /// </summary>
         /// <typeparam name="T1">The type of the 1.</typeparam>
         /// <param name="b">if set to <c>true</c> [b].</param>
         /// <param name="errorMessageTemplate">The error message template.</param>
@@ -112,6 +94,14 @@ namespace InCube.Core
             }
         }
 
+        [StringFormatMethod("errorMessageTemplate")]
+        public static void CheckArgumentF<T1>(bool b, [NotNull] string errorMessageTemplate, T1 p1)
+        {
+            if (!b)
+            {
+                throw new ArgumentException(string.Format(errorMessageTemplate, p1));
+            }
+        }
         /// <summary>
         /// Ensures the truth of an expression involving one or more parameters to the calling method.
         /// </summary>
@@ -127,6 +117,15 @@ namespace InCube.Core
             if (!b)
             {
                 throw new ArgumentException(Format(errorMessageTemplate, p1, p2));
+            }
+        }
+
+        [StringFormatMethod("errorMessageTemplate")]
+        public static void CheckArgumentF<T1, T2>(bool b, [NotNull] string errorMessageTemplate, T1 p1, T2 p2)
+        {
+            if (!b)
+            {
+                throw new ArgumentException(string.Format(errorMessageTemplate, p1, p2));
             }
         }
 
@@ -147,6 +146,15 @@ namespace InCube.Core
             if (!b)
             {
                 throw new ArgumentException(Format(errorMessageTemplate, p1, p2, p3));
+            }
+        }
+
+        [StringFormatMethod("errorMessageTemplate")]
+        public static void CheckArgumentF<T1, T2, T3>(bool b, [NotNull] string errorMessageTemplate, T1 p1, T2 p2, T3 p3)
+        {
+            if (!b)
+            {
+                throw new ArgumentException(string.Format(errorMessageTemplate, p1, p2, p3));
             }
         }
 
@@ -172,6 +180,15 @@ namespace InCube.Core
             }
         }
 
+
+        [StringFormatMethod("errorMessageTemplate")]
+        public static void CheckArgumentF<T1, T2, T3, T4>(bool b, [NotNull] string errorMessageTemplate, T1 p1, T2 p2, T3 p3, T4 p4)
+        {
+            if (!b)
+            {
+                throw new ArgumentException(string.Format(errorMessageTemplate, p1, p2, p3, p4));
+            }
+        }
 
         public static T CheckNotNull<T>(T reference)
         {
@@ -204,37 +221,27 @@ namespace InCube.Core
         /// Ensures that an object reference passed as a parameter to the calling method is not null.
         /// </summary>
         /// <typeparam name="T"></typeparam>
-        /// <param name="reference">The reference.</param>
-        /// <param name="errorMessageTemplate">The error message template.</param>
-        /// <param name="errorMessageArgs">The error message arguments.</param>
-        /// <returns></returns>
-        /// <exception cref="ArgumentNullException"></exception>
-        public static T CheckNotNull<T>(
-            T reference, [CanBeNull] String errorMessageTemplate, [CanBeNull] params object[] errorMessageArgs)
-        {
-            if (reference == null)
-            {
-                // If either of these parameters is null, the right thing happens anyway
-                throw new ArgumentNullException(Format(errorMessageTemplate, errorMessageArgs));
-            }
-            return reference;
-        }
-
-        /// <summary>
-        /// Ensures that an object reference passed as a parameter to the calling method is not null.
-        /// </summary>
-        /// <typeparam name="T"></typeparam>
         /// <typeparam name="T1">The type of the 1.</typeparam>
         /// <param name="obj">The object.</param>
         /// <param name="errorMessageTemplate">The error message template.</param>
         /// <param name="p1">The p1.</param>
         /// <returns></returns>
         /// <exception cref="ArgumentNullException"></exception>
-        public static T CheckNotNull<T, T1>(T obj, [CanBeNull] String errorMessageTemplate, T1 p1)
+        public static T CheckNotNull<T, T1>(T obj, [CanBeNull] string errorMessageTemplate, T1 p1)
         {
             if (obj == null)
             {
                 throw new ArgumentNullException(Format(errorMessageTemplate, p1));
+            }
+            return obj;
+        }
+
+        [StringFormatMethod("errorMessageTemplate")]
+        public static T CheckNotNullF<T, T1>(T obj, [NotNull] string errorMessageTemplate, T1 p1)
+        {
+            if (obj == null)
+            {
+                throw new ArgumentNullException(string.Format(errorMessageTemplate, p1));
             }
             return obj;
         }
@@ -251,11 +258,21 @@ namespace InCube.Core
         /// <param name="p2">The p2.</param>
         /// <returns></returns>
         /// <exception cref="ArgumentNullException"></exception>
-        public static T CheckNotNull<T, T1, T2>(T obj, [CanBeNull] String errorMessageTemplate, T1 p1, T2 p2)
+        public static T CheckNotNull<T, T1, T2>(T obj, [CanBeNull] string errorMessageTemplate, T1 p1, T2 p2)
         {
             if (obj == null)
             {
                 throw new ArgumentNullException(Format(errorMessageTemplate, p1, p2));
+            }
+            return obj;
+        }
+
+        [StringFormatMethod("errorMessageTemplate")]
+        public static T CheckNotNullF<T, T1, T2>(T obj, [NotNull] string errorMessageTemplate, T1 p1, T2 p2)
+        {
+            if (obj == null)
+            {
+                throw new ArgumentNullException(string.Format(errorMessageTemplate, p1, p2));
             }
             return obj;
         }
@@ -274,11 +291,21 @@ namespace InCube.Core
         /// <param name="p3">The p3.</param>
         /// <returns></returns>
         /// <exception cref="ArgumentNullException"></exception>
-        public static T CheckNotNull<T, T1, T2, T3>(T obj, [CanBeNull] String errorMessageTemplate, T1 p1, T2 p2, T3 p3)
+        public static T CheckNotNull<T, T1, T2, T3>(T obj, [CanBeNull] string errorMessageTemplate, T1 p1, T2 p2, T3 p3)
         {
             if (obj == null)
             {
-                throw new ArgumentNullException(Format(errorMessageTemplate, p1));
+                throw new ArgumentNullException(Format(errorMessageTemplate, p1, p2, p3));
+            }
+            return obj;
+        }
+
+        [StringFormatMethod("errorMessageTemplate")]
+        public static T CheckNotNullF<T, T1, T2, T3>(T obj, [NotNull] string errorMessageTemplate, T1 p1, T2 p2, T3 p3)
+        {
+            if (obj == null)
+            {
+                throw new ArgumentNullException(string.Format(errorMessageTemplate, p1, p2, p3));
             }
             return obj;
         }
@@ -299,11 +326,21 @@ namespace InCube.Core
         /// <param name="p4">The p4.</param>
         /// <returns></returns>
         /// <exception cref="ArgumentNullException"></exception>
-        public static T CheckNotNull<T, T1, T2, T3, T4>(T obj, [CanBeNull] String errorMessageTemplate, T1 p1, T2 p2, T3 p3, T4 p4)
+        public static T CheckNotNull<T, T1, T2, T3, T4>(T obj, [CanBeNull] string errorMessageTemplate, T1 p1, T2 p2, T3 p3, T4 p4)
         {
             if (obj == null)
             {
                 throw new ArgumentNullException(Format(errorMessageTemplate, p1, p2, p3, p4));
+            }
+            return obj;
+        }
+
+        [StringFormatMethod("errorMessageTemplate")]
+        public static T CheckNotNullF<T, T1, T2, T3, T4>(T obj, [NotNull] string errorMessageTemplate, T1 p1, T2 p2, T3 p3, T4 p4)
+        {
+            if (obj == null)
+            {
+                throw new ArgumentNullException(string.Format(errorMessageTemplate, p1, p2, p3, p4));
             }
             return obj;
         }

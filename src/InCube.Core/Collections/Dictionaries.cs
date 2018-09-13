@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
 using InCube.Core.Functional;
+using JetBrains.Annotations;
 
 namespace InCube.Core.Collections
 {
@@ -28,6 +29,13 @@ namespace InCube.Core.Collections
 
         public static Option<V> GetOption<K, V>(this IReadOnlyDictionary<K, V> dict, K key) =>
             dict.TryGetValue(key, out var value) ? Options.Some(value) : Options.None;
+
+        [StringFormatMethod("format")]
+        public static V GetOrThrow<K, V>(this IReadOnlyDictionary<K, V> dict, string format, K key) =>
+            dict.GetOrDefault(key, () => throw new KeyNotFoundException(string.Format(format, key)));
+
+        public static V GetOrThrow<K, V>(this IReadOnlyDictionary<K, V> dict, K key) =>
+            dict.GetOrThrow("missing key: {0}", key);
 
         public static Dictionary<T, V> ToDictionary<T, V>(this IEnumerable<KeyValuePair<T, V>> enumerable)
         {
