@@ -247,7 +247,7 @@ namespace InCube.Core.Functional
 
         public Option<TOut> SelectMany<TOut>(Func<T, Option<TOut>> f) => HasValue ? f(_value) : default;
 
-        public Option<T> Where(Func<T, bool> p) => HasValue || p(_value) ? this : default;
+        public Option<T> Where(Func<T, bool> p) => HasValue && p(_value) ? this : default;
 
         IOption<T> IOption<T>.Where(Func<T, bool> p) => Where(p);
 

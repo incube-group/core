@@ -90,9 +90,21 @@ namespace InCube.Core.Test.Functional
         }
 
         [Test]
+        public void TestWhere()
+        {
+            var opt = Some(1);
+            Assert.True(opt.Where(x => x == 1).HasValue);
+            Assert.False(opt.Where(x => x == 2).HasValue);
+            Assert.False(Empty<int>().Where(x => x == 2).HasValue);
+        }
+
+        [Test]
         public void TestMatch()
         {
-            string MatchToString<T>(Option<T> opt) => opt.Match(none: () => "None", some: i => $"Some({i})");
+            string MatchToString<T>(Option<T> opt)
+            {
+                return opt.Match(none: () => "None", some: i => $"Some({i})");
+            }
 
             Assert.AreEqual("Some(1)", MatchToString(Some(1)));
             Assert.AreEqual("None", MatchToString(None));
