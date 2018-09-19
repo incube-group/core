@@ -42,6 +42,8 @@ namespace InCube.Core.Functional
 
         public Option<TR> RightOption => IsRight ? Options.Some((TR) _value) : Options.None;
 
+        public Type Type => IsLeft ? typeof(TL) : typeof(TR);
+
         IOption<TL> IEither<TL, TR>.LeftOption => LeftOption;
         IOption<TR> IEither<TL, TR>.RightOption => RightOption;
 
@@ -49,18 +51,16 @@ namespace InCube.Core.Functional
         /// Construct an Either for a <see cref="Left"/> value.
         /// </summary>
         /// <param name="value">The value to wrap.</param>
-        /// <param name="_">Help type inference with the <see cref="Right"/> value.</param>
         /// <returns></returns>
-        public static Either<TL, TR> OfLeft(TL value, TR _ = default) => 
+        public static Either<TL, TR> OfLeft(TL value) => 
             new Either<TL, TR>(value, left: true, right: false);
 
         /// <summary>
         /// Construct an Either for a <see cref="Right"/> value.
         /// </summary>
         /// <param name="value">The value to wrap.</param>
-        /// <param name="_">Help type inference with the <see cref="Left"/> value.</param>
         /// <returns></returns>
-        public static Either<TL, TR> OfRight(TR value, TL _ = default) => 
+        public static Either<TL, TR> OfRight(TR value) => 
             new Either<TL, TR>(value, left: false, right: true);
 
         public T Match<T>(Func<TL, T> left, Func<TR, T> right) =>

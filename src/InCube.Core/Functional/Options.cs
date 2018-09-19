@@ -55,6 +55,12 @@ namespace InCube.Core.Functional
         public static Option<T> Flatten<T>(this in Option<Option<T>> self) =>
             self.HasValue ? self.Value : None;
 
+        public static Option<T> Flatten<T>(this in Option<T?> self) where T : struct =>
+            self.HasValue ? self.Value.ToOption() : None;
+
+        public static Option<T> Flatten<T>(this in Option<T>? self) =>
+            self ?? None;
+
         public static bool Contains<T>(this in Option<T> self, T elem) => 
             self.Contains(elem, EqualityComparer<T>.Default);
 
@@ -80,6 +86,8 @@ namespace InCube.Core.Functional
             !self.HasValue || p(self.Value) ? self : default;
 
         public static bool Any<T>(this in T? self) where T : struct => self.HasValue;
+
+        public static bool Any<T>(this in T? self, Func<T, bool> p) where T : struct => self.HasValue && p(self.Value);
 
         public static bool All<T>(this in T? self, Func<T, bool> p) where T : struct => !self.HasValue || p(self.Value);
 
@@ -247,7 +255,7 @@ namespace InCube.Core.Functional
 
         public Option<TOut> SelectMany<TOut>(Func<T, Option<TOut>> f) => HasValue ? f(_value) : default;
 
-        public Option<T> Where(Func<T, bool> p) => HasValue && p(_value) ? this : default;
+        public Option<T> Where(Func<T, bool> p) => !HasValue || p(_value) ? this : default;
 
         IOption<T> IOption<T>.Where(Func<T, bool> p) => Where(p);
 
