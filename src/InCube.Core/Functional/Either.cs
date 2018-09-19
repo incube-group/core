@@ -52,16 +52,16 @@ namespace InCube.Core.Functional
         /// </summary>
         /// <param name="value">The value to wrap.</param>
         /// <returns></returns>
-        public static Either<TL, TR> OfLeft(TL value) => 
-            new Either<TL, TR>(value, left: true, right: false);
+        public Either(TL value) : this(value, left: true, right: false)
+        {}
 
         /// <summary>
         /// Construct an Either for a <see cref="Right"/> value.
         /// </summary>
         /// <param name="value">The value to wrap.</param>
         /// <returns></returns>
-        public static Either<TL, TR> OfRight(TR value) => 
-            new Either<TL, TR>(value, left: false, right: true);
+        public Either(TR value) : this(value, left: false, right: true)
+        {}
 
         public T Match<T>(Func<TL, T> left, Func<TR, T> right) =>
             IsLeft ? left(Left) : right(Right);
@@ -77,6 +77,10 @@ namespace InCube.Core.Functional
                 right(Right);
             }
         }
+
+        public static implicit operator Either<TL, TR>(TL left) => new Either<TL, TR>(left);
+
+        public static implicit operator Either<TL, TR>(TR right) => new Either<TL, TR>(right);
     }
 
 }

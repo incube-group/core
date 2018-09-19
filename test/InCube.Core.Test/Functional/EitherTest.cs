@@ -9,7 +9,7 @@ namespace InCube.Core.Test.Functional
         [Test]
         public void TestIntOrDouble()
         {
-            var intEither = Either<int, double>.OfLeft(1);
+            Either<int, double> intEither = 1;
             Assert.True(intEither.IsLeft);
             Assert.False(intEither.IsRight);
             Assert.True(intEither.LeftOption.HasValue);
@@ -21,7 +21,7 @@ namespace InCube.Core.Test.Functional
             });
             Assert.AreEqual(typeof(int), intEither.Type);
 
-            var dblEither = Either<int, double>.OfRight(1);
+            Either<int, double> dblEither  = 1.0;
             Assert.False(dblEither.IsLeft);
             Assert.True(dblEither.IsRight);
             Assert.False(dblEither.LeftOption.HasValue);
