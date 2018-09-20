@@ -11,13 +11,15 @@ namespace InCube.Core.Functional
 
         TR Right { get; }
 
-        T Match<T>(Func<TL, T> left, Func<TR, T> right);
-
         IOption<TL> LeftOption { get; }
 
         IOption<TR> RightOption { get; }
 
+        T Match<T>(Func<TL, T> left, Func<TR, T> right);
+
         void ForEach(Action<TL> left, Action<TR> right);
+
+        Type Type { get; }
     }
 
     public readonly struct Either<TL, TR> : IEither<TL, TR>
@@ -34,9 +36,11 @@ namespace InCube.Core.Functional
         public bool IsLeft { get; }
         public bool IsRight { get; }
 
-        public TL Left => IsLeft ? (TL) _value : throw new NotSupportedException("not left");
+        public TL Left => IsLeft ? (TL) _value : 
+            throw new NotSupportedException($"not a {typeof(TL)}, but a {typeof(TR)}");
 
-        public TR Right => IsRight ? (TR) _value : throw new NotSupportedException("not right");
+        public TR Right => IsRight ? (TR) _value : 
+            throw new NotSupportedException($"not a {typeof(TR)}, but a {typeof(TL)}");
 
         public Option<TL> LeftOption => IsLeft ? Options.Some((TL) _value) : Options.None;
 
