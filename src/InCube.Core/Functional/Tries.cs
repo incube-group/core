@@ -4,8 +4,45 @@ using System.Collections.Generic;
 
 namespace InCube.Core.Functional
 {
+    public interface ITry<out T> : IEnumerable<T>
+    {
+        bool HasValue { get; }
+
+        T Value { get; }
+
+        Exception Exception { get; }
+
+        IOption<T> AsOption { get; }
+
+        Try<Exception> Failed();
+
+        TOut Match<TOut>(Func<Exception, TOut> failure, Func<T, TOut> success);
+
+        T GetValueOrDefault();
+
+        Try<TOut> Select<TOut>(Func<T, TOut> f);
+
+        Try<TOut> SelectMany<TOut>(Func<T, Try<TOut>> success);
+
+        Try<TOut> Transform<TOut>(Func<Exception, Try<TOut>> failure, Func<T, Try<TOut>> success);
+
+        ITry<T> Where(Func<T, bool> p);
+
+        bool Any();
+
+        bool Any(Func<T, bool> p);
+
+        bool All(Func<T, bool> p);
+
+        void ForEach(Action<T> action);
+
+        void ForEach(Action failure, Action<T> success);
+
+        void ForEach(Action<Exception> failure, Action<T> success);
+    }
+
     [Serializable]
-    public readonly struct Try<T> : IEnumerable<T>
+    public readonly struct Try<T> : ITry<T>
     {
         private readonly Option<T> _value;
         private readonly Exception _exception;
@@ -29,21 +66,85 @@ namespace InCube.Core.Functional
         public Exception Exception =>
             HasValue ? throw new InvalidOperationException("Try is success") : _exception.ToOption().Value;
 
-        public IEnumerator<T> GetEnumerator()
-        {
-            if (HasValue) yield return Value;
-        }
+        public IEnumerator<T> GetEnumerator() => this._value.GetEnumerator();
 
-        IEnumerator IEnumerable.GetEnumerator()
-        {
-            return GetEnumerator();
-        }
+        IEnumerator IEnumerable.GetEnumerator() => this.GetEnumerator();
 
         public override string ToString() => HasValue ? $"Success({Value})" : $"Failure({_exception})";
 
         public static implicit operator Option<T>(Try<T> t) => t._value;
 
         public Option<T> AsOption => this;
+
+        IOption<T> ITry<T>.AsOption => this.AsOption;
+
+        public Try<Exception> Failed()
+        {
+            var self = this; // in order to capture this in the following lambda
+            return Tries.Try(() => self.Exception);
+        }
+
+        public TOut Match<TOut>(Func<Exception, TOut> failure, Func<T, TOut> success) =>
+            HasValue ? success(_value.Value) : failure(Exception);
+
+        public T GetValueOrDefault() => this.GetValueOrDefault(default(T));
+
+        public Try<TOut> Select<TOut>(Func<T, TOut> f)
+        {
+            var self = this; // in order to capture this in the following lambda
+            return HasValue ? Tries.Try(() => f(self._value.Value)) : Tries.Failure<TOut>(Exception);
+        }
+
+        public Try<TOut> SelectMany<TOut>(Func<T, Try<TOut>> f) =>
+            this.HasValue ? f(this.Value) : Tries.Failure<TOut>(this.Exception);
+
+        public Try<TOut> Transform<TOut>(Func<Exception, Try<TOut>> failure, Func<T, Try<TOut>> success) =>
+            HasValue ? success(_value.Value) : failure(Exception);
+
+        public Try<T> Where(Func<T, bool> p) =>
+            !this.HasValue || p(_value.Value)
+                ? this
+                : Tries.Failure<T>(new ArgumentException("Predicate does not hold for value " + _value.Value));
+
+        ITry<T> ITry<T>.Where(Func<T, bool> p) => this.Where(p);
+
+        public bool Any() => AsOption.Any();
+
+        public bool Any(Func<T, bool> p) => AsOption.Any(p);
+
+        public bool All(Func<T, bool> p) => AsOption.All(p);
+
+        public void ForEach(Action<T> action)
+        {
+            if (HasValue)
+            {
+                action(_value.Value);
+            }
+        }
+
+        public void ForEach(Action failure, Action<T> success)
+        {
+            if (HasValue)
+            {
+                success(_value.Value);
+            }
+            else
+            {
+                failure();
+            }
+        }
+
+        public void ForEach(Action<Exception> failure, Action<T> success)
+        {
+            if (HasValue)
+            {
+                success(_value.Value);
+            }
+            else
+            {
+                failure(Exception);
+            }
+        }
     }
 
     public static class Tries
@@ -64,15 +165,6 @@ namespace InCube.Core.Functional
             }
         }
 
-        public static Try<Exception> Failed<T>(this Try<T> self) => Try(() => self.Exception);
-
-        public static T2 Match<T2, T1>(this in Try<T1> self, Func<Exception, T2> failure, Func<T1, T2> success) =>
-            self.HasValue ? success(self.Value) : failure(self.Exception);
-
-        public static Try<T2> Transform<T2, T1>(this in Try<T1> self, Func<Exception, Try<T2>> failure,
-            Func<T1, Try<T2>> success) =>
-            self.HasValue ? success(self.Value) : failure(self.Exception);
-
         public static T GetValueOrDefault<T>(this in Try<T> self, Func<Exception, T> @default) =>
             self.HasValue ? self.Value : @default(self.Exception);
 
@@ -81,9 +173,6 @@ namespace InCube.Core.Functional
 
         public static T GetValueOrDefault<T>(this in Try<T> self, T @default) =>
             self.AsOption.GetValueOrDefault(@default);
-
-        public static T GetValueOrDefault<T>(this in Try<T> self) where T : class => 
-            self.GetValueOrDefault(default(T));
 
         public static Try<T> OrElse<T>(this in Try<T> self, Func<Exception, Try<T>> @default) =>
             self.HasValue ? self : @default(self.Exception);
@@ -105,39 +194,5 @@ namespace InCube.Core.Functional
 
         public static bool Contains<T>(this in Try<T> self, T elem, IEqualityComparer<T> comparer) =>
             self.AsOption.Contains(elem, comparer);
-
-        public static Try<T2> Select<T2, T1>(this Try<T1> self, Func<T1, T2> f) =>
-            self.HasValue ? Try(() => f(self.Value)) : Failure<T2>(self.Exception);
-
-        public static Try<T2> SelectMany<T2, T1>(this in Try<T1> self, Func<T1, Try<T2>> f) =>
-            self.HasValue ? f(self.Value): Failure<T2>(self.Exception);
-
-        public static Try<T> Where<T>(this in Try<T> self, Func<T, bool> p) =>
-            !self.HasValue || p(self.Value)
-                ? self
-                : Failure<T>(new ArgumentException("Predicate does not hold for value " + self.Value));
-
-        public static bool Any<T>(this in Try<T> self) => self.AsOption.Any();
-
-        public static bool Any<T>(this in Try<T> self, Func<T, bool> p) => self.AsOption.Any(p);
-
-        public static bool All<T>(this in Try<T> self, Func<T, bool> p) => self.AsOption.All(p);
-
-        public static void ForEach<T>(this in Try<T> self, Action<T> action)
-        {
-            if (self.HasValue) action(self.Value);
-        }
-
-        public static void ForEach<T>(this in Try<T> self, Action failure, Action<T> success)
-        {
-            if (self.HasValue) success(self.Value);
-            else failure();
-        }
-
-        public static void ForEach<T>(this in Try<T> self, Action<Exception> failure, Action<T> success)
-        {
-            if (self.HasValue) success(self.Value);
-            else failure(self.Exception);
-        }
     }
 }

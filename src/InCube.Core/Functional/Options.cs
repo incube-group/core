@@ -126,7 +126,7 @@ namespace InCube.Core.Functional
     }
 
     /// <summary>
-    /// A contravariant version of <see cref="Option{T}"/>.
+    /// A covariant version of <see cref="Option{T}"/>.
     /// </summary>
     /// <typeparam name="T"></typeparam>
     public interface IOption<out T> : IEnumerable<T>
@@ -139,6 +139,10 @@ namespace InCube.Core.Functional
 
         T GetValueOrDefault();
 
+        Option<TOut> Select<TOut>(Func<T, TOut> f);
+
+        Option<TOut> SelectMany<TOut>(Func<T, Option<TOut>> f);
+
         bool Any();
 
         bool Any(Func<T, bool> p);
@@ -149,10 +153,6 @@ namespace InCube.Core.Functional
 
         void ForEach(Action none, Action<T> some);
 
-        Option<TOut> Select<TOut>(Func<T, TOut> f);
-
-        Option<TOut> SelectMany<TOut>(Func<T, Option<TOut>> f);
-        
         IOption<T> Where(Func<T, bool> p);
     }
 

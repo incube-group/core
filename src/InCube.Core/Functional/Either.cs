@@ -1,8 +1,17 @@
 ﻿using System;
+using System.Collections;
+using System.Collections.Generic;
 
 namespace InCube.Core.Functional
 {
-    public interface IEither<out TL, out TR>
+    /// <summary>
+    /// Represents the union of two distinct types, namely, <typeparamref name="TL"/> and <typeparamref name="TR"/>.
+    ///
+    /// This union type is right-biased if used as an <see cref="IEnumerable"/>.
+    /// </summary>
+    /// <typeparam name="TL">The <see cref="Left"/> type.</typeparam>
+    /// <typeparam name="TR">The <see cref="Right"/> type.</typeparam>
+    public interface IEither<out TL, out TR>: IEnumerable<TR>
     {
         bool IsLeft { get; }
         bool IsRight { get; }
@@ -85,6 +94,10 @@ namespace InCube.Core.Functional
         public static implicit operator Either<TL, TR>(TL left) => new Either<TL, TR>(left);
 
         public static implicit operator Either<TL, TR>(TR right) => new Either<TL, TR>(right);
+
+        public IEnumerator<TR> GetEnumerator() => RightOption.GetEnumerator();
+
+        IEnumerator IEnumerable.GetEnumerator() => GetEnumerator();
     }
 
 }
