@@ -24,7 +24,7 @@ namespace InCube.Core.Functional
 
         Try<TOut> SelectMany<TOut>(Func<T, Try<TOut>> success);
 
-        Try<TOut> Transform<TOut>(Func<Exception, Try<TOut>> failure, Func<T, Try<TOut>> success);
+        Try<TOut> SelectMany<TOut>(Func<Exception, Try<TOut>> failure, Func<T, Try<TOut>> success);
 
         ITry<T> Where(Func<T, bool> p);
 
@@ -98,7 +98,7 @@ namespace InCube.Core.Functional
         public Try<TOut> SelectMany<TOut>(Func<T, Try<TOut>> f) =>
             this.HasValue ? f(this.Value) : Tries.Failure<TOut>(this.Exception);
 
-        public Try<TOut> Transform<TOut>(Func<Exception, Try<TOut>> failure, Func<T, Try<TOut>> success) =>
+        public Try<TOut> SelectMany<TOut>(Func<Exception, Try<TOut>> failure, Func<T, Try<TOut>> success) =>
             HasValue ? success(_value.Value) : failure(Exception);
 
         public Try<T> Where(Func<T, bool> p) =>
