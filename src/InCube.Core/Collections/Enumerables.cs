@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using InCube.Core.Functional;
+using static InCube.Core.Preconditions;
 
 namespace InCube.Core.Collections
 {
@@ -128,25 +129,86 @@ namespace InCube.Core.Collections
         public static IEnumerable<int> IntRange(int startInclusive, int stopExclusive) =>
             Enumerable.Range(startInclusive, stopExclusive - startInclusive);
 
-        public static IEnumerable<T> Slice<T>(this IEnumerable<T> elems, int startInclusive, int stopExclusive)
+        public static IEnumerable<int> IntRange(int stopExclusive) =>
+            Enumerable.Range(0, stopExclusive);
+
+        public static IEnumerable<T> Slice<T>(
+            this IEnumerable<T> elems, 
+            int? startInclusive = default, 
+            int? stopExclusive = default)
         {
             switch (elems)
             {
                 case IReadOnlyList<T> list:
                     return list.Slice(startInclusive, stopExclusive);
                 default:
-                    return elems.Skip(startInclusive).Take(stopExclusive - startInclusive);
+                    var skip = startInclusive ?? 0;
+                    return elems.Skip(skip).ApplyOpt(e => stopExclusive.Select(stop => e.Take(stop - skip)));
             }
         }
 
-        public static IEnumerable<T> Slice<T>(this IReadOnlyList<T> list, int startInclusive, int stopExclusive) =>
-            IntRange(startInclusive, stopExclusive).Select(i => list[i]);
+        public static IEnumerable<T> Slice<T>(
+            this IReadOnlyList<T> list, 
+            int startInclusive = default, 
+            int? stopExclusive = default) =>
+            IntRange(startInclusive, stopExclusive ?? list.Count).Select(i => list[i]);
 
-        public static ArraySegment<T> Slice<T>(this T[] elems, int startInclusive, int stopExclusive) =>
-            new ArraySegment<T>(elems, startInclusive, stopExclusive - startInclusive);
+        public static ArraySegment<T> Slice<T>(
+            this T[] elems,
+            int startInclusive = default,
+            int? stopExclusive = default) => 
+            new ArraySegment<T>(elems, startInclusive, (stopExclusive ?? elems.Length) - startInclusive);
 
-        public static ArraySegment<T> Slice<T>(this ArraySegment<T> elems, int startInclusive, int stopExclusive) =>
-            new ArraySegment<T>(elems.Array, elems.Offset + startInclusive, stopExclusive - startInclusive);
+        public static ArraySegment<T> Slice<T>(
+            this ArraySegment<T> elems,
+            int startInclusive = default,
+            int? stopExclusive = default) => 
+            new ArraySegment<T>(elems.Array, elems.Offset + startInclusive, (stopExclusive ?? elems.Count) - startInclusive);
+
+        public static T[,] Slice<T>(
+            this T[,] elems,
+            int rowStartInclusive = default,
+            int? rowStopExclusive = default,
+            int colStartInclusive = default,
+            int? colStopExclusive = default,
+            T[,] result = null) where T : unmanaged
+        {
+            var srcRowCount = elems.GetLength(0);
+            var rowStop = rowStopExclusive ?? srcRowCount;
+            CheckArgumentF(0 <= rowStop && rowStop <= srcRowCount, "invalid row stop {0}", rowStop);
+            var srcColCount = elems.GetLength(1);
+            var colStop = colStopExclusive ?? srcColCount;
+            CheckArgumentF(0 <= colStop && colStop <= srcColCount, "invalid col stop {0}", colStop);
+            var rowCount = rowStop - rowStartInclusive;
+            CheckArgumentF(0 <= rowCount && rowCount <= srcRowCount, "invalid row count {0}", rowCount);
+            var colCount = colStop - colStartInclusive;
+            CheckArgumentF(0 <= colCount && colCount <= srcRowCount, "invalid col count {0}", colCount);
+
+            result = result ?? new T[rowCount, colCount];
+            if (rowCount == 0 || colCount == 0) return result;
+
+            var dstRowCount = result.GetLength(0);
+            CheckArgumentF(rowCount <= dstRowCount, "insufficient space for {0} rows", rowCount);
+            var dstColCount = result.GetLength(1);
+            CheckArgumentF(colCount <= dstColCount, "insufficient space for {0} columns", colCount);
+
+            unsafe
+            {
+                var rowSize = colCount * sizeof(T);
+                fixed (T* src = &elems[rowStartInclusive, colStartInclusive])
+                fixed (T* dst = &result[0, 0])
+                {
+                    for (var r = 0; r < rowCount; ++r)
+                    {
+                        var srcP = src + srcColCount * r;
+                        var dstP = dst + dstColCount * r;
+                        Buffer.MemoryCopy(srcP, dstP, rowSize, rowSize);
+                    }
+                }
+            }
+
+            return result;
+        }
 
         public static IEnumerable<T> Flatten<T>(this IEnumerable<IEnumerable<T>> enumerable) =>
             enumerable.SelectMany(list => list);
