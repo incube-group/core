@@ -2,7 +2,9 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.Diagnostics;
+using InCube.Core.Format;
 using JetBrains.Annotations;
+using Newtonsoft.Json;
 
 namespace InCube.Core.Functional
 {
@@ -161,7 +163,7 @@ namespace InCube.Core.Functional
     /// both struct and class types.
     /// </summary>
     /// <typeparam name="T"></typeparam>
-    [Serializable]
+    [Serializable] [JsonConverter(typeof(GenericOptionJsonConverter))]
     public readonly struct Option<T>: IEquatable<Option<T>>, IOption<T>
     {
         private readonly T _value;
