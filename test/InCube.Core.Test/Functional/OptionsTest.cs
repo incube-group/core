@@ -118,5 +118,17 @@ namespace InCube.Core.Test.Functional
             var l2 = Some(Enumerable.Range(0, count).ToArray());
             Assert.AreEqual(l1.Value.Count, l2.Value.Length);
         }
+
+        [Test]
+        public void TestFlatten()
+        {
+            double? one = 1;
+            Assert.AreEqual(one, Some(one).Flatten());
+            double? none = default;
+            // ReSharper disable once ExpressionIsAlwaysNull
+            // ReSharper disable once AssignNullToNotNullAttribute
+            Assert.AreEqual(none, Some(none).Flatten());
+
+        }
     }
 }

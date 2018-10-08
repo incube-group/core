@@ -57,8 +57,8 @@ namespace InCube.Core.Functional
         public static Option<T> Flatten<T>(this in Option<Option<T>> self) =>
             self.HasValue ? self.Value : None;
 
-        public static Option<T> Flatten<T>(this in Option<T?> self) where T : struct =>
-            self.HasValue ? self.Value.ToOption() : None;
+        public static T? Flatten<T>(this in Option<T?> self) where T : struct =>
+            self.HasValue ? self.Value : null;
 
         public static Option<T> Flatten<T>(this in Option<T>? self) =>
             self ?? None;
@@ -168,9 +168,8 @@ namespace InCube.Core.Functional
     {
         private readonly T _value;
 
-        internal Option([NotNull] T value)
+        internal Option(T value)
         {
-            Debug.Assert(value != null, nameof(value) + " is null");
             HasValue = true;
             _value = value;
         }
