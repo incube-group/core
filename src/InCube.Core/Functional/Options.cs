@@ -5,6 +5,7 @@ using System.Diagnostics;
 using InCube.Core.Format;
 using JetBrains.Annotations;
 using Newtonsoft.Json;
+using static InCube.Core.Preconditions;
 
 namespace InCube.Core.Functional
 {
@@ -220,7 +221,8 @@ namespace InCube.Core.Functional
 
         public T GetValueOrDefault() => GetValueOrDefault(default(T));
 
-        public T GetValueOrDefault(Func<T> @default) => HasValue ? _value : @default();
+        public T GetValueOrDefault([NotNull] Func<T> @default) =>
+            HasValue ? _value : CheckNotNull(@default, nameof(@default)).Invoke();
 
         public T GetValueOrDefault(T @default) => HasValue ? _value : @default;
 
