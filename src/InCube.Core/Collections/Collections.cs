@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -368,7 +369,21 @@ namespace InCube.Core.Collections
             return freeIndex;
         }
 
+        public static IReadOnlyList<T> Empty<T>() => new EmptyList<T>();
 
+        private class EmptyList<T> : IReadOnlyList<T>
+        {
+            public IEnumerator<T> GetEnumerator()
+            {
+                yield break;
+            }
+
+            IEnumerator IEnumerable.GetEnumerator() => this.GetEnumerator();
+
+            public int Count => 0;
+
+            public T this[int index] => throw new ArgumentOutOfRangeException(nameof(index), index, "invalid index");
+        }
     }
 
 }
