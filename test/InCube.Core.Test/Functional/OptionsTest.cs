@@ -3,7 +3,7 @@ using System.Linq;
 using InCube.Core.Collections;
 using NUnit.Framework;
 using InCube.Core.Functional;
-using static InCube.Core.Functional.Options;
+using static InCube.Core.Functional.Option;
 
 namespace InCube.Core.Test.Functional
 {

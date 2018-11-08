@@ -35,7 +35,7 @@ namespace InCube.Core.Test.Format
         public void TestGenericConverter()
         {
             var converter = new GenericOptionJsonConverter();
-            Assert.True(converter.CanConvert(Options.None.GetType()));
+            Assert.True(converter.CanConvert(Option.None.GetType()));
             TestOptionsConverter(converter);
         }
 
@@ -43,13 +43,13 @@ namespace InCube.Core.Test.Format
         public void TestConcreteConverter()
         {
             var converter = new OptionJsonConverter<int>();
-            Assert.False(converter.CanConvert(Options.None.GetType()));
+            Assert.False(converter.CanConvert(Option.None.GetType()));
             TestOptionsConverter(converter);
         }
 
         private static void TestOptionsConverter(JsonConverter converter)
         {
-            var opt42 = Options.Some(42);
+            var opt42 = Option.Some(42);
             Assert.True(converter.CanRead);
             Assert.True(converter.CanWrite);
             Assert.True(converter.CanConvert(opt42.GetType()));
@@ -63,7 +63,7 @@ namespace InCube.Core.Test.Format
             var str42 = JsonConvert.SerializeObject(opt42, settings);
             Assert.AreEqual(opt42, JsonConvert.DeserializeObject<Option<int>>(str42, settings));
 
-            var none = Options.Empty<int>();
+            var none = Option.Empty<int>();
             var strNone = JsonConvert.SerializeObject(none, settings);
             Assert.AreEqual(none, JsonConvert.DeserializeObject<Option<int>>(strNone, settings));
         }

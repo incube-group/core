@@ -272,7 +272,7 @@ namespace InCube.Core.Collections
         {
             using (var enumerator = self.GetEnumerator())
             {
-                return enumerator.MoveNext() ? Options.Some(enumerator.Current) : Options.None;
+                return enumerator.MoveNext() ? Option.Some(enumerator.Current) : Option.None;
             }
         }
 

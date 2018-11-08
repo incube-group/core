@@ -30,11 +30,11 @@ namespace InCube.Core.Numerics
             var edgeCount = elements.Count;
 
             var (edges, optIndices) = Functions.If(elements.IsSorted(comparer: comparer),
-                ifBranch:   () => (elements, Options.Empty<int[]>()),
+                ifBranch:   () => (elements, Option.Empty<int[]>()),
                 elseBranch: () =>
                 {
                     var edgeArray = elements.ToArray();
-                    var edgeIndices = Options.Some(Enumerable.Range(0, edgeCount).ToArray());
+                    var edgeIndices = Option.Some(Enumerable.Range(0, edgeCount).ToArray());
                     Array.Sort(edgeArray, edgeIndices.Value, comparer);
                     return (edgeArray, edgeIndices);
                 }

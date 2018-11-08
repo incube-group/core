@@ -14,6 +14,8 @@ namespace InCube.Core.Functional
 
         IOption<T> AsOption { get; }
 
+        IEither<Exception, T> AsEither { get; }
+
         Try<Exception> Failed();
 
         TOut Match<TOut>(Func<Exception, TOut> failure, Func<T, TOut> success);
@@ -49,13 +51,13 @@ namespace InCube.Core.Functional
 
         internal Try(T value)
         {
-            _value = Options.Some(value);
+            _value = Option.Some(value);
             _exception = null;
         }
 
         internal Try(Exception exception)
         {
-            _value = Options.None;
+            _value = Option.None;
             _exception = exception;
         }
 
@@ -74,14 +76,21 @@ namespace InCube.Core.Functional
 
         public static implicit operator Option<T>(Try<T> t) => t._value;
 
+        public static implicit operator Either<Exception, T>(Try<T> t) => 
+            t.Match(Either<Exception, T>.OfLeft, Either<Exception, T>.OfRight);
+
         public Option<T> AsOption => this;
 
         IOption<T> ITry<T>.AsOption => this.AsOption;
 
+        public Either<Exception, T> AsEither => this;
+
+        IEither<Exception, T> ITry<T>.AsEither => this.AsEither;
+
         public Try<Exception> Failed()
         {
             var self = this; // in order to capture this in the following lambda
-            return Tries.Try(() => self.Exception);
+            return Try.Execute(() => self.Exception);
         }
 
         public TOut Match<TOut>(Func<Exception, TOut> failure, Func<T, TOut> success) =>
@@ -89,22 +98,19 @@ namespace InCube.Core.Functional
 
         public T GetValueOrDefault() => this.GetValueOrDefault(default(T));
 
-        public Try<TOut> Select<TOut>(Func<T, TOut> f)
-        {
-            var self = this; // in order to capture this in the following lambda
-            return HasValue ? Tries.Try(() => f(self._value.Value)) : Tries.Failure<TOut>(Exception);
-        }
+        public Try<TOut> Select<TOut>(Func<T, TOut> f) =>
+            Match(Try.Failure<TOut>, value => Try.Execute(() => f(value)));
 
         public Try<TOut> SelectMany<TOut>(Func<T, Try<TOut>> f) =>
-            this.HasValue ? f(this.Value) : Tries.Failure<TOut>(this.Exception);
+            Match(Try.Failure<TOut>, f);
 
         public Try<TOut> SelectMany<TOut>(Func<Exception, Try<TOut>> failure, Func<T, Try<TOut>> success) =>
-            HasValue ? success(_value.Value) : failure(Exception);
+            Match(failure, success);
 
         public Try<T> Where(Func<T, bool> p) =>
             !this.HasValue || p(_value.Value)
                 ? this
-                : Tries.Failure<T>(new ArgumentException("Predicate does not hold for value " + _value.Value));
+                : Try.Failure<T>(new ArgumentException("Predicate does not hold for value " + _value.Value));
 
         ITry<T> ITry<T>.Where(Func<T, bool> p) => this.Where(p);
 
@@ -147,13 +153,13 @@ namespace InCube.Core.Functional
         }
     }
 
-    public static class Tries
+    public static class Try
     {
         public static Try<T> Success<T>(T t) => new Try<T>(t);
 
         public static Try<T> Failure<T>(Exception ex) => new Try<T>(ex);
 
-        public static Try<T> Try<T>(Func<T> f)
+        public static Try<T> Execute<T>(Func<T> f)
         {
             try
             {

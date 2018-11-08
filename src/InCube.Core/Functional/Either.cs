@@ -26,6 +26,10 @@ namespace InCube.Core.Functional
 
         T Match<T>(Func<TL, T> left, Func<TR, T> right);
 
+        IEither<TL, TOut> Select<TOut>(Func<TR, TOut> f);
+
+        void ForEach(Action<TR> right);
+
         void ForEach(Action<TL> left, Action<TR> right);
 
         Type Type { get; }
@@ -51,9 +55,9 @@ namespace InCube.Core.Functional
         public TR Right => IsRight ? (TR) _value : 
             throw new NotSupportedException($"not a {typeof(TR)}, but a {typeof(TL)}");
 
-        public Option<TL> LeftOption => IsLeft ? Options.Some((TL) _value) : Options.None;
+        public Option<TL> LeftOption => IsLeft ? Option.Some((TL) _value) : Option.None;
 
-        public Option<TR> RightOption => IsRight ? Options.Some((TR) _value) : Options.None;
+        public Option<TR> RightOption => IsRight ? Option.Some((TR) _value) : Option.None;
 
         public Type Type => IsLeft ? typeof(TL) : typeof(TR);
 
@@ -79,6 +83,23 @@ namespace InCube.Core.Functional
         public T Match<T>(Func<TL, T> left, Func<TR, T> right) =>
             IsLeft ? left(Left) : right(Right);
 
+        IEither<TL, TOut> IEither<TL, TR>.Select<TOut>(Func<TR, TOut> f) => Select(f);
+
+        public Either<TL, TOut> Select<TOut>(Func<TR, TOut> f) =>
+            Match<Either<TL, TOut>>(left => left, right => f(right));
+
+        public Either<TL, TOut> SelectMany<TOut>(Func<TR, Either<TL, TOut>> f) => 
+            Match(left => left, f);
+
+        public void ForEach(Action<TR> right)
+        {
+            if (IsRight)
+            {
+                right(Right);
+            }
+        }
+
+
         public void ForEach(Action<TL> left, Action<TR> right)
         {
             if (IsLeft)
@@ -98,6 +119,18 @@ namespace InCube.Core.Functional
         public IEnumerator<TR> GetEnumerator() => RightOption.GetEnumerator();
 
         IEnumerator IEnumerable.GetEnumerator() => GetEnumerator();
+
+        public static Either<TL, TR> OfLeft(TL left) => left;
+
+        public static Either<TL, TR> OfRight(TR right) => right;
     }
 
+    public static class Either
+    {
+        public static IEither<TL, TOut> SelectMany<TL, TR, TOut>(
+            this IEither<TL, TR> @this,
+            Func<TR, IEither<TL, TOut>> f) =>
+            // ReSharper disable once ConvertClosureToMethodGroup
+            @this.Match(l => Either<TL, TOut>.OfLeft(l), f);
+    }
 }

@@ -1,7 +1,7 @@
 ﻿using System;
 using InCube.Core.Functional;
 using NUnit.Framework;
-using static InCube.Core.Functional.Tries;
+using static InCube.Core.Functional.Try;
 
 namespace InCube.Core.Test.Functional
 {
@@ -11,7 +11,7 @@ namespace InCube.Core.Test.Functional
         public void TestSuccess()
         {
             const int value = 1;
-            var t = Try(() => value);
+            var t = Execute(() => value);
             Assert.True(t.HasValue);
             Assert.AreEqual(value, t.Value);
             Assert.Throws<InvalidOperationException>(() =>
@@ -27,7 +27,7 @@ namespace InCube.Core.Test.Functional
         public void TestFailure()
         {
             const int value = 1;
-            var t = Try(() =>
+            var t = Execute(() =>
             {
                 Preconditions.CheckArgument(value <= 0, "value is positive: {}", value);
                 return value;

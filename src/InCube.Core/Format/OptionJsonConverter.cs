@@ -16,13 +16,13 @@ namespace InCube.Core.Format
 
         public override Option<T> ReadJson(JsonReader reader, Type objectType, Option<T> existingValue,
                                            bool hasExistingValue, JsonSerializer serializer) =>
-            reader.Value == null ? Options.None : Options.Some(serializer.Deserialize<T>(reader));
+            reader.Value == null ? Option.None : Option.Some(serializer.Deserialize<T>(reader));
     }
 
     public class GenericOptionJsonConverter : JsonConverter
     {
-        private static readonly MethodInfo EmptyMethod = typeof(Options).GetMethod("Empty");
-        private static readonly MethodInfo SomeMethod = typeof(Options).GetMethod("Some");
+        private static readonly MethodInfo EmptyMethod = typeof(Option).GetMethod("Empty");
+        private static readonly MethodInfo SomeMethod = typeof(Option).GetMethod("Some");
 
         public override void WriteJson(JsonWriter writer, object value, JsonSerializer serializer)
         {

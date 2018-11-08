@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
-using System.Diagnostics;
 using InCube.Core.Format;
 using JetBrains.Annotations;
 using Newtonsoft.Json;
@@ -12,7 +11,7 @@ namespace InCube.Core.Functional
     /// <summary>
     /// Defines utility operations on instances of <see cref="Option{T}"/> and <see cref="Nullable{T}"/>.
     /// </summary>
-    public static class Options
+    public static class Option
     {
         public static readonly Option<Nothing> None = default;
 
@@ -254,7 +253,7 @@ namespace InCube.Core.Functional
             }
         }
 
-        public Option<TOut> Select<TOut>(Func<T, TOut> f) => HasValue ? Options.Some(f(_value)) : default;
+        public Option<TOut> Select<TOut>(Func<T, TOut> f) => HasValue ? Option.Some(f(_value)) : default;
 
         public Option<TOut> SelectMany<TOut>(Func<T, Option<TOut>> f) => HasValue ? f(_value) : default;
 
@@ -262,7 +261,7 @@ namespace InCube.Core.Functional
 
         IOption<T> IOption<T>.Where(Func<T, bool> p) => Where(p);
 
-        public Option<TD> Cast<TD>() where TD : T => SelectMany(x => x is TD d ? Options.Some(d) : default);
+        public Option<TD> Cast<TD>() where TD : T => SelectMany(x => x is TD d ? Option.Some(d) : default);
     }
 
 }

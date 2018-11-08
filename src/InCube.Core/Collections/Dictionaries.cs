@@ -28,7 +28,7 @@ namespace InCube.Core.Collections
             dict.TryGetValue(key, out var value) ? value : supplier();
 
         public static Option<V> GetOption<K, V>(this IReadOnlyDictionary<K, V> dict, K key) =>
-            dict.TryGetValue(key, out var value) ? Options.Some(value) : Options.None;
+            dict.TryGetValue(key, out var value) ? Option.Some(value) : Option.None;
 
         [StringFormatMethod("format")]
         public static V GetOrThrow<K, V>(this IReadOnlyDictionary<K, V> dict, string format, K key) =>
