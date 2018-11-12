@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using JetBrains.Annotations;
 
 namespace InCube.Core
 {
@@ -34,6 +35,7 @@ namespace InCube.Core
             return Add(creator());
         }
 
+        [CanBeNull]
         private List<Exception> ReleaseUnmanagedResources()
         {
             List<Exception> exceptions = null;
