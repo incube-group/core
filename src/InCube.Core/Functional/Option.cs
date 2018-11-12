@@ -17,6 +17,8 @@ namespace InCube.Core.Functional
 
         public static Option<T> Some<T>([NotNull] T value) => new Option<T>(value);
 
+        public static Option<T?> Some<T>(T? value) where T : struct => new Option<T?>(value);
+
         public static Option<T> ToOption<T>(this T value) where T : class =>
             value != null ? Some(value) : None;
 
@@ -36,6 +38,12 @@ namespace InCube.Core.Functional
 
         public static T GetValueOrDefault<T>(this in T? self, Func<T> @default) where T : struct =>
             self ?? @default();
+
+        public static T GetValueOrDefault<T>(this IOption<T> self, T @default) => 
+            self.HasValue ? self.Value : @default;
+
+        public static T GetValueOrDefault<T>(this IOption<T> self, [NotNull] Func<T> @default) =>
+            self.HasValue ? self.Value : CheckNotNull(@default, nameof(@default)).Invoke();
 
         public static Option<T> OrElse<T>(this in Option<T> self, Func<Option<T>> @default) =>
             self.HasValue ? self : @default();
@@ -131,7 +139,7 @@ namespace InCube.Core.Functional
     /// A covariant version of <see cref="Option{T}"/>.
     /// </summary>
     /// <typeparam name="T"></typeparam>
-    public interface IOption<out T> : IEnumerable<T>
+    public interface IOption<out T> : IReadOnlyCollection<T>
     {
         bool HasValue { get; }
 
@@ -208,11 +216,8 @@ namespace InCube.Core.Functional
 
         public static explicit operator T(Option<T> value) => value.Value;
 
-        /// <summary>
-        /// Note that this operation involves boxing.
-        /// </summary>
-        /// <param name="value">The value to convert.</param>
-        public static implicit operator Option<T>(T value) => value != null ? new Option<T>(value) : default;
+        public static implicit operator Option<T>(T value) => 
+            typeof(T).IsValueType || value != null ? new Option<T>(value) : default;
 
         public static implicit operator Option<T>(Option<Nothing> _) => default;
 
@@ -262,6 +267,8 @@ namespace InCube.Core.Functional
         IOption<T> IOption<T>.Where(Func<T, bool> p) => Where(p);
 
         public Option<TD> Cast<TD>() where TD : T => SelectMany(x => x is TD d ? Option.Some(d) : default);
+
+        public int Count => HasValue ? 1 : 0;
     }
 
 }

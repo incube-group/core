@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Linq;
 using System.Reflection;
 using InCube.Core.Functional;
 using Newtonsoft.Json;
@@ -22,7 +23,8 @@ namespace InCube.Core.Format
     public class GenericOptionJsonConverter : JsonConverter
     {
         private static readonly MethodInfo EmptyMethod = typeof(Option).GetMethod("Empty");
-        private static readonly MethodInfo SomeMethod = typeof(Option).GetMethod("Some");
+        private static readonly MethodInfo SomeMethod = typeof(Option).
+            GetMethods().Single(m => m.Name == "Some" && !m.GetParameters().First().ParameterType.IsGenericType);
 
         public override void WriteJson(JsonWriter writer, object value, JsonSerializer serializer)
         {

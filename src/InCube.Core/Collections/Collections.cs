@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -369,6 +368,6 @@ namespace InCube.Core.Collections
             return freeIndex;
         }
 
-        public static IReadOnlyList<T> Empty<T>() => Array.Empty<T>();
+        public static T[] Empty<T>() => Array.Empty<T>();
     }
 }

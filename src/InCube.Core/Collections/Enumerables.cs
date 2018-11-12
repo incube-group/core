@@ -213,6 +213,9 @@ namespace InCube.Core.Collections
         public static IEnumerable<T> Flatten<T>(this IEnumerable<IEnumerable<T>> enumerable) =>
             enumerable.SelectMany(list => list);
 
+        public static IEnumerable<T> Flatten<T>(this IEnumerable<Option<T>> enumerable) =>
+            enumerable.SelectMany(list => list);
+
         public static bool IsEmpty<T>(this IEnumerable<T> col) => !col.Any();
 
         public static IEnumerable<T> GenFilter<T, U>(this IEnumerable<T> list, Func<U, bool> predicate) where T : U

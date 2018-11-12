@@ -7,7 +7,7 @@ using static InCube.Core.Functional.Option;
 
 namespace InCube.Core.Test.Functional
 {
-    public class OptionsTest
+    public class OptionTest
     {
         [Test]
         public void TestNone()
@@ -57,6 +57,7 @@ namespace InCube.Core.Test.Functional
             Assert.True(1 == optionOne);
             Assert.True(optionOne.Equals((object)optionOne));
 
+
             Assert.True(intNone.Equals(none));
 
             // ReSharper disable once EqualExpressionComparison
@@ -87,6 +88,13 @@ namespace InCube.Core.Test.Functional
 
             Assert.True(Convert() == None);
             Assert.True(Convert(1) == Some(1));
+
+            Option<Option<object>> optOptObj = Empty<object>();
+            Assert.True(optOptObj.HasValue);
+            Option<Option<int>> optOptInt = Empty<int>();
+            Assert.True(optOptObj.HasValue);
+            Option<int?> optNullableInt = default(int?);
+            Assert.True(optNullableInt.HasValue);
         }
 
         [Test]
