@@ -5,7 +5,7 @@ using InCube.Core.Collections;
 using NUnit.Framework;
 using InCube.Core.Functional;
 using Newtonsoft.Json;
-using static InCube.Core.Functional.NullableRef;
+using static InCube.Core.Functional.CanBeNull;
 
 namespace InCube.Core.Test.Functional
 {
@@ -68,7 +68,7 @@ namespace InCube.Core.Test.Functional
         public static Boxed<T> Of<T>(T value) where T : struct => value;
     } 
 
-    public class NullableRefTest
+    public class CanBeNullTest
     {
         [Test]
         public void TestNone()
@@ -92,6 +92,9 @@ namespace InCube.Core.Test.Functional
             Assert.AreEqual(one, some.GetValueOrDefault(0));
             Assert.AreEqual(one, some.GetValueOrDefault());
             Assert.AreEqual(Some(Boxed.Of(2)), some.Select(x => Boxed.Of(x + 1)));
+
+            // ReSharper disable once AssignNullToNotNullAttribute
+            Assert.Throws<ArgumentNullException>(() => Some(default(Boxed<int>)));
         }
 
         [Test]
@@ -147,17 +150,18 @@ namespace InCube.Core.Test.Functional
         [Test]
         public void TestImplicitConversion()
         {
-            //Option<int> Convert(Option<int> opt = default) => opt;
+            CanBeNull<Boxed<int>> Convert(CanBeNull<Boxed<int>> opt = default) => opt;
 
-            //Assert.True(Convert() == None);
-            //Assert.True(Convert(1) == Some(1));
+            Assert.True(Convert() == None);
+            var one = Boxed.Of(1);
+            Assert.True(Convert(one) == Some(one));
+            Option<Boxed<int>> someOptInt = Some(one);
+            Assert.True(someOptInt.HasValue);
 
-            //Option<Option<object>> optOptObj = Empty<object>();
-            //Assert.True(optOptObj.HasValue);
-            //Option<Option<int>> optOptInt = Empty<int>();
-            //Assert.True(optOptObj.HasValue);
-            //Option<int?> optNullableInt = default(int?);
-            //Assert.True(optNullableInt.HasValue);
+            Option<CanBeNull<object>> optOptObj = Empty<object>();
+            Assert.True(optOptObj.HasValue);
+            Option<Boxed<int>> optOptInt = Empty<Boxed<int>>();
+            Assert.False(optOptInt.HasValue);
         }
 
         [Test]
@@ -172,7 +176,7 @@ namespace InCube.Core.Test.Functional
         [Test]
         public void TestMatch()
         {
-            string MatchToString<T>(NullableRef<T> opt) where T : class
+            string MatchToString<T>(CanBeNull<T> opt) where T : class
             {
                 return opt.Match(none: () => "None", some: i => $"Some({i})");
             }
@@ -193,9 +197,9 @@ namespace InCube.Core.Test.Functional
         [Test]
         public void TestFlatten()
         {
-            var one = NullableRef.Some(Boxed.Of(1));
+            var one = CanBeNull.Some(Boxed.Of(1));
             Assert.AreEqual(one, Option.Some(one).Flatten());
-            var none = NullableRef.Empty<Boxed<int>>();
+            var none = CanBeNull.Empty<Boxed<int>>();
             // ReSharper disable once ExpressionIsAlwaysNull
             // ReSharper disable once AssignNullToNotNullAttribute
             Assert.AreEqual(none, Option.Some(none).Flatten());
@@ -206,9 +210,9 @@ namespace InCube.Core.Test.Functional
         {
             var someOne = Some(Boxed.Of(1));
             Assert.AreEqual(typeof(int), someOne.Select(x => x.Value).GetType());
-            Assert.AreEqual(typeof(NullableRef<Boxed<int>>), someOne.Select(x => x).GetType());
+            Assert.AreEqual(typeof(CanBeNull<Boxed<int>>), someOne.Select(x => x).GetType());
             Assert.AreEqual(typeof(int), someOne.SelectMany(x => x.Value.ToNullable()).GetType());
-            Assert.AreEqual(typeof(NullableRef<Boxed<int>>), someOne.SelectMany(x => x.ToNullable()).GetType());
+            Assert.AreEqual(typeof(CanBeNull<Boxed<int>>), someOne.SelectMany(x => x.ToNullable()).GetType());
         }
     }
 }

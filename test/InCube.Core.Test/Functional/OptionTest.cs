@@ -92,7 +92,7 @@ namespace InCube.Core.Test.Functional
             Option<Option<object>> optOptObj = Empty<object>();
             Assert.True(optOptObj.HasValue);
             Option<Option<int>> optOptInt = Empty<int>();
-            Assert.True(optOptObj.HasValue);
+            Assert.True(optOptInt.HasValue);
             Option<int?> optNullableInt = default(int?);
             Assert.True(optNullableInt.HasValue);
         }

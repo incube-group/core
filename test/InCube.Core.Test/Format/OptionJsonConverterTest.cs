@@ -43,9 +43,9 @@ namespace InCube.Core.Test.Format
         [Test]
         public void TestGenericNullRefConverter()
         {
-            var converter = new GenericOptionJsonConverter(typeof(NullableRef<>));
-            Assert.True(converter.CanConvert(NullableRef.None.GetType()));
-            TestOptionsConverter(converter, NullableRef.Some(Boxed.Of(42)));
+            var converter = new GenericOptionJsonConverter(typeof(CanBeNull<>));
+            Assert.True(converter.CanConvert(CanBeNull.None.GetType()));
+            TestOptionsConverter(converter, CanBeNull.Some(Boxed.Of(42)));
         }
 
         [Test]

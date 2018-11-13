@@ -153,7 +153,7 @@ namespace InCube.Core.Functional
         public static Option<T> ToOption<T>(this in T? value) where T : struct =>
             value.HasValue ? Some(value.Value) : default;
 
-        public static Option<T> ToOption<T>(this NullableRef<T> value) where T : class =>
+        public static Option<T> ToOption<T>(this CanBeNull<T> value) where T : class =>
             value.HasValue ? Some(value.Value) : default;
 
         public static Option<T> ToOption<T>(this IOption<T> value) =>
