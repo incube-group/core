@@ -3,6 +3,7 @@ using System.Linq;
 using System.Reflection;
 using InCube.Core.Functional;
 using Newtonsoft.Json;
+using Nullable = System.Nullable;
 
 namespace InCube.Core.Format
 {
@@ -17,14 +18,39 @@ namespace InCube.Core.Format
 
         public override Option<T> ReadJson(JsonReader reader, Type objectType, Option<T> existingValue,
                                            bool hasExistingValue, JsonSerializer serializer) =>
-            reader.Value == null ? Option.None : Option.Some(serializer.Deserialize<T>(reader));
+            reader.TokenType == JsonToken.Null ? Option.None : Option.Some(serializer.Deserialize<T>(reader));
     }
 
     public class GenericOptionJsonConverter : JsonConverter
     {
-        private static readonly MethodInfo EmptyMethod = typeof(Option).GetMethod("Empty");
-        private static readonly MethodInfo SomeMethod = typeof(Option).
-            GetMethods().Single(m => m.Name == "Some" && !m.GetParameters().First().ParameterType.IsGenericType);
+        private static readonly MethodInfo OptionEmptyMethod = typeof(Option).GetMethod("Empty");
+        private static readonly MethodInfo OptionSomeMethod = typeof(Option).
+            GetMethods().Single(m => m.Name == "Some" && !m.ReturnType.GetGenericArguments()[0].IsGenericType);
+
+        private static readonly MethodInfo NullRefEmptyMethod = typeof(NullableRef).GetMethod("Empty");
+        private static readonly MethodInfo NullRefSomeMethod = typeof(NullableRef).GetMethod("Some");
+
+        public GenericOptionJsonConverter(Type optionType)
+        {
+            this.OptionType = optionType;
+            if (optionType == typeof(Option<>))
+            {
+                EmptyMethod = OptionEmptyMethod;
+                SomeMethod = OptionSomeMethod;
+            } else if (optionType == typeof(NullableRef<>))
+            {
+                EmptyMethod = NullRefEmptyMethod;
+                SomeMethod = NullRefSomeMethod;
+            }
+            else
+            {
+                throw new ArgumentException($"unsupported option type: {optionType}");
+            }
+        }
+
+        private Type OptionType { get; }
+        private MethodInfo SomeMethod { get; }
+        private MethodInfo EmptyMethod { get; }
 
         public override void WriteJson(JsonWriter writer, object value, JsonSerializer serializer)
         {
@@ -44,7 +70,7 @@ namespace InCube.Core.Format
                                         JsonSerializer serializer)
         {
             var paramType = objectType.GenericTypeArguments[0];
-            if (reader.Value == null)
+            if (reader.TokenType == JsonToken.Null)
             {
                 return EmptyMethod.MakeGenericMethod(paramType).Invoke(null, null);
             }
@@ -54,6 +80,6 @@ namespace InCube.Core.Format
         }
 
         public sealed override bool CanConvert(Type objectType) => 
-            objectType.IsConstructedGenericType && typeof(Option<>) == objectType.GetGenericTypeDefinition();
+            objectType.IsConstructedGenericType && OptionType == objectType.GetGenericTypeDefinition();
     }
 }

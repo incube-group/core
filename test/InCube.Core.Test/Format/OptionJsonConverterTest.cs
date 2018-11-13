@@ -1,6 +1,7 @@
 ﻿using System;
 using InCube.Core.Format;
 using InCube.Core.Functional;
+using InCube.Core.Test.Functional;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Serialization;
 using NUnit.Framework;
@@ -32,40 +33,50 @@ namespace InCube.Core.Test.Format
         }
 
         [Test]
-        public void TestGenericConverter()
+        public void TestGenericOptionConverter()
         {
-            var converter = new GenericOptionJsonConverter();
+            var converter = new GenericOptionJsonConverter(typeof(Option<>));
             Assert.True(converter.CanConvert(Option.None.GetType()));
-            TestOptionsConverter(converter);
+            TestOptionsConverter(converter, Option.Some(Boxed.Of(42)));
+        }
+
+        [Test]
+        public void TestGenericNullRefConverter()
+        {
+            var converter = new GenericOptionJsonConverter(typeof(NullableRef<>));
+            Assert.True(converter.CanConvert(NullableRef.None.GetType()));
+            TestOptionsConverter(converter, NullableRef.Some(Boxed.Of(42)));
         }
 
         [Test]
         public void TestConcreteConverter()
         {
-            var converter = new OptionJsonConverter<int>();
+            var converter = new OptionJsonConverter<Boxed<int>>();
             Assert.False(converter.CanConvert(Option.None.GetType()));
-            TestOptionsConverter(converter);
+            TestOptionsConverter(converter, Option.Some(Boxed.Of(42)));
         }
 
-        private static void TestOptionsConverter(JsonConverter converter)
+        private static void TestOptionsConverter<T>(
+            JsonConverter converter,
+            T some,
+            T none = default) where T : IOption<Boxed<int>>
         {
-            var opt42 = Option.Some(42);
+
             Assert.True(converter.CanRead);
             Assert.True(converter.CanWrite);
-            Assert.True(converter.CanConvert(opt42.GetType()));
+            Assert.True(converter.CanConvert(some.GetType()));
             Assert.False(converter.CanConvert(typeof(int)));
 
             var settings = new JsonSerializerSettings
             {
-                ContractResolver = new CustomContractResolver(converter, opt42.GetType())
+                ContractResolver = new CustomContractResolver(converter, some.GetType())
             };
 
-            var str42 = JsonConvert.SerializeObject(opt42, settings);
-            Assert.AreEqual(opt42, JsonConvert.DeserializeObject<Option<int>>(str42, settings));
+            var someStr = JsonConvert.SerializeObject(some, settings);
+            Assert.AreEqual(some, JsonConvert.DeserializeObject<T>(someStr, settings));
 
-            var none = Option.Empty<int>();
             var strNone = JsonConvert.SerializeObject(none, settings);
-            Assert.AreEqual(none, JsonConvert.DeserializeObject<Option<int>>(strNone, settings));
+            Assert.AreEqual(none, JsonConvert.DeserializeObject<T>(strNone, settings));
         }
 
     }
