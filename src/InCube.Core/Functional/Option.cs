@@ -137,7 +137,7 @@ namespace InCube.Core.Functional
         
         public static readonly Option<Nothing> None = default;
         
-        public static Option<T> Empty<T>() => None;
+        public static Option<T> Empty<T>() => default;
 
         public static Option<T> Some<T>([NotNull] T value) => new Option<T>(value);
 
@@ -148,16 +148,16 @@ namespace InCube.Core.Functional
         #region Conversion
 
         public static Option<T> ToOption<T>(this T value) where T : class =>
-            value != null ? Some(value) : None;
+            value != null ? Some(value) : default;
 
         public static Option<T> ToOption<T>(this in T? value) where T : struct =>
-            value.HasValue ? Some(value.Value) : None;
+            value.HasValue ? Some(value.Value) : default;
 
         public static Option<T> ToOption<T>(this NullableRef<T> value) where T : class =>
-            value.HasValue ? Some(value.Value) : None;
+            value.HasValue ? Some(value.Value) : default;
 
         public static Option<T> ToOption<T>(this IOption<T> value) =>
-            value is Option<T> opt ? opt : value.HasValue ? Some(value.Value) : None;
+            value is Option<T> opt ? opt : value.HasValue ? Some(value.Value) : default;
 
         [Obsolete("remove unnecessary call to " + nameof(ToOption))]
         public static Option<T> ToOption<T>(this in Option<T> value) => value;
@@ -170,13 +170,13 @@ namespace InCube.Core.Functional
         #region Flattening
         
         public static Option<T> Flatten<T>(this in Option<Option<T>> self) =>
-            self.HasValue ? self.Value : None;
+            self.HasValue ? self.Value : default;
 
         public static T? Flatten<T>(this in Option<T?> self) where T : struct =>
             self.HasValue ? self.Value : null;
 
         public static Option<T> Flatten<T>(this in Option<T>? self) =>
-            self ?? None;
+            self ?? default;
 
         #endregion
     }

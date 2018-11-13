@@ -163,10 +163,10 @@ namespace InCube.Core.Functional
         #region Flattening
 
         public static NullableRef<T> Flatten<T>(this in Option<NullableRef<T>> self) where T : class =>
-            self.HasValue ? self.Value : None;
+            self.HasValue ? self.Value : default;
 
         public static NullableRef<T> Flatten<T>(this in NullableRef<T>? self) where T : class =>
-            self ?? None;
+            self ?? default;
 
         #endregion
 
@@ -186,7 +186,7 @@ namespace InCube.Core.Functional
 
         public static NullableRef<TOut> SelectMany<TIn, TOut>(this in TIn? self, Func<TIn, NullableRef<TOut>> f) 
             where TIn : struct where TOut : class =>
-            self.HasValue ? f(self.Value) : None;
+            self.HasValue ? f(self.Value) : default;
 
         #endregion
     }
