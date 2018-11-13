@@ -6,9 +6,9 @@ using JetBrains.Annotations;
 namespace InCube.Core.Functional
 {
     [Serializable]
-    public readonly struct Try<T> : ITry<T>
+    public readonly struct Try<T> : ITry<T>, IInvariantOption<T, Try<T>>
     {
-        private readonly Exception _exception;
+        private readonly NullableRef<Exception> _exception;
 
         internal Try(T value)
         {
@@ -40,13 +40,16 @@ namespace InCube.Core.Functional
         public T Value => HasValue ? AsOption.Value : throw Exception;
 
         public Exception Exception =>
-            HasValue ? throw new InvalidOperationException("Try is success") : _exception.ToOption().Value;
+            HasValue ? throw new InvalidOperationException("Try is success") : _exception.Value;
 
         public IEnumerator<T> GetEnumerator() => this.AsOption.GetEnumerator();
 
         IEnumerator IEnumerable.GetEnumerator() => this.GetEnumerator();
 
-        public override string ToString() => HasValue ? $"Success({Value})" : $"Failure({_exception})";
+        public bool Equals(Try<T> that) =>
+            AsOption.Equals(that.AsOption) && _exception.Equals(that._exception);
+
+        public override string ToString() => HasValue ? $"Success({Value})" : $"Failure({_exception.GetValueOrDefault()})";
 
         public Try<Exception> Failed()
         {
@@ -61,6 +64,15 @@ namespace InCube.Core.Functional
             Match(_ => none(), some);
 
         public T GetValueOrDefault() => AsOption.GetValueOrDefault();
+
+        public T GetValueOrDefault([NotNull] Func<Exception, T> @default) =>
+            HasValue ? Value : @default(Exception);
+
+        public T GetValueOrDefault([NotNull] Func<T> @default) =>
+            AsOption.GetValueOrDefault(@default);
+
+        public T GetValueOrDefault(T @default) =>
+            AsOption.GetValueOrDefault(@default);
 
         IOption<TOut> IOption<T>.Select<TOut>(Func<T, TOut> f) =>
             AsOption.Select(f);
@@ -124,10 +136,26 @@ namespace InCube.Core.Functional
         }
 
         public int Count => AsOption.Count;
+
+        public Try<T> OrElse([NotNull] Func<Exception, Try<T>> @default) =>
+            HasValue ? this : @default(Exception);
+
+        public Try<T> OrElse([NotNull] Func<Try<T>> @default) =>
+            HasValue ? this : @default();
+
+        public Try<T> OrElse(Try<T> @default) =>
+            HasValue ? this : @default;
+
+        public bool Contains(T elem) => Contains(elem, EqualityComparer<T>.Default);
+
+        public bool Contains(T elem, IEqualityComparer<T> comparer) =>
+            AsOption.Contains(elem, comparer);
     }
 
     public static class Try
     {
+        #region Construction 
+
         public static Try<T> Success<T>(T t) => new Try<T>(t);
 
         public static Try<T> Failure<T>(Exception ex) => new Try<T>(ex);
@@ -144,37 +172,20 @@ namespace InCube.Core.Functional
             }
         }
 
+        #endregion
+
+        #region Conversion
+
         public static Try<T> ToTry<T>(this ITry<T> value) =>
             value is Try<T> @try ? @try : value.HasValue ? Success(value.Value) : Failure<T>(value.Exception);
 
-        public static T GetValueOrDefault<T>(this in Try<T> self, [NotNull] Func<Exception, T> @default) =>
-            self.HasValue ? self.Value : @default(self.Exception);
+        #endregion
 
-        public static T GetValueOrDefault<T>(this in Try<T> self, [NotNull] Func<T> @default) => 
-            self.AsOption.GetValueOrDefault(@default);
-
-        public static T GetValueOrDefault<T>(this in Try<T> self, T @default) =>
-            self.AsOption.GetValueOrDefault(@default);
-
-        public static Try<T> OrElse<T>(this in Try<T> self, [NotNull] Func<Exception, Try<T>> @default) =>
-            self.HasValue ? self : @default(self.Exception);
-
-        public static Try<T> OrElse<T>(this in Try<T> self, [NotNull] Func<Try<T>> @default) =>
-            self.HasValue ? self : @default();
-
-        public static Try<T> OrElse<T>(this in Try<T> self, Try<T> @default) =>
-            self.HasValue ? self : @default;
-
-        public static T? ToNullable<T>(this in Try<T> self) where T : struct =>
-            self.HasValue ? new T?(self.Value) : null;
+        #region Flattening
 
         public static Try<T> Flatten<T>(this in Try<Try<T>> self) =>
             self.HasValue ? self.Value : Failure<T>(self.Exception);
 
-        public static bool Contains<T>(this in Try<T> self, T elem) => 
-            self.AsOption.Contains(elem);
-
-        public static bool Contains<T>(this in Try<T> self, T elem, IEqualityComparer<T> comparer) =>
-            self.AsOption.Contains(elem, comparer);
+        #endregion
     }
 }

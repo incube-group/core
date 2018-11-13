@@ -16,7 +16,8 @@ namespace InCube.Core.Functional
     /// <typeparam name="T"></typeparam>
     [Serializable]
     [JsonConverter(typeof(GenericOptionJsonConverter), typeof(NullableRef<>))]
-    public readonly struct NullableRef<T> : IEquatable<NullableRef<T>>, IOption<T> where T : class
+    public readonly struct NullableRef<T> : IOption<T>, IInvariantOption<T, NullableRef<T>> 
+        where T : class
     {
         private readonly T _value;
 
@@ -127,10 +128,23 @@ namespace InCube.Core.Functional
             SelectMany(x => x is TD d ? new NullableRef<TD>(d) : default);
 
         public int Count => HasValue ? 1 : 0;
+
+        public NullableRef<T> OrElse([NotNull] Func<NullableRef<T>> @default) =>
+            HasValue ? this : @default();
+
+        public NullableRef<T> OrElse(NullableRef<T> @default) =>
+            HasValue ? this : @default;
+
+        public bool Contains(T elem) => Contains(elem, EqualityComparer<T>.Default);
+
+        public bool Contains(T elem, IEqualityComparer<T> comparer) =>  
+            HasValue && comparer.Equals(_value, elem);
     }
 
     public static class NullableRef
     {
+        #region Construction 
+
         public static readonly NullableRef<Nothing> None = default;
 
         public static NullableRef<T> Empty<T>() where T : class => default;
@@ -138,25 +152,25 @@ namespace InCube.Core.Functional
         public static NullableRef<T> Some<T>([NotNull] T value) where T : class => 
             CheckNotNull(value, nameof(value));
 
+        #endregion
+
+        #region Conversion
+
         public static NullableRef<T> ToNullable<T>(this T value) where T : class => value;
 
-        public static NullableRef<T> OrElse<T>(this NullableRef<T> self, [NotNull] Func<NullableRef<T>> @default)
-            where T : class =>
-            self.HasValue ? self : @default();
+        #endregion
 
-        public static NullableRef<T> OrElse<T>(this NullableRef<T> self, NullableRef<T> @default)
-            where T : class =>
-            self.HasValue ? self : @default;
+        #region Flattening
 
         public static NullableRef<T> Flatten<T>(this in Option<NullableRef<T>> self) where T : class =>
-            self.HasValue ? self.Value : default;
+            self.HasValue ? self.Value : None;
 
-        public static bool Contains<T>(this NullableRef<T> self, T elem) where T : class =>
-            self.Contains(elem, EqualityComparer<T>.Default);
+        public static NullableRef<T> Flatten<T>(this in NullableRef<T>? self) where T : class =>
+            self ?? None;
 
-        public static bool Contains<T>(this NullableRef<T> self, T elem, IEqualityComparer<T> comparer)
-            where T : class =>
-            self.HasValue && comparer.Equals(self.Value, elem);
+        #endregion
+
+        #region Projection
 
         public static TOut? Select<T, TOut>(this NullableRef<T> @this, Func<T, TOut> f)
             where T : class where TOut : struct =>
@@ -166,5 +180,14 @@ namespace InCube.Core.Functional
             where T : class where TOut : struct =>
             @this.HasValue ? f(@this.Value) : default;
 
+        public static NullableRef<TOut> Select<TIn, TOut>(this in TIn? self, Func<TIn, TOut> f) 
+            where TIn : struct where TOut : class =>
+            self.HasValue ? f(self.Value).ToNullable() : default;
+
+        public static NullableRef<TOut> SelectMany<TIn, TOut>(this in TIn? self, Func<TIn, NullableRef<TOut>> f) 
+            where TIn : struct where TOut : class =>
+            self.HasValue ? f(self.Value) : None;
+
+        #endregion
     }
 }

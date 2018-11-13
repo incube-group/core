@@ -14,7 +14,7 @@ namespace InCube.Core.Functional
     /// </summary>
     /// <typeparam name="T"></typeparam>
     [Serializable] [JsonConverter(typeof(GenericOptionJsonConverter), typeof(Option<>))]
-    public readonly struct Option<T>: IEquatable<Option<T>>, IOption<T>
+    public readonly struct Option<T>: IOption<T>, IInvariantOption<T, Option<T>>
     {
         private readonly T _value;
 
@@ -115,6 +115,17 @@ namespace InCube.Core.Functional
         public Option<TD> Cast<TD>() where TD : T => SelectMany(x => x is TD d ? Option.Some(d) : default);
 
         public int Count => HasValue ? 1 : 0;
+
+        public Option<T> OrElse([NotNull] Func<Option<T>> @default) =>
+            HasValue ? this : @default();
+
+        public Option<T> OrElse(Option<T> @default) =>
+            HasValue ? this : @default;
+
+        public bool Contains(T elem) => Contains(elem, EqualityComparer<T>.Default);
+
+        public bool Contains(T elem, IEqualityComparer<T> comparer) =>
+            HasValue && comparer.Equals(_value, elem);
     }
 
     /// <summary>
@@ -122,6 +133,8 @@ namespace InCube.Core.Functional
     /// </summary>
     public static class Option
     {
+        #region Construction 
+        
         public static readonly Option<Nothing> None = default;
         
         public static Option<T> Empty<T>() => None;
@@ -129,6 +142,10 @@ namespace InCube.Core.Functional
         public static Option<T> Some<T>([NotNull] T value) => new Option<T>(value);
 
         public static Option<T?> Some<T>([CanBeNull] T? value) where T : struct => new Option<T?>(value);
+
+        #endregion
+
+        #region Conversion
 
         public static Option<T> ToOption<T>(this T value) where T : class =>
             value != null ? Some(value) : None;
@@ -145,15 +162,13 @@ namespace InCube.Core.Functional
         [Obsolete("remove unnecessary call to " + nameof(ToOption))]
         public static Option<T> ToOption<T>(this in Option<T> value) => value;
 
-        public static Option<T> OrElse<T>(this in Option<T> self, [NotNull] Func<Option<T>> @default) =>
-            self.HasValue ? self : @default();
-
-        public static Option<T> OrElse<T>(this in Option<T> self, in Option<T> @default) =>
-            self.HasValue ? self : @default;
-
         public static T? ToNullable<T>(this in Option<T> self) where T : struct =>
             self.HasValue ? new T?(self.Value) : null;
 
+        #endregion
+
+        #region Flattening
+        
         public static Option<T> Flatten<T>(this in Option<Option<T>> self) =>
             self.HasValue ? self.Value : None;
 
@@ -163,16 +178,6 @@ namespace InCube.Core.Functional
         public static Option<T> Flatten<T>(this in Option<T>? self) =>
             self ?? None;
 
-        public static bool Contains<T>(this in Option<T> self, T elem) =>
-            self.Contains(elem, EqualityComparer<T>.Default);
-
-        public static bool Contains<T>(this in Option<T> self, T elem, IEqualityComparer<T> comparer) =>
-            self.HasValue && comparer.Equals(self.Value, elem);
-
-        public static Option<TOut> Select<TIn, TOut>(this in TIn? self, Func<TIn, TOut> f) where TIn : struct where TOut : class =>
-            self.HasValue ? Some(f(self.Value)) : None;
-
-        public static Option<TOut> SelectMany<TIn, TOut>(this in TIn? self, Func<TIn, Option<TOut>> f) where TIn : struct =>
-            self.HasValue ? f(self.Value) : None;
+        #endregion
     }
 }

@@ -17,6 +17,7 @@ namespace InCube.Core.Functional
 
         TOut Match<TOut>(Func<TOut> none, Func<T, TOut> some);
 
+        [Pure]
         T GetValueOrDefault();
 
         IOption<TOut> Select<TOut>(Func<T, TOut> f);

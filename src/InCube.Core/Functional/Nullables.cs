@@ -1,16 +1,23 @@
 ﻿using System;
 using System.Collections.Generic;
+using JetBrains.Annotations;
 
 namespace InCube.Core.Functional
 {
     public static class Nullables
     {
+        #region Conversion
+
         public static T? ToNullable<T>(this T self) where T : struct => self;
 
-        public static T GetValueOrDefault<T>(this in T? self, Func<T> @default) where T : struct =>
+        #endregion
+
+        #region IOption like extensions
+        
+        public static T GetValueOrDefault<T>(this in T? self, [NotNull] Func<T> @default) where T : struct =>
             self ?? @default();
 
-        public static T? OrElse<T>(this in T? self, Func<T?> @default) where T : struct =>
+        public static T? OrElse<T>(this in T? self, [NotNull] Func<T?> @default) where T : struct =>
             self ?? @default();
 
         public static T? OrElse<T>(this in T? self, T? @default) where T : struct =>
@@ -59,5 +66,7 @@ namespace InCube.Core.Functional
 
         public static TOut? SelectMany<TIn, TOut>(this in TIn? self, Func<TIn, TOut?> f) where TIn : struct where TOut : struct =>
             self.HasValue ? f(self.Value) : default;
+
+        #endregion
     }
 }
