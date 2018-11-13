@@ -13,13 +13,13 @@ namespace InCube.Core.Functional
         internal Try(T value)
         {
             AsOption = Option.Some(value);
-            _exception = null;
+            _exception = NullableRef.None;
         }
 
         internal Try(Exception exception)
         {
             AsOption = Option.None;
-            _exception = exception;
+            _exception = NullableRef.Some(exception);
         }
 
         public Option<T> AsOption { get; }
