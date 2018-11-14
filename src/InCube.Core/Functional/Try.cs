@@ -8,18 +8,18 @@ namespace InCube.Core.Functional
     [Serializable]
     public readonly struct Try<T> : ITry<T>, IInvariantOption<T, Try<T>>
     {
-        private readonly CanBeNull<Exception> _exception;
+        private readonly Maybe<Exception> _exception;
 
         internal Try(T value)
         {
             AsOption = Option.Some(value);
-            _exception = CanBeNull.None;
+            _exception = Maybe.None;
         }
 
         internal Try(Exception exception)
         {
             AsOption = Option.None;
-            _exception = CanBeNull.Some(exception);
+            _exception = Maybe.Some(exception);
         }
 
         public Option<T> AsOption { get; }

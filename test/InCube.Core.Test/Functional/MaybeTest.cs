@@ -4,7 +4,7 @@ using System.Linq;
 using NUnit.Framework;
 using InCube.Core.Functional;
 using Newtonsoft.Json;
-using static InCube.Core.Functional.CanBeNull;
+using static InCube.Core.Functional.Maybe;
 
 namespace InCube.Core.Test.Functional
 {
@@ -67,7 +67,7 @@ namespace InCube.Core.Test.Functional
         public static Boxed<T> Of<T>(T value) where T : struct => value;
     } 
 
-    public class CanBeNullTest
+    public class MaybeTest
     {
         [Test]
         public void TestNone()
@@ -149,7 +149,7 @@ namespace InCube.Core.Test.Functional
         [Test]
         public void TestImplicitConversion()
         {
-            CanBeNull<Boxed<int>> Convert(CanBeNull<Boxed<int>> opt = default) => opt;
+            Maybe<Boxed<int>> Convert(Maybe<Boxed<int>> opt = default) => opt;
 
             Assert.True(Convert() == None);
             var one = Boxed.Of(1);
@@ -157,7 +157,7 @@ namespace InCube.Core.Test.Functional
             Option<Boxed<int>> someOptInt = Some(one);
             Assert.True(someOptInt.HasValue);
 
-            Option<CanBeNull<object>> optOptObj = Empty<object>();
+            Option<Maybe<object>> optOptObj = Empty<object>();
             Assert.True(optOptObj.HasValue);
             Option<Boxed<int>> optOptInt = Empty<Boxed<int>>();
             Assert.False(optOptInt.HasValue);
@@ -175,7 +175,7 @@ namespace InCube.Core.Test.Functional
         [Test]
         public void TestMatch()
         {
-            string MatchToString<T>(CanBeNull<T> opt) where T : class
+            string MatchToString<T>(Maybe<T> opt) where T : class
             {
                 return opt.Match(none: () => "None", some: i => $"Some({i})");
             }
@@ -209,9 +209,9 @@ namespace InCube.Core.Test.Functional
         {
             var someOne = Some(Boxed.Of(1));
             Assert.AreEqual(typeof(int), someOne.Select(x => x.Value).GetType());
-            Assert.AreEqual(typeof(CanBeNull<Boxed<int>>), someOne.Select(x => x).GetType());
+            Assert.AreEqual(typeof(Maybe<Boxed<int>>), someOne.Select(x => x).GetType());
             Assert.AreEqual(typeof(int), someOne.SelectMany(x => x.Value.ToNullable()).GetType());
-            Assert.AreEqual(typeof(CanBeNull<Boxed<int>>), someOne.SelectMany(x => x.ToNullable()).GetType());
+            Assert.AreEqual(typeof(Maybe<Boxed<int>>), someOne.SelectMany(x => x.ToNullable()).GetType());
             var some = Some(Boxed.Of(false));
             Assert.False(some.Select(x => x.Value).GetValueOrDefault(true));
             var none = Empty<Boxed<bool>>();
@@ -224,7 +224,7 @@ namespace InCube.Core.Test.Functional
         {
             void AssertSameSize<T>() where T : class
             {
-                Assert.AreEqual(TypeSize<T>.Size, TypeSize<CanBeNull<T>>.Size);
+                Assert.AreEqual(TypeSize<T>.Size, TypeSize<Maybe<T>>.Size);
             }
 
             AssertSameSize<Nothing>();

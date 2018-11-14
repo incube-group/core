@@ -27,8 +27,8 @@ namespace InCube.Core.Format
         private static readonly MethodInfo OptionSomeMethod = typeof(Option).
             GetMethods().Single(m => m.Name == "Some" && !m.ReturnType.GetGenericArguments()[0].IsGenericType);
 
-        private static readonly MethodInfo NullRefEmptyMethod = typeof(CanBeNull).GetMethod("Empty");
-        private static readonly MethodInfo NullRefSomeMethod = typeof(CanBeNull).GetMethod("Some");
+        private static readonly MethodInfo NullRefEmptyMethod = typeof(Maybe).GetMethod("Empty");
+        private static readonly MethodInfo NullRefSomeMethod = typeof(Maybe).GetMethod("Some");
 
         public GenericOptionJsonConverter(Type optionType)
         {
@@ -37,7 +37,7 @@ namespace InCube.Core.Format
             {
                 EmptyMethod = OptionEmptyMethod;
                 SomeMethod = OptionSomeMethod;
-            } else if (optionType == typeof(CanBeNull<>))
+            } else if (optionType == typeof(Maybe<>))
             {
                 EmptyMethod = NullRefEmptyMethod;
                 SomeMethod = NullRefSomeMethod;
