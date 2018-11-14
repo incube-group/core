@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using InCube.Core.Collections;
 using NUnit.Framework;
 using InCube.Core.Functional;
 using Newtonsoft.Json;
@@ -197,9 +196,9 @@ namespace InCube.Core.Test.Functional
         [Test]
         public void TestFlatten()
         {
-            var one = CanBeNull.Some(Boxed.Of(1));
+            var one = Some(Boxed.Of(1));
             Assert.AreEqual(one, Option.Some(one).Flatten());
-            var none = CanBeNull.Empty<Boxed<int>>();
+            var none = Empty<Boxed<int>>();
             // ReSharper disable once ExpressionIsAlwaysNull
             // ReSharper disable once AssignNullToNotNullAttribute
             Assert.AreEqual(none, Option.Some(none).Flatten());
@@ -213,6 +212,23 @@ namespace InCube.Core.Test.Functional
             Assert.AreEqual(typeof(CanBeNull<Boxed<int>>), someOne.Select(x => x).GetType());
             Assert.AreEqual(typeof(int), someOne.SelectMany(x => x.Value.ToNullable()).GetType());
             Assert.AreEqual(typeof(CanBeNull<Boxed<int>>), someOne.SelectMany(x => x.ToNullable()).GetType());
+            var some = Some(Boxed.Of(false));
+            Assert.False(some.Select(x => x.Value).GetValueOrDefault(true));
+            var none = Empty<Boxed<bool>>();
+            Assert.True(none.Select(x => x.Value).GetValueOrDefault(true));
+            Assert.True(some.Select(x => default(Boxed<bool>)).GetValueOrDefault(Boxed.Of(true)));
+        }
+
+        [Test]
+        public void TestSize()
+        {
+            void AssertSameSize<T>() where T : class
+            {
+                Assert.AreEqual(TypeSize<T>.Size, TypeSize<CanBeNull<T>>.Size);
+            }
+
+            AssertSameSize<Nothing>();
+            AssertSameSize<object>();
         }
     }
 }

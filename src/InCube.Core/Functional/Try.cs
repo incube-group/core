@@ -78,7 +78,7 @@ namespace InCube.Core.Functional
             AsOption.Select(f);
 
         IOption<TOut> IOption<T>.SelectMany<TOut>(Func<T, IOption<TOut>> f) =>
-            ((IOption<T>)AsOption).SelectMany(f);
+            AsOption.SelectMany(x => f(x).ToOption());
 
         ITry<TOut> ITry<T>.Select<TOut>(Func<T, TOut> f) =>
             Select(f);

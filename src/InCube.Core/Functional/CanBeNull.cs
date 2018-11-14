@@ -67,7 +67,7 @@ namespace InCube.Core.Functional
         public static implicit operator Option<T>(CanBeNull<T> nullable) =>
             nullable.ToOption();
 
-        public static implicit operator CanBeNull<T>(CanBeNull<Nothing> _) => default;
+        public static implicit operator CanBeNull<T>(CanBeNull<Nothing> _) => default(CanBeNull<T>);
 
         public TOut Match<TOut>(Func<TOut> none, Func<T, TOut> some) => 
             HasValue ? some(_value) : none();
@@ -114,17 +114,17 @@ namespace InCube.Core.Functional
             HasValue ? f(_value).ToOption() : Option.None;
 
         public CanBeNull<TOut> Select<TOut>(Func<T, TOut> f) where TOut : class =>
-            HasValue ? f(_value) : default;
+            HasValue ? f(_value) : default(CanBeNull<TOut>);
 
         public CanBeNull<TOut> SelectMany<TOut>(Func<T, CanBeNull<TOut>> f) where TOut : class =>
-            HasValue ? f(_value) : default;
+            HasValue ? f(_value) : default(CanBeNull<TOut>);
 
         IOption<T> IOption<T>.Where(Func<T, bool> p) => Where(p);
 
-        public CanBeNull<T> Where(Func<T, bool> p) => !HasValue || p(_value) ? this : default;
+        public CanBeNull<T> Where(Func<T, bool> p) => !HasValue || p(_value) ? this : default(CanBeNull<T>);
 
         public CanBeNull<TD> Cast<TD>() where TD : class, T =>
-            SelectMany(x => x is TD d ? new CanBeNull<TD>(d) : default);
+            SelectMany(x => x is TD d ? new CanBeNull<TD>(d) : default(CanBeNull<TD>));
 
         public int Count => HasValue ? 1 : 0;
 
@@ -144,9 +144,9 @@ namespace InCube.Core.Functional
     {
         #region Construction 
 
-        public static readonly CanBeNull<Nothing> None = default;
+        public static readonly CanBeNull<Nothing> None = default(CanBeNull<Nothing>);
 
-        public static CanBeNull<T> Empty<T>() where T : class => default;
+        public static CanBeNull<T> Empty<T>() where T : class => default(CanBeNull<T>);
 
         public static CanBeNull<T> Some<T>([NotNull] T value) where T : class => 
             CheckNotNull(value, nameof(value));
@@ -162,10 +162,10 @@ namespace InCube.Core.Functional
         #region Flattening
 
         public static CanBeNull<T> Flatten<T>(this in Option<CanBeNull<T>> self) where T : class =>
-            self.HasValue ? self.Value : default;
+            self.HasValue ? self.Value : default(CanBeNull<T>);
 
         public static CanBeNull<T> Flatten<T>(this in CanBeNull<T>? self) where T : class =>
-            self ?? default;
+            self ?? default(CanBeNull<T>);
 
         #endregion
 
@@ -173,19 +173,19 @@ namespace InCube.Core.Functional
 
         public static TOut? Select<T, TOut>(this CanBeNull<T> @this, Func<T, TOut> f)
             where T : class where TOut : struct =>
-            @this.HasValue ? f(@this.Value) : default;
+            @this.HasValue ? f(@this.Value).ToNullable() : default(TOut?);
 
         public static TOut? SelectMany<T, TOut>(this CanBeNull<T> @this, Func<T, TOut?> f)
             where T : class where TOut : struct =>
-            @this.HasValue ? f(@this.Value) : default;
+            @this.HasValue ? f(@this.Value) : default(TOut?);
 
         public static CanBeNull<TOut> Select<TIn, TOut>(this in TIn? self, Func<TIn, TOut> f) 
             where TIn : struct where TOut : class =>
-            self.HasValue ? f(self.Value).ToNullable() : default;
+            self.HasValue ? f(self.Value).ToNullable() : default(CanBeNull<TOut>);
 
         public static CanBeNull<TOut> SelectMany<TIn, TOut>(this in TIn? self, Func<TIn, CanBeNull<TOut>> f) 
             where TIn : struct where TOut : class =>
-            self.HasValue ? f(self.Value) : default;
+            self.HasValue ? f(self.Value) : default(CanBeNull<TOut>);
 
         #endregion
     }

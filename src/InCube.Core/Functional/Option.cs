@@ -59,9 +59,9 @@ namespace InCube.Core.Functional
         public static explicit operator T(Option<T> value) => value.Value;
 
         public static implicit operator Option<T>(T value) => 
-            typeof(T).IsValueType || value != null ? new Option<T>(value) : default;
+            typeof(T).IsValueType || value != null ? new Option<T>(value) : default(Option<T>);
 
-        public static implicit operator Option<T>(Option<Nothing> _) => default;
+        public static implicit operator Option<T>(Option<Nothing> _) => default(Option<T>);
 
         public TOut Match<TOut>(Func<TOut> none, Func<T, TOut> some) => HasValue ? some(_value) : none();
 
@@ -100,19 +100,24 @@ namespace InCube.Core.Functional
             }
         }
 
-        IOption<TOut> IOption<T>.Select<TOut>(Func<T, TOut> f) => this.Select(f);
+        IOption<TOut> IOption<T>.Select<TOut>(Func<T, TOut> f) => 
+            Select(f);
 
-        IOption<TOut> IOption<T>.SelectMany<TOut>(Func<T, IOption<TOut>> f) => SelectMany(x => f(x).ToOption());
+        IOption<TOut> IOption<T>.SelectMany<TOut>(Func<T, IOption<TOut>> f) => 
+            SelectMany(x => f(x).ToOption());
 
-        public Option<TOut> Select<TOut>(Func<T, TOut> f) => HasValue ? Option.Some(f(_value)) : default;
+        public Option<TOut> Select<TOut>(Func<T, TOut> f) => 
+            HasValue ? Option.Some(f(_value)) : default(Option<TOut>);
 
-        public Option<TOut> SelectMany<TOut>(Func<T, Option<TOut>> f) => HasValue ? f(_value) : default;
+        public Option<TOut> SelectMany<TOut>(Func<T, Option<TOut>> f) => 
+            HasValue ? f(_value) : default(Option<TOut>);
 
         IOption<T> IOption<T>.Where(Func<T, bool> p) => Where(p);
         
-        public Option<T> Where(Func<T, bool> p) => !HasValue || p(_value) ? this : default;
+        public Option<T> Where(Func<T, bool> p) => !HasValue || p(_value) ? this : default(Option<T>);
 
-        public Option<TD> Cast<TD>() where TD : T => SelectMany(x => x is TD d ? Option.Some(d) : default);
+        public Option<TD> Cast<TD>() where TD : T => 
+            SelectMany(x => x is TD d ? Option.Some(d) : default(Option<TD>));
 
         public int Count => HasValue ? 1 : 0;
 
@@ -135,9 +140,9 @@ namespace InCube.Core.Functional
     {
         #region Construction 
         
-        public static readonly Option<Nothing> None = default;
-        
-        public static Option<T> Empty<T>() => default;
+        public static readonly Option<Nothing> None = default(Option<Nothing>);
+
+        public static Option<T> Empty<T>() => default(Option<T>);
 
         public static Option<T> Some<T>([NotNull] T value) => new Option<T>(value);
 
@@ -148,16 +153,16 @@ namespace InCube.Core.Functional
         #region Conversion
 
         public static Option<T> ToOption<T>(this T value) where T : class =>
-            value != null ? Some(value) : default;
+            value != null ? Some(value) : default(Option<T>);
 
         public static Option<T> ToOption<T>(this in T? value) where T : struct =>
-            value.HasValue ? Some(value.Value) : default;
+            value.HasValue ? Some(value.Value) : default(Option<T>);
 
         public static Option<T> ToOption<T>(this CanBeNull<T> value) where T : class =>
-            value.HasValue ? Some(value.Value) : default;
+            value.HasValue ? Some(value.Value) : default(Option<T>);
 
         public static Option<T> ToOption<T>(this IOption<T> value) =>
-            value is Option<T> opt ? opt : value.HasValue ? Some(value.Value) : default;
+            value is Option<T> opt ? opt : value.HasValue ? Some(value.Value) : default(Option<T>);
 
         [Obsolete("remove unnecessary call to " + nameof(ToOption))]
         public static Option<T> ToOption<T>(this in Option<T> value) => value;
@@ -170,13 +175,13 @@ namespace InCube.Core.Functional
         #region Flattening
         
         public static Option<T> Flatten<T>(this in Option<Option<T>> self) =>
-            self.HasValue ? self.Value : default;
+            self.HasValue ? self.Value : default(Option<T>);
 
         public static T? Flatten<T>(this in Option<T?> self) where T : struct =>
-            self.HasValue ? self.Value : null;
+            self.HasValue ? self.Value : default(T?);
 
         public static Option<T> Flatten<T>(this in Option<T>? self) =>
-            self ?? default;
+            self ?? default(Option<T>);
 
         #endregion
     }

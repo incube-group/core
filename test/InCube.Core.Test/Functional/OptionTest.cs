@@ -73,7 +73,7 @@ namespace InCube.Core.Test.Functional
             Assert.True(none != optionOne);
             Assert.True(optionOne != none);
 
-            var someArray = new[] {1}.ToOption();
+            var someArray = new[] { 1 }.ToOption();
             Assert.True(someArray != new[] { 1 });
             Assert.True(someArray != none);
             Assert.True(none != someArray);
@@ -138,5 +138,34 @@ namespace InCube.Core.Test.Functional
             Assert.AreEqual(none, Some(none).Flatten());
 
         }
+
+        [Test]
+        public void TestSize()
+        {
+            void AssertDoubleSize<T>()
+            {
+                Assert.AreEqual(TypeSize<T>.Size * 2, TypeSize<Option<T>>.Size);
+            }
+
+            AssertDoubleSize<bool>();
+            AssertDoubleSize<byte>();
+            AssertDoubleSize<short>();
+            AssertDoubleSize<int>();
+            AssertDoubleSize<long>();
+            AssertDoubleSize<float>();
+            AssertDoubleSize<double>();
+            AssertDoubleSize<Nothing>();
+            AssertDoubleSize<object>();
+        }
+
+        [Test]
+        public void TestSelect()
+        {
+            var some = Some(false);
+            Assert.False(some.Select(x => x).GetValueOrDefault(true));
+            var none = Empty<bool>();
+            Assert.True(none.Select(x => x).GetValueOrDefault(true));
+        }
+
     }
 }

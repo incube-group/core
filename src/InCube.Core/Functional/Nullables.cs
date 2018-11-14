@@ -6,6 +6,12 @@ namespace InCube.Core.Functional
 {
     public static class Nullables
     {
+        #region construction
+        
+        public static T? Empty<T>() where T : struct => default(T?);
+
+        #endregion
+
         #region Conversion
 
         public static T? ToNullable<T>(this T self) where T : struct => self;
@@ -33,7 +39,7 @@ namespace InCube.Core.Functional
             self.HasValue && comparer.Equals(self.Value, elem);
 
         public static T? Where<T>(this in T? self, Func<T, bool> p) where T : struct =>
-            !self.HasValue || p(self.Value) ? self : default;
+            !self.HasValue || p(self.Value) ? self : default(T?);
 
         public static bool Any<T>(this in T? self) where T : struct => self.HasValue;
 
@@ -62,10 +68,10 @@ namespace InCube.Core.Functional
         }
 
         public static TOut? Select<TIn, TOut>(this in TIn? self, Func<TIn, TOut> f) where TIn : struct where TOut : struct =>
-            self.HasValue ? f(self.Value) : default;
+            self.HasValue ? f(self.Value).ToNullable() : null;
 
         public static TOut? SelectMany<TIn, TOut>(this in TIn? self, Func<TIn, TOut?> f) where TIn : struct where TOut : struct =>
-            self.HasValue ? f(self.Value) : default;
+            self.HasValue ? f(self.Value) : null;
 
         #endregion
     }
