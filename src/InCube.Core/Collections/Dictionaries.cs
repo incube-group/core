@@ -11,56 +11,56 @@ namespace InCube.Core.Collections
 {
     public static class Dictionaries
     {
-        public static SortedDictionary<T, V> AsSorted<T, V>(this Dictionary<T, V> dict, IComparer<T> comparer = null) =>
-            new SortedDictionary<T, V>(dict, comparer);
+        public static SortedDictionary<TK, TV> AsSorted<TK, TV>(this Dictionary<TK, TV> dict, IComparer<TK> comparer = null) =>
+            new SortedDictionary<TK, TV>(dict, comparer);
 
-        public static SortedDictionary<T, V> AsSorted<T, V>(this IReadOnlyDictionary<T, V> dict, IComparer<T> comparer = null)
+        public static SortedDictionary<TK, TV> AsSorted<TK, TV>(this IReadOnlyDictionary<TK, TV> dict, IComparer<TK> comparer = null)
         {
-            return !(dict is SortedDictionary<T, V> sorted) || comparer != null
-                ? new SortedDictionary<T, V>(dict.ToDictionary())
+            return !(dict is SortedDictionary<TK, TV> sorted) || comparer != null
+                ? new SortedDictionary<TK, TV>(dict.ToDictionary())
                 : sorted;
         }
 
-        public static V GetOrDefault<K, V>(this IReadOnlyDictionary<K, V> dict, K key, V @default) =>
+        public static TV GetOrDefault<TK, TV>(this IReadOnlyDictionary<TK, TV> dict, TK key, TV @default) =>
             dict.TryGetValue(key, out var value) ? value : @default;
 
-        public static V GetOrDefault<K, V>(this IReadOnlyDictionary<K, V> dict, K key, Func<V> supplier) =>
+        public static TV GetOrDefault<TK, TV>(this IReadOnlyDictionary<TK, TV> dict, TK key, Func<TV> supplier) =>
             dict.TryGetValue(key, out var value) ? value : supplier();
 
-        public static Option<V> GetOption<K, V>(this IReadOnlyDictionary<K, V> dict, K key) =>
+        public static Option<TV> GetOption<TK, TV>(this IReadOnlyDictionary<TK, TV> dict, TK key) =>
             dict.TryGetValue(key, out var value) ? Option.Some(value) : Option.None;
 
         [StringFormatMethod("format")]
-        public static V GetOrThrow<K, V>(this IReadOnlyDictionary<K, V> dict, string format, K key) =>
+        public static TV GetOrThrow<TK, TV>(this IReadOnlyDictionary<TK, TV> dict, string format, TK key) =>
             dict.GetOrDefault(key, () => throw new KeyNotFoundException(string.Format(format, key)));
 
-        public static V GetOrThrow<K, V>(this IReadOnlyDictionary<K, V> dict, K key) =>
+        public static TV GetOrThrow<TK, TV>(this IReadOnlyDictionary<TK, TV> dict, TK key) =>
             dict.GetOrThrow("missing key: {0}", key);
 
-        public static Dictionary<T, V> ToDictionary<T, V>(this IEnumerable<KeyValuePair<T, V>> enumerable)
+        public static Dictionary<TK, TV> ToDictionary<TK, TV>(this IEnumerable<KeyValuePair<TK, TV>> enumerable)
         {
             return enumerable.ToDictionary(kv => kv.Key, kv => kv.Value);
         }
 
-        public static Dictionary<T, V> ToDictionary<T, V>(this IEnumerable<(T key, V value)> enumerable)
+        public static Dictionary<TK, TV> ToDictionary<TK, TV>(this IEnumerable<(TK key, TV value)> enumerable)
         {
             return enumerable.ToDictionary(kv => kv.key, kv => kv.value);
         }
 
-        public static IReadOnlyDictionary<T, V> AsReadOnly<T, V>(this IDictionary<T, V> dict)
+        public static IReadOnlyDictionary<TK, TV> AsReadOnly<TK, TV>(this IDictionary<TK, TV> dict)
         {
             switch (dict)
             {
-                case Dictionary<T, V> d:
+                case Dictionary<TK, TV> d:
                     return d;
-                case ConcurrentDictionary<T, V> d:
+                case ConcurrentDictionary<TK, TV> d:
                     return d;
-                case SortedDictionary<T, V> d:
+                case SortedDictionary<TK, TV> d:
                     return d;
-                case SortedList<T, V> d:
+                case SortedList<TK, TV> d:
                     return d;
                 default:
-                    return new ReadOnlyDictionary<T, V>(dict);
+                    return new ReadOnlyDictionary<TK, TV>(dict);
             }
         }
 
@@ -68,7 +68,7 @@ namespace InCube.Core.Collections
         /// The purpose of this method is to issue a compiler warning if someone calls this by mistake.
         /// </summary>
         [Obsolete("unnecessary call")]
-        public static IReadOnlyDictionary<T, V> AsReadOnly<T, V>(this IReadOnlyDictionary<T, V> dict) => dict;
+        public static IReadOnlyDictionary<TK, TV> AsReadOnly<TK, TV>(this IReadOnlyDictionary<TK, TV> dict) => dict;
 
         private class EmptyDictionary<TKey, TValue> : IReadOnlyDictionary<TKey, TValue>
         {
@@ -83,6 +83,7 @@ namespace InCube.Core.Collections
             }
 
             public int Count => 0;
+
             public bool ContainsKey(TKey key) => false;
 
             public bool TryGetValue(TKey key, out TValue value)
@@ -94,6 +95,7 @@ namespace InCube.Core.Collections
             public TValue this[TKey key] => throw new KeyNotFoundException();
 
             public IEnumerable<TKey> Keys => Enumerable.Empty<TKey>();
+
             public IEnumerable<TValue> Values => Enumerable.Empty<TValue>();
         }
 

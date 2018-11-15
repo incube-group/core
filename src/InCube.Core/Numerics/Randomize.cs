@@ -19,6 +19,5 @@ namespace InCube.Core.Numerics
 
             return list;
         }
-
     }
 }

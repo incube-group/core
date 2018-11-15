@@ -45,7 +45,5 @@ namespace InCube.Core.Functional
 
         public static T GetValueOrDefault<T>(this IOption<T> self, [NotNull] Func<T> @default) =>
             self.HasValue ? self.Value : CheckNotNull(@default, nameof(@default)).Invoke();
-
-
     }
 }

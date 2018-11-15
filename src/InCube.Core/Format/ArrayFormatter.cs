@@ -38,7 +38,7 @@ namespace InCube.Core.Format
             return sb.ToString();
         }
 
-        public static string ToArrayString(this IReadOnlyList<int> array, string stringFormat = "######")
+        public static string ToArrayString(this IReadOnlyList<int> array)
         {
             var sb = new StringBuilder();
             foreach (var d in array)

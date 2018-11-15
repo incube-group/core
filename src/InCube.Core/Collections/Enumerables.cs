@@ -43,7 +43,8 @@ namespace InCube.Core.Collections
         }
 
         public static (IEnumerable<T1>, IEnumerable<T2>) Unzip<T, T1, T2>(this IReadOnlyCollection<T> zipped,
-            Func<T, T1> selector1, Func<T, T2> selector2) => (zipped.Select(selector1), zipped.Select(selector2));
+            Func<T, T1> selector1,
+            Func<T, T2> selector2) => (zipped.Select(selector1), zipped.Select(selector2));
 
         /// <summary>
         /// Selects three enumerables while iterating over <paramref name="zipped" /> only once.
@@ -73,8 +74,11 @@ namespace InCube.Core.Collections
             return zipped.ToList().Unzip(selector1, selector2, selector3);
         }
 
-        public static (IEnumerable<T1>, IEnumerable<T2>, IEnumerable<T3>) Unzip<T, T1, T2, T3>(this IReadOnlyCollection<T> zipped,
-            Func<T, T1> selector1, Func<T, T2> selector2, Func<T, T3> selector3) => 
+        public static (IEnumerable<T1>, IEnumerable<T2>, IEnumerable<T3>) Unzip<T, T1, T2, T3>(
+            this IReadOnlyCollection<T> zipped,
+            Func<T, T1> selector1,
+            Func<T, T2> selector2,
+            Func<T, T3> selector3) =>
             (zipped.Select(selector1), zipped.Select(selector2), zipped.Select(selector3));
 
         public static (IEnumerable<T1>, IEnumerable<T2>) Unzip<T1, T2>(this IEnumerable<(T1, T2)> zipped) =>
@@ -175,6 +179,8 @@ namespace InCube.Core.Collections
         {
             var srcRowCount = elems.GetLength(0);
             var rowStop = rowStopExclusive ?? srcRowCount;
+
+#pragma warning disable SA1131 // Use readable conditions
             CheckArgumentF(0 <= rowStop && rowStop <= srcRowCount, "invalid row stop {0}", rowStop);
             var srcColCount = elems.GetLength(1);
             var colStop = colStopExclusive ?? srcColCount;
@@ -183,6 +189,7 @@ namespace InCube.Core.Collections
             CheckArgumentF(0 <= rowCount && rowCount <= srcRowCount, "invalid row count {0}", rowCount);
             var colCount = colStop - colStartInclusive;
             CheckArgumentF(0 <= colCount && colCount <= srcRowCount, "invalid col count {0}", colCount);
+#pragma warning restore SA1131 // Use readable conditions
 
             result = result ?? new T[rowCount, colCount];
             if (rowCount == 0 || colCount == 0) return result;
@@ -218,7 +225,7 @@ namespace InCube.Core.Collections
 
         public static bool IsEmpty<T>(this IEnumerable<T> col) => !col.Any();
 
-        public static IEnumerable<T> GenFilter<T, U>(this IEnumerable<T> list, Func<U, bool> predicate) where T : U
+        public static IEnumerable<T> GenFilter<T, TU>(this IEnumerable<T> list, Func<TU, bool> predicate) where T : TU
         {
             foreach (var l in list)
             {
@@ -282,9 +289,9 @@ namespace InCube.Core.Collections
         public static bool IsSorted<T>(this IEnumerable<T> self, IComparer<T> comparer = null, bool strict = false)
         {
             comparer = comparer ?? Comparer<T>.Default;
-            var outOfOrder = strict ? (Func<T, T, bool>)
-                ((x, y) => comparer.Compare(x, y) >= 0) : 
-                ((x, y) => comparer.Compare(x, y) >  0);
+            var outOfOrder = strict
+                ? (Func<T, T, bool>)((x, y) => comparer.Compare(x, y) >= 0)
+                :                    (x, y) => comparer.Compare(x, y) > 0;
             using (var enumerator = self.GetEnumerator())
             {
                 if (!enumerator.MoveNext()) return true;

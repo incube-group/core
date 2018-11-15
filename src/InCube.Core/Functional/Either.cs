@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 
 namespace InCube.Core.Functional
 {
@@ -11,9 +12,10 @@ namespace InCube.Core.Functional
     /// </summary>
     /// <typeparam name="TL">The <see cref="Left"/> type.</typeparam>
     /// <typeparam name="TR">The <see cref="Right"/> type.</typeparam>
-    public interface IEither<out TL, out TR>: IEnumerable<TR>
+    public interface IEither<out TL, out TR> : IEnumerable<TR>
     {
         bool IsLeft { get; }
+
         bool IsRight { get; }
 
         TL Left { get; }
@@ -35,33 +37,38 @@ namespace InCube.Core.Functional
         Type Type { get; }
     }
 
-    public readonly struct Either<TL, TR> : IEither<TL, TR>
+    [SuppressMessage("Managed Binary Analysis",
+        "CA2225: Operator overloads have named alternates",
+        Justification = "Methods are in static companion class.")]
+    public readonly struct Either<TL, TR> : IEither<TL, TR>, IEquatable<Either<TL, TR>>
     {
-        private readonly object _value;
+        private readonly object value;
 
         private Either(object value, bool left, bool right)
         {
-            _value = value;
+            this.value = value;
             IsLeft = left;
             IsRight = right;
         }
 
         public bool IsLeft { get; }
+
         public bool IsRight { get; }
 
-        public TL Left => IsLeft ? (TL) _value : 
+        public TL Left => IsLeft ? (TL)this.value : 
             throw new NotSupportedException($"Either is not Left<{typeof(TL)}>, but Right<{typeof(TR)}>");
 
-        public TR Right => IsRight ? (TR) _value : 
+        public TR Right => IsRight ? (TR)this.value : 
             throw new NotSupportedException($"Either is not Right<{typeof(TR)}>, but Left<{typeof(TL)}>");
 
-        public Option<TL> LeftOption => IsLeft ? Option.Some((TL) _value) : Option.None;
+        public Option<TL> LeftOption => IsLeft ? Option.Some((TL)this.value) : Option.None;
 
-        public Option<TR> RightOption => IsRight ? Option.Some((TR) _value) : Option.None;
+        public Option<TR> RightOption => IsRight ? Option.Some((TR)this.value) : Option.None;
 
         public Type Type => IsLeft ? typeof(TL) : typeof(TR);
 
         IOption<TL> IEither<TL, TR>.LeftOption => LeftOption;
+
         IOption<TR> IEither<TL, TR>.RightOption => RightOption;
 
         /// <summary>
@@ -99,7 +106,6 @@ namespace InCube.Core.Functional
             }
         }
 
-
         public void ForEach(Action<TL> left, Action<TR> right)
         {
             if (IsLeft)
@@ -120,17 +126,33 @@ namespace InCube.Core.Functional
 
         IEnumerator IEnumerable.GetEnumerator() => GetEnumerator();
 
-        public static Either<TL, TR> OfLeft(TL left) => left;
+        public bool Equals(Either<TL, TR> that)
+        {
+            return this.LeftOption == that.LeftOption && this.RightOption == that.RightOption;
+        }
 
-        public static Either<TL, TR> OfRight(TR right) => right;
+        public override bool Equals(object obj) => 
+            obj is Either<TL, TR> other && Equals(other);
+
+        public override int GetHashCode() => 
+            LeftOption.GetHashCode() + RightOption.GetHashCode();
+
+        public static bool operator ==(Either<TL, TR> left, Either<TL, TR> right) => left.Equals(right);
+
+        public static bool operator !=(Either<TL, TR> left, Either<TL, TR> right) => !left.Equals(right);
     }
 
     public static class Either
     {
+        public static Either<TL, TR> OfLeft<TL, TR>(TL left) => left;
+
+        public static Either<TL, TR> OfRight<TL, TR>(TR right) => right;
+
         public static IEither<TL, TOut> SelectMany<TL, TR, TOut>(
             this IEither<TL, TR> @this,
             Func<TR, IEither<TL, TOut>> f) =>
+            
             // ReSharper disable once ConvertClosureToMethodGroup
-            @this.Match(l => Either<TL, TOut>.OfLeft(l), f);
+            @this.Match(l => OfLeft<TL, TOut>(l), f);
     }
 }

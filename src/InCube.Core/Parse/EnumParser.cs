@@ -82,5 +82,4 @@ namespace InCube.Core.Parse
             return parsed;
         }
     }
-
 }

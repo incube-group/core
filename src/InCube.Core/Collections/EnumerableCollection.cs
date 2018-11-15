@@ -10,18 +10,18 @@ namespace InCube.Core.Collections
     /// Wraps an <see cref="IEnumerable{T}"/> into a read only <see cref="ICollection{T}"/> by adding a count argument.
     /// </summary>
     /// <typeparam name="T">The type of the collection</typeparam>
-    public struct EnumerableCollection<T> : ICollection<T>, IReadOnlyCollection<T>
+    public class EnumerableCollection<T> : ICollection<T>, IReadOnlyCollection<T>
     {
         public EnumerableCollection(IEnumerable<T> enumerable, int count)
         {
-            _enumerable = enumerable;
+            this.enumerable = enumerable;
             Count = count;
             IsReadOnly = true;
         }
 
         public IEnumerator<T> GetEnumerator()
         {
-            return _enumerable.GetEnumerator();
+            return this.enumerable.GetEnumerator();
         }
 
         IEnumerator IEnumerable.GetEnumerator()
@@ -41,16 +41,18 @@ namespace InCube.Core.Collections
 
         public bool Contains(T item)
         {
-            return _enumerable.Contains(item);
+            return this.enumerable.Contains(item);
         }
 
         public void CopyTo(T[] array, int arrayIndex)
         {
             CheckArgument(Count <= array.Length - arrayIndex,
                 "insufficient space for {} elements in array of length {} at index {}",
-                Count, array.Length, arrayIndex);
+                Count,
+                array.Length,
+                arrayIndex);
             var i = -1;
-            foreach (var item in _enumerable)
+            foreach (var item in this.enumerable)
             {
                 array[++i] = item;
             }
@@ -62,9 +64,9 @@ namespace InCube.Core.Collections
         }
 
         public int Count { get; }
+
         public bool IsReadOnly { get; }
 
-        private readonly IEnumerable<T> _enumerable;
+        private readonly IEnumerable<T> enumerable;
     }
-
 }

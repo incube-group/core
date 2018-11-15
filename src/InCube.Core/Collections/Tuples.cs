@@ -37,7 +37,8 @@ namespace InCube.Core.Collections
         }
 
         [PublicAPI]
-        public static IEnumerable<(T1, T2, T3)> ZipAsTuple<T1, T2, T3>(this IEnumerable<T1> e1, IEnumerable<T2> e2,
+        public static IEnumerable<(T1, T2, T3)> ZipAsTuple<T1, T2, T3>(this IEnumerable<T1> e1,
+            IEnumerable<T2> e2,
             IEnumerable<T3> e3)
         {
             return e1.ZipAsTuple(e2).Zip(e3, (x, y) => (x.Item1, x.Item2, y));
@@ -63,13 +64,13 @@ namespace InCube.Core.Collections
         }
 
         [PublicAPI]
-        public static IEnumerable<U> TupleSelect<K, V, U>(this IEnumerable<(K Key, V Value)> enumerable,
-            Func<K, V, U> mapper) =>
+        public static IEnumerable<TU> TupleSelect<TK, TV, TU>(this IEnumerable<(TK Key, TV Value)> enumerable,
+            Func<TK, TV, TU> mapper) =>
             enumerable.Select(kv => mapper(kv.Key, kv.Value));
 
         [PublicAPI]
-        public static IEnumerable<U> TupleSelect<K, V, U>(this IEnumerable<KeyValuePair<K, V>> enumerable,
-            Func<K, V, U> mapper) =>
+        public static IEnumerable<TU> TupleSelect<TK, TV, TU>(this IEnumerable<KeyValuePair<TK, TV>> enumerable,
+            Func<TK, TV, TU> mapper) =>
             enumerable.Select(kv => mapper(kv.Key, kv.Value));
 
         [PublicAPI]
@@ -77,46 +78,45 @@ namespace InCube.Core.Collections
             enumerable.Select(MakeValueTuple);
 
         [PublicAPI]
-        public static IEnumerable<KeyValuePair<T, V>> MapValues<T, U, V>(
-            this IEnumerable<KeyValuePair<T, U>> enumerable, Func<U, V> mapper) =>
+        public static IEnumerable<KeyValuePair<T, TV>> MapValues<T, TU, TV>(
+            this IEnumerable<KeyValuePair<T, TU>> enumerable, Func<TU, TV> mapper) =>
             enumerable.Select(keyValue => MakePair(keyValue.Key, mapper(keyValue.Value)));
 
         [PublicAPI]
-        public static IEnumerable<(T Key, V Value)> MapValues<T, U, V>(this IEnumerable<(T Key, U Value)> enumerable,
-            Func<U, V> mapper) =>
+        public static IEnumerable<(T Key, TV Value)> MapValues<T, TU, TV>(this IEnumerable<(T Key, TU Value)> enumerable,
+            Func<TU, TV> mapper) =>
             enumerable.Select(kv => (kv.Key, mapper(kv.Value)));
 
         [PublicAPI]
-        public static IEnumerable<V> Values<T, V>(
-            this IEnumerable<(T Key, V Value)> enumerable) =>
+        public static IEnumerable<TV> Values<T, TV>(
+            this IEnumerable<(T Key, TV Value)> enumerable) =>
             enumerable.TupleSelect((_, value) => value);
 
         [PublicAPI]
-        public static IEnumerable<V> Values<T, V>(
-            this IEnumerable<KeyValuePair<T, V>> enumerable) =>
+        public static IEnumerable<TV> Values<T, TV>(
+            this IEnumerable<KeyValuePair<T, TV>> enumerable) =>
             enumerable.TupleSelect((_, value) => value);
 
         [PublicAPI]
-        public static IEnumerable<T> Keys<T, V>(
-            this IEnumerable<KeyValuePair<T, V>> enumerable) =>
+        public static IEnumerable<T> Keys<T, TV>(
+            this IEnumerable<KeyValuePair<T, TV>> enumerable) =>
             enumerable.TupleSelect((key, _) => key);
 
         [PublicAPI]
-        public static IEnumerable<T> Keys<T, V>(
-            this IEnumerable<(T Key, V Value)> enumerable) =>
+        public static IEnumerable<T> Keys<T, TV>(
+            this IEnumerable<(T Key, TV Value)> enumerable) =>
             enumerable.TupleSelect((key, _) => key);
 
         [PublicAPI]
-        public static IEnumerable<(T, V)> AsTuple<T, V>(this IEnumerable<KeyValuePair<T, V>> enumerable)
+        public static IEnumerable<(T, TV)> AsTuple<T, TV>(this IEnumerable<KeyValuePair<T, TV>> enumerable)
         {
             return enumerable.TupleSelect((key, value) => (key, value));
         }
 
         [PublicAPI]
-        public static IEnumerable<KeyValuePair<T, V>> AsKeyValuePair<T, V>(this IEnumerable<(T Key, V Value)> enumerable)
+        public static IEnumerable<KeyValuePair<T, TV>> AsKeyValuePair<T, TV>(this IEnumerable<(T Key, TV Value)> enumerable)
         {
             return enumerable.TupleSelect(MakePair);
         }
-
     }
 }

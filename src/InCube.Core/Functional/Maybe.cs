@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using InCube.Core.Format;
 using JetBrains.Annotations;
 using Newtonsoft.Json;
@@ -15,7 +16,10 @@ namespace InCube.Core.Functional
     /// <typeparam name="T"></typeparam>
     [Serializable]
     [JsonConverter(typeof(GenericOptionJsonConverter), typeof(Maybe<>))]
-    public readonly struct Maybe<T> : IOption<T>, IInvariantOption<T, Maybe<T>> 
+    [SuppressMessage("Managed Binary Analysis",
+        "CA2225: Operator overloads have named alternates",
+        Justification = "Methods are in static companion class.")]
+    public readonly struct Maybe<T> : IOption<T>, IInvariantOption<T, Maybe<T>>, IEquatable<Maybe<T>>
         where T : class
     {
         private readonly T value;
@@ -62,7 +66,7 @@ namespace InCube.Core.Functional
 
         public static bool operator ==(Maybe<T> c1, Maybe<T> c2) => c1.Equals(c2);
 
-        public static bool operator !=(Maybe<T> c1, Maybe<T> c2) => !(c1 == c2);
+        public static bool operator !=(Maybe<T> c1, Maybe<T> c2) => !c1.Equals(c2);
 
         public static explicit operator T(Maybe<T> maybe) => maybe.Value;
 
@@ -74,7 +78,10 @@ namespace InCube.Core.Functional
         public static implicit operator Option<T>(Maybe<T> maybe) =>
             maybe.AsAny.ToOption();
 
-        public static implicit operator Maybe<T>(Maybe<Nothing> _) => default(Maybe<T>);
+        [SuppressMessage("Usage",
+            "CA1801: Review unused parameters",
+            Justification = "Need parameter for complying with implicit conversion operator.")]
+        public static implicit operator Maybe<T>(Maybe<Nothing> x) => default(Maybe<T>);
 
         public TOut Match<TOut>(Func<TOut> none, Func<T, TOut> some) =>
             this.value?.Apply(x => some(x).ToAny()) ?? none();
@@ -98,7 +105,6 @@ namespace InCube.Core.Functional
         {
             this.value?.Apply(action);
         }
-
 
         public void ForEach(Action none, Action<T> some)
         {

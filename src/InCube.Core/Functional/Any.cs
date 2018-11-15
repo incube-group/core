@@ -1,8 +1,13 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 
 namespace InCube.Core.Functional
 {
+    [SuppressMessage("Managed Binary Analysis",
+        "CA2225: Operator overloads have named alternates",
+        Justification = "Methods are in static companion class.")]
+    [Serializable]
     public readonly struct Any<T> : IEquatable<Any<T>>
     {
         public Any(T value)
@@ -22,6 +27,10 @@ namespace InCube.Core.Functional
             obj is Any<T> other && Equals(other);
 
         public override int GetHashCode() => EqualityComparer<T>.Default.GetHashCode(this.Value);
+
+        public static bool operator ==(Any<T> left, Any<T> right) => left.Equals(right);
+
+        public static bool operator !=(Any<T> left, Any<T> right) => !(left == right);
     }
 
     public static class Any
@@ -31,6 +40,5 @@ namespace InCube.Core.Functional
         public static TOut Apply<T, TOut>(this T self, Func<T, TOut> f) => f(self);
 
         public static void Apply<T>(this T self, Action<T> f) => f(self);
-
     }
 }

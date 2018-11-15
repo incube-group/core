@@ -11,22 +11,22 @@ namespace InCube.Core
     {
         public delegate void Disposer();
 
-        private readonly Stack<Disposer> _unmanaged = new Stack<Disposer>();
-        private readonly Stack<IDisposable> _managed = new Stack<IDisposable>();
-        private bool _disposed = false;
+        private readonly Stack<Disposer> unmanaged = new Stack<Disposer>();
+        private readonly Stack<IDisposable> managed = new Stack<IDisposable>();
+        private bool disposed = false;
 
         public void Add(Disposer disposer)
         {
-            Preconditions.CheckArgument(!_disposed, "disposed");
+            Preconditions.CheckArgument(!this.disposed, "disposed");
             Preconditions.CheckNotNull(disposer);
-            _unmanaged.Push(disposer);
+            this.unmanaged.Push(disposer);
         }
 
         public T Add<T>(T disposable) where T : IDisposable
         {
-            Preconditions.CheckArgument(!_disposed, "disposed");
+            Preconditions.CheckArgument(!this.disposed, "disposed");
             Preconditions.CheckNotNull(disposable);
-            _managed.Push(disposable);
+            this.managed.Push(disposable);
             return disposable;
         }
 
@@ -39,9 +39,9 @@ namespace InCube.Core
         private List<Exception> ReleaseUnmanagedResources()
         {
             List<Exception> exceptions = null;
-            while (_unmanaged.Count > 0)
+            while (this.unmanaged.Count > 0)
             {
-                var disposer = _unmanaged.Pop();
+                var disposer = this.unmanaged.Pop();
                 try
                 {
                     disposer();
@@ -60,14 +60,14 @@ namespace InCube.Core
 
         protected virtual void Dispose(bool disposing)
         {
-            if (_disposed) return;
+            if (this.disposed) return;
 
             var exceptions = ReleaseUnmanagedResources();
             if (disposing)
             {
-                while (_managed.Count > 0)
+                while (this.managed.Count > 0)
                 {
-                    var disposable = _managed.Pop();
+                    var disposable = this.managed.Pop();
                     try
                     {
                         disposable.Dispose();
@@ -83,7 +83,7 @@ namespace InCube.Core
                 }
             }
 
-            _disposed = true;
+            this.disposed = true;
 
             if (exceptions != null)
             {

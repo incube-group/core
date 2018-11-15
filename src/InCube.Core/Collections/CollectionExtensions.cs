@@ -10,7 +10,7 @@ using static InCube.Core.Preconditions;
 namespace InCube.Core.Collections
 {
 
-    public static class Collections
+    public static class CollectionExtensions
     {
         /// <returns>the last element of a list</returns>
         public static T Last<T>(this IReadOnlyList<T> list) => list[list.Count - 1];
@@ -45,7 +45,7 @@ namespace InCube.Core.Collections
         /// sure to return the greatest boundary in case of ties.
         /// 
         /// Corresponds to the <code>upper_bound</code> function of the STL.
-        /// </summary>
+        /// </summary> 
         /// <typeparam name="T"></typeparam>
         /// <param name="input">buckets must be sorted in ascending order</param>
         /// <param name="item">the item to place into the buckets</param>
@@ -69,15 +69,16 @@ namespace InCube.Core.Collections
                 do
                 {
                     ++idx;
-                } while (idx < count && comparer.Compare(input[idx], item) == 0);
+                } 
+                while (idx < count && comparer.Compare(input[idx], item) == 0);
             }
             else
             {
                 idx = ~idx;
             }
 
-            Debug.Assert(idx == count || comparer.Compare(input[idx], item) > 0);
-            Debug.Assert(idx == 0 || comparer.Compare(input[idx - 1], item) <= 0);
+            Debug.Assert(idx == count || comparer.Compare(input[idx], item) > 0, "next item is less or equal");
+            Debug.Assert(idx == 0 || comparer.Compare(input[idx - 1], item) <= 0, "previous item is greater");
 
             return idx;
         }
@@ -139,8 +140,8 @@ namespace InCube.Core.Collections
                 idx = ~idx;
             }
 
-            Debug.Assert(idx == count || comparer.Compare(input[idx], item) >= 0);
-            Debug.Assert(idx == 0 || comparer.Compare(input[idx - 1], item) < 0);
+            Debug.Assert(idx == count || comparer.Compare(input[idx], item) >= 0, "next item is less");
+            Debug.Assert(idx == 0 || comparer.Compare(input[idx - 1], item) < 0, "previous item is greater or equal");
 
             return idx;
         }
@@ -202,8 +203,11 @@ namespace InCube.Core.Collections
         public static TU[] ParallelMap<T, TU>(this IReadOnlyList<T> list, Func<T, TU> map, TU[] result = null) =>
             list.ParallelMap(map, 0, list.Count, result);
 
-        public static TU[] ParallelMap<T, TU>(this IReadOnlyList<T> list, Func<T, TU> map,
-            int fromInclusive, int toExclusive, TU[] result = null)
+        public static TU[] ParallelMap<T, TU>(this IReadOnlyList<T> list,
+            Func<T, TU> map,
+            int fromInclusive,
+            int toExclusive,
+            TU[] result = null)
         {
             result = result ?? new TU[toExclusive - fromInclusive];
             Parallel.For(fromInclusive, toExclusive, i => result[i - fromInclusive] = map(list[i]));
@@ -213,8 +217,11 @@ namespace InCube.Core.Collections
         public static TU[] ParallelMapI<T, TU>(this IReadOnlyList<T> list, Func<T, int, TU> map, TU[] result = null) =>
             list.ParallelMapI(map, 0, list.Count, result);
 
-        public static TU[] ParallelMapI<T, TU>(this IReadOnlyList<T> list, Func<T, int, TU> map, 
-            int fromInclusive, int toExclusive, TU[] result = null)
+        public static TU[] ParallelMapI<T, TU>(this IReadOnlyList<T> list,
+            Func<T, int, TU> map,
+            int fromInclusive,
+            int toExclusive,
+            TU[] result = null)
         {
             result = result ?? new TU[toExclusive - fromInclusive];
             Parallel.For(fromInclusive, toExclusive, i => result[i - fromInclusive] = map(list[i], i));
@@ -232,7 +239,8 @@ namespace InCube.Core.Collections
             where TKey : IComparable<TKey> =>
             source.MaxBy(selector, DefaultComparer<TKey>());
 
-        public static TSource MaxBy<TSource, TKey>(this IEnumerable<TSource> source, Func<TSource, TKey> selector,
+        public static TSource MaxBy<TSource, TKey>(this IEnumerable<TSource> source,
+            Func<TSource, TKey> selector,
             IComparer<TKey> comparer)
         {
             using (var iterator = source.GetEnumerator())
@@ -263,8 +271,10 @@ namespace InCube.Core.Collections
             where TKey : IComparable<TKey> =>
             source.MinBy(selector, DefaultComparer<TKey>());
 
-        public static TSource MinBy<TSource, TKey>(this IEnumerable<TSource> source, Func<TSource, TKey> selector,
-            IComparer<TKey> comparer) => source.MaxBy(selector, Comparer<TKey>.Create((x, y) => comparer.Compare(y, x)));
+        public static TSource MinBy<TSource, TKey>(this IEnumerable<TSource> source,
+            Func<TSource, TKey> selector,
+            IComparer<TKey> comparer) =>
+            source.MaxBy(selector, Comparer<TKey>.Create((x, y) => comparer.Compare(y, x)));
 
         public static int ArgMax<T>(this IEnumerable<T> source, IComparer<T> comparer) =>
             source.ZipWithIndex().MaxBy(x => x.value, comparer).index;

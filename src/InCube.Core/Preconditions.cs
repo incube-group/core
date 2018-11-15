@@ -102,6 +102,7 @@ namespace InCube.Core
                 throw new ArgumentException(string.Format(errorMessageTemplate, p1));
             }
         }
+        
         /// <summary>
         /// Ensures the truth of an expression involving one or more parameters to the calling method.
         /// </summary>
@@ -179,7 +180,6 @@ namespace InCube.Core
                 throw new ArgumentException(Format(errorMessageTemplate, p1, p2, p3, p4));
             }
         }
-
 
         [StringFormatMethod("errorMessageTemplate")]
         public static void CheckArgumentF<T1, T2, T3, T4>(bool b, [NotNull] string errorMessageTemplate, T1 p1, T2 p2, T3 p3, T4 p4)

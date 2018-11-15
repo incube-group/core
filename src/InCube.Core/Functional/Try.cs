@@ -1,25 +1,28 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using JetBrains.Annotations;
 
 namespace InCube.Core.Functional
 {
-    [Serializable]
-    public readonly struct Try<T> : ITry<T>, IInvariantOption<T, Try<T>>
+    [SuppressMessage("Managed Binary Analysis",
+        "CA2225: Operator overloads have named alternates",
+        Justification = "Methods are in static companion class.")]
+    public readonly struct Try<T> : ITry<T>, IInvariantOption<T, Try<T>>, IEquatable<Try<T>>
     {
-        private readonly Maybe<Exception> _exception;
+        private readonly Maybe<Exception> exception;
 
         internal Try(T value)
         {
             AsOption = Option.Some(value);
-            _exception = Maybe.None;
+            this.exception = Maybe.None;
         }
 
         internal Try(Exception exception)
         {
             AsOption = Option.None;
-            _exception = Maybe.Some(exception);
+            this.exception = Maybe.Some(exception);
         }
 
         public Option<T> AsOption { get; }
@@ -33,23 +36,43 @@ namespace InCube.Core.Functional
         IEither<Exception, T> ITry<T>.AsEither => AsEither;
 
         public static implicit operator Either<Exception, T>(Try<T> t) =>
-            t.Match(Either<Exception, T>.OfLeft, Either<Exception, T>.OfRight);
+            t.Match(Either.OfLeft<Exception, T>, Either.OfRight<Exception, T>);
 
         public bool HasValue => AsOption.HasValue;
 
-        public T Value => HasValue ? AsOption.Value : throw Exception;
+        [SuppressMessage("Design",
+            "CA1065: Do not raise exceptions in unexpected locations",
+            Justification = "by design")]
+        public T Value
+        {
+            get
+            {
+                var @this = this;
+                return AsOption.GetValueOrDefault(() => throw @this.Exception);
+            }
+        }
 
         public Exception Exception =>
-            HasValue ? throw new InvalidOperationException("Try is success") : _exception.Value;
+            HasValue ? throw new InvalidOperationException("Try is success") : this.exception.Value;
 
         public IEnumerator<T> GetEnumerator() => this.AsOption.GetEnumerator();
 
         IEnumerator IEnumerable.GetEnumerator() => this.GetEnumerator();
 
         public bool Equals(Try<T> that) =>
-            AsOption.Equals(that.AsOption) && _exception.Equals(that._exception);
+            AsOption.Equals(that.AsOption) && this.exception.Equals(that.exception);
 
-        public override string ToString() => HasValue ? $"Success({Value})" : $"Failure({_exception.GetValueOrDefault()})";
+        public override bool Equals(object obj) => 
+            obj is Try<T> other && Equals(other);
+
+        public override int GetHashCode() => 
+            AsOption.GetHashCode() + this.exception.GetHashCode();
+
+        public static bool operator ==(Try<T> left, Try<T> right) => left.Equals(right);
+
+        public static bool operator !=(Try<T> left, Try<T> right) => !left.Equals(right);
+
+        public override string ToString() => HasValue ? $"Success({Value})" : $"Failure({this.exception.GetValueOrDefault()})";
 
         public Try<Exception> Failed()
         {

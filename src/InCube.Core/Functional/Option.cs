@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using InCube.Core.Format;
 using JetBrains.Annotations;
 using Newtonsoft.Json;
@@ -13,8 +14,11 @@ namespace InCube.Core.Functional
     /// both struct and class types.
     /// </summary>
     /// <typeparam name="T"></typeparam>
-    [Serializable] [JsonConverter(typeof(GenericOptionJsonConverter), typeof(Option<>))]
-    public readonly struct Option<T>: IOption<T>, IInvariantOption<T, Option<T>>
+    [JsonConverter(typeof(GenericOptionJsonConverter), typeof(Option<>))]
+    [SuppressMessage("Managed Binary Analysis",
+        "CA2225: Operator overloads have named alternates",
+        Justification = "Methods are in static companion class.")]
+    public readonly struct Option<T> : IOption<T>, IInvariantOption<T, Option<T>>, IEquatable<Option<T>>
     {
         internal Option(T value)
         {
@@ -71,7 +75,10 @@ namespace InCube.Core.Functional
         public static implicit operator Option<T>(T value) => 
             typeof(T).IsValueType || value != null ? new Option<T>(value) : default(Option<T>);
 
-        public static implicit operator Option<T>(Option<Nothing> _) => default(Option<T>);
+        [SuppressMessage("Usage",
+            "CA1801: Review unused parameters",
+            Justification = "Need parameter for complying with implicit conversion operator.")]
+        public static implicit operator Option<T>(Option<Nothing> x) => default(Option<T>);
 
         public TOut Match<TOut>(Func<TOut> none, Func<T, TOut> some) =>
             AsAny.Select(x => some(x).ToAny()) ?? none();
@@ -87,14 +94,12 @@ namespace InCube.Core.Functional
 
         public bool Any(Func<T, bool> p) => AsAny.Any(x => p(x));
 
-
         public bool All(Func<T, bool> p) => AsAny.All(x => p(x));
 
         public void ForEach(Action<T> action)
         {
             AsAny.ForEach(x => action(x));
         }
-
 
         public void ForEach(Action none, Action<T> some)
         {

@@ -9,21 +9,23 @@ namespace InCube.Core.Numerics
     public static class Statistics
     {
         public static Histogram<T> MakeHistogram<T>(this IEnumerable<T> values,
-            IReadOnlyList<T> edges, bool lowerBoundEquals = Histogram<T>.DefaultLowerEdgeEquals)
+            IReadOnlyList<T> edges,
+            bool lowerBoundEquals = Histogram.DefaultLowerEdgeEquals)
             where T : IComparable<T> =>
-            MakeHistogram(values, edges, Collections.Collections.DefaultComparer<T>(), lowerBoundEquals);
+            MakeHistogram(values, edges, Collections.CollectionExtensions.DefaultComparer<T>(), lowerBoundEquals);
 
         public static Histogram<T> MakeHistogram<T>(this IEnumerable<T> values,
-            IReadOnlyList<T> edges, IComparer<T> comparer,
-            bool lowerEdgeEquals = Histogram<T>.DefaultLowerEdgeEquals) =>
-            Histogram<T>.Create(values, edges, comparer, lowerEdgeEquals);
+            IReadOnlyList<T> edges,
+            IComparer<T> comparer,
+            bool lowerEdgeEquals = Histogram.DefaultLowerEdgeEquals) =>
+            Histogram.Create(values, edges, comparer, lowerEdgeEquals);
 
         public static int Rank<T>(this IEnumerable<T> values, T element) where T : IComparable<T> =>
             values.Aggregate(0, (lesserCount, value) => value.CompareTo(element) <= 0 ? lesserCount + 1 : lesserCount);
 
         public static int[] VectorRank<T>(this IEnumerable<T> values, IReadOnlyList<T> elements)
             where T : IComparable<T> =>
-            values.VectorRank(elements, Collections.Collections.DefaultComparer<T>());
+            values.VectorRank(elements, Collections.CollectionExtensions.DefaultComparer<T>());
 
         public static int[] VectorRank<T>(this IEnumerable<T> values, IReadOnlyList<T> elements, IComparer<T> comparer)
         {
@@ -37,8 +39,7 @@ namespace InCube.Core.Numerics
                     var edgeIndices = Option.Some(Enumerable.Range(0, edgeCount).ToArray());
                     Array.Sort(edgeArray, edgeIndices.Value, comparer);
                     return (edgeArray, edgeIndices);
-                }
-            );
+                });
 
             var ranks = new int[edgeCount];
             if (edgeCount == 0) return ranks;
