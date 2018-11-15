@@ -60,13 +60,21 @@ namespace InCube.Core.Test.Collections
             var lower = a.Slice(rowStartInclusive: rowOffset, colStartInclusive: colOffset);
             Assert.AreEqual(a.GetLength(0) - rowOffset, lower.GetLength(0));
             Assert.AreEqual(a.GetLength(1) - colOffset, lower.GetLength(1));
-            Assert.That(lower, Is.EquivalentTo(new [,] { {6}, {9}}));
+            Assert.That(lower, Is.EquivalentTo(new[,]
+            {
+                {6}, 
+                {9}
+            }));
 
             var upper = a.Slice(rowStopExclusive: a.GetLength(0) - rowOffset, 
                 colStopExclusive: a.GetLength(1) - colOffset);
             Assert.AreEqual(a.GetLength(0) - rowOffset, lower.GetLength(0));
             Assert.AreEqual(a.GetLength(1) - colOffset, lower.GetLength(1));
-            Assert.That(upper, Is.EquivalentTo(new[,] { { 1 }, { 4 } }));
+            Assert.That(upper, Is.EquivalentTo(new[,]
+            {
+                {1}, 
+                {4}
+            }));
 
             var mid = a.Slice(1, 2, 1, 2);
             Assert.That(mid, Is.EquivalentTo(new[,] { { 5 } }));
@@ -77,7 +85,7 @@ namespace InCube.Core.Test.Collections
             Assert.Throws<ArgumentException>(() => a.Slice(colStartInclusive: a.GetLength(1) + 1));
             Assert.Throws<ArgumentException>(() => a.Slice(rowStartInclusive: 1, rowStopExclusive: 0));
             Assert.Throws<ArgumentException>(() => a.Slice(colStartInclusive: 1, colStopExclusive: 0));
-            Assert.Throws<ArgumentException>(() => a.Slice(rowStartInclusive: - 1));
+            Assert.Throws<ArgumentException>(() => a.Slice(rowStartInclusive: -1));
             Assert.Throws<ArgumentException>(() => a.Slice(colStartInclusive: -1));
         }
     }

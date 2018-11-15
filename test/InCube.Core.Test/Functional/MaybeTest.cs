@@ -1,72 +1,13 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Linq;
 using NUnit.Framework;
 using InCube.Core.Functional;
-using Newtonsoft.Json;
 using static InCube.Core.Functional.Maybe;
+
+#pragma warning disable SA1131 // Use readable conditions
 
 namespace InCube.Core.Test.Functional
 {
-    internal class Boxed<T> : IEquatable<Boxed<T>> where T : struct
-    {
-        [JsonConstructor]
-        internal Boxed(T value)
-        {
-            this.Value = value;
-        }
-
-        public T Value { get; }
-
-        public static implicit operator T(Boxed<T> boxed) => boxed.Value;
-
-        public static implicit operator Boxed<T>(T value) => new Boxed<T>(value);
-
-        public bool Equals(Boxed<T> that)
-        {
-            if (ReferenceEquals(null, that))
-            {
-                return false;
-            }
-
-            if (ReferenceEquals(this, that))
-            {
-                return true;
-            }
-
-            return EqualityComparer<T>.Default.Equals(this.Value, that.Value);
-        }
-
-        public override bool Equals(object obj)
-        {
-            if (ReferenceEquals(null, obj))
-            {
-                return false;
-            }
-
-            if (ReferenceEquals(this, obj))
-            {
-                return true;
-            }
-
-            if (obj.GetType() != this.GetType())
-            {
-                return false;
-            }
-
-            return Equals((Boxed<T>) obj);
-        }
-
-        public override int GetHashCode() => this.Value.GetHashCode();
-
-        public override string ToString() => $"{this.Value}";
-    }
-
-    internal static class Boxed
-    {
-        public static Boxed<T> Of<T>(T value) where T : struct => value;
-    } 
-
     public class MaybeTest
     {
         [Test]
@@ -76,7 +17,7 @@ namespace InCube.Core.Test.Functional
             Assert.False(none.HasValue);
             Assert.Throws<InvalidOperationException>(() =>
             {
-                var _ = none.Value;
+                var x = none.Value;
             });
             Assert.AreEqual(null, none.GetValueOrDefault());
         }
@@ -99,6 +40,7 @@ namespace InCube.Core.Test.Functional
         [Test]
         public void TestEquals()
         {
+#pragma warning disable SA1131 // Use readable conditions
             var none = None;
             // ReSharper disable once EqualExpressionComparison
 #pragma warning disable CS1718 // Comparison made to same variable
@@ -121,7 +63,6 @@ namespace InCube.Core.Test.Functional
             Assert.True(optionOne == one);
             Assert.True(one == optionOne);
             Assert.True(optionOne.Equals((object)optionOne));
-
 
             Assert.True(intNone.Equals(none));
 

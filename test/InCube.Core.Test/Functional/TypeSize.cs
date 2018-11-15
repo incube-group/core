@@ -11,7 +11,7 @@ namespace InCube.Core.Test.Functional
 
         static TypeSize()
         {
-            var dm = new DynamicMethod("SizeOfType", typeof(int), new Type[] { });
+            var dm = new DynamicMethod("SizeOfType", typeof(int), Array.Empty<Type>());
             var il = dm.GetILGenerator();
             il.Emit(OpCodes.Sizeof, typeof(T));
             il.Emit(OpCodes.Ret);

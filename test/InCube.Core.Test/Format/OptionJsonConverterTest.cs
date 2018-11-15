@@ -10,25 +10,25 @@ namespace InCube.Core.Test.Format
 {
     public class OptionJsonConverterTest
     {
-        class CustomContractResolver : DefaultContractResolver
+        private class CustomContractResolver : DefaultContractResolver
         {
-            private readonly JsonConverter _converter;
-            private readonly Type _type;
+            private readonly JsonConverter converter;
+            private readonly Type type;
 
             public CustomContractResolver(JsonConverter converter, Type type)
             {
-                this._converter = converter;
-                this._type = type;
+                this.converter = converter;
+                this.type = type;
             }
 
             protected override JsonConverter ResolveContractConverter(Type objectType)
             {
-                if (objectType == null || !_type.IsAssignableFrom(objectType)) // alternatively _type == objectType
+                if (objectType == null || !this.type.IsAssignableFrom(objectType)) // alternatively _type == objectType
                 {
                     return base.ResolveContractConverter(objectType);
                 }
 
-                return _converter;
+                return this.converter;
             }
         }
 

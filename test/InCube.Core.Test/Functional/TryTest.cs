@@ -16,7 +16,7 @@ namespace InCube.Core.Test.Functional
             Assert.AreEqual(value, t.Value);
             Assert.Throws<InvalidOperationException>(() =>
             {
-                var _ = t.Exception;
+                var x = t.Exception;
             });
             Assert.AreEqual(value, t.GetValueOrDefault(value - 1));
             Assert.AreEqual(value + 1, t.Match(failure: ex => value - 1, success: v => v + 1));
@@ -35,7 +35,7 @@ namespace InCube.Core.Test.Functional
             Assert.False(t.HasValue);
             Assert.Throws<ArgumentException>(() =>
             {
-                var _ = t.Value;
+                var x = t.Value;
             });
             Assert.AreEqual("value is positive: " + value, t.Exception.Message);
             Assert.AreEqual(value - 1, t.GetValueOrDefault(value - 1));

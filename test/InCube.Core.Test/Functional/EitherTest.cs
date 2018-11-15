@@ -17,7 +17,7 @@ namespace InCube.Core.Test.Functional
             Assert.AreEqual(1, intEither.Left);
             Assert.Throws<NotSupportedException>(() =>
             {
-                var _ = intEither.Right;
+                var x = intEither.Right;
             });
             Assert.AreEqual(typeof(int), intEither.Type);
 
@@ -29,7 +29,7 @@ namespace InCube.Core.Test.Functional
             Assert.AreEqual(1, dblEither.Right, 0);
             Assert.Throws<NotSupportedException>(() =>
             {
-                var _ = dblEither.Left;
+                var x = dblEither.Left;
             });
             Assert.AreEqual(typeof(double), dblEither.Type);
         }

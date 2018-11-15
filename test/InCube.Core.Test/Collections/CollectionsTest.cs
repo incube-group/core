@@ -143,7 +143,7 @@ namespace InCube.Core.Test.Collections
         [Test]
         public void TestSlice()
         {
-            var expected = new []{2, 3, 4};
+            var expected = new [] {2, 3, 4};
             var start = expected.First();
             var stop = start + expected.Length;
             var elems = Enumerables.Iterate(0, x => x + 1);

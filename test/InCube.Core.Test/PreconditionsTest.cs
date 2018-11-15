@@ -6,18 +6,20 @@ using static InCube.Core.Preconditions;
 
 namespace InCube.Core.Test
 {
-    class PreconditionsTest
+    public class PreconditionsTest
     {
         [Test]
         public void TestCheckArgument()
         {
             var expression = true;
             var errorMessageTemplate = "expression was {}";
-            CheckArgument(expression, errorMessageTemplate, expression);
+            // ReSharper disable ConditionIsAlwaysTrueOrFalse
+            Assert.DoesNotThrow(() => CheckArgument(expression, errorMessageTemplate, expression));
             expression = false;
             Assert.Throws<ArgumentException>(() => CheckArgument(expression, errorMessageTemplate, expression),
-                "expression was {0}", expression);
-            var test = String.Format("template {0}", false);
+                "expression was {0}",
+                expression);
+            // ReSharper restore ConditionIsAlwaysTrueOrFalse
         }
     }
 }

@@ -5,6 +5,8 @@ using NUnit.Framework;
 using InCube.Core.Functional;
 using static InCube.Core.Functional.Option;
 
+#pragma warning disable SA1131 // Use readable conditions
+
 namespace InCube.Core.Test.Functional
 {
     public class OptionTest
@@ -16,7 +18,7 @@ namespace InCube.Core.Test.Functional
             Assert.False(none.HasValue);
             Assert.Throws<InvalidOperationException>(() =>
             {
-                var _ = none.Value;
+                var x = none.Value;
             });
             Assert.AreEqual(null, none.GetValueOrDefault());
         }
@@ -56,7 +58,6 @@ namespace InCube.Core.Test.Functional
             Assert.True(optionOne == 1);
             Assert.True(1 == optionOne);
             Assert.True(optionOne.Equals((object)optionOne));
-
 
             Assert.True(intNone.Equals(none));
 
