@@ -21,5 +21,7 @@ namespace InCube.Core.Functional
         bool Contains(T elem, IEqualityComparer<T> comparer);
 
         TOpt Where(Func<T, bool> p);
+
+        Any<T>? AsAny { get; }
     }
 }

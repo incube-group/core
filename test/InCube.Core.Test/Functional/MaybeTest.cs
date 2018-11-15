@@ -138,7 +138,7 @@ namespace InCube.Core.Test.Functional
             Assert.True(none != optionOne);
             Assert.True(optionOne != none);
 
-            var someArray = new[] {1}.ToNullable();
+            var someArray = new[] {1}.ToMaybe();
             Assert.True(someArray != new[] { 1 });
             Assert.True(someArray != none);
             Assert.True(none != someArray);
@@ -211,7 +211,7 @@ namespace InCube.Core.Test.Functional
             Assert.AreEqual(typeof(int), someOne.Select(x => x.Value).GetType());
             Assert.AreEqual(typeof(Maybe<Boxed<int>>), someOne.Select(x => x).GetType());
             Assert.AreEqual(typeof(int), someOne.SelectMany(x => x.Value.ToNullable()).GetType());
-            Assert.AreEqual(typeof(Maybe<Boxed<int>>), someOne.SelectMany(x => x.ToNullable()).GetType());
+            Assert.AreEqual(typeof(Maybe<Boxed<int>>), someOne.SelectMany(x => x.ToMaybe()).GetType());
             var some = Some(Boxed.Of(false));
             Assert.False(some.Select(x => x.Value).GetValueOrDefault(true));
             var none = Empty<Boxed<bool>>();

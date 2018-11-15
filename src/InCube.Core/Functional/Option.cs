@@ -16,41 +16,51 @@ namespace InCube.Core.Functional
     [Serializable] [JsonConverter(typeof(GenericOptionJsonConverter), typeof(Option<>))]
     public readonly struct Option<T>: IOption<T>, IInvariantOption<T, Option<T>>
     {
-        private readonly T _value;
-
         internal Option(T value)
         {
-            HasValue = true;
-            _value = value;
+            AsAny = value;
         }
 
-        public bool HasValue { get; }
+        internal Option(in Any<T>? any)
+        {
+            AsAny = any;
+        }
 
-        public T Value => HasValue ? _value : throw new InvalidOperationException("None.Get");
+        public Any<T>? AsAny { get; }
+
+        /// <see cref="Nullable{T}.HasValue"/>
+        public bool HasValue => AsAny.HasValue;
+
+        /// <see cref="Nullable{T}.Value"/>
+        /// <exception cref="InvalidOperationException">If the maybe is undefined.</exception>
+        // ReSharper disable once PossibleInvalidOperationException
+        public T Value => AsAny.Value;
 
         public IEnumerator<T> GetEnumerator()
         {
-            if (HasValue) yield return _value;
+            if (AsAny.HasValue)
+            {
+                yield return AsAny.Value;
+            }
         }
 
-        IEnumerator IEnumerable.GetEnumerator()
-        {
-            return GetEnumerator();
-        }
+        IEnumerator IEnumerable.GetEnumerator() => GetEnumerator();
 
-        public bool Equals(Option<T> that) =>
-            !HasValue && !that.HasValue ||
-            HasValue && that.HasValue && EqualityComparer<T>.Default.Equals(_value, that._value);
-
+        public bool Equals(Option<T> that) => Nullable.Equals(this.AsAny, that.AsAny);
+        
         public override bool Equals(object obj)
         {
             if (obj == null) return !HasValue;
             return obj is Option<T> option && Equals(option);
         }
 
-        public override int GetHashCode() => HasValue ? EqualityComparer<T>.Default.GetHashCode(_value) : 0;
+        public override int GetHashCode() => AsAny.GetHashCode();
 
-        public override string ToString() => HasValue ? $"Some({Value})" : "None";
+        public override string ToString()
+        {
+            var typeName = typeof(T).Name;
+            return Select(x => $"Some<${typeName}>({x})").GetValueOrDefault(() => $"None<{typeName}>");
+        }
 
         public static bool operator ==(Option<T> c1, Option<T> c2) => c1.Equals(c2);
 
@@ -63,41 +73,32 @@ namespace InCube.Core.Functional
 
         public static implicit operator Option<T>(Option<Nothing> _) => default(Option<T>);
 
-        public TOut Match<TOut>(Func<TOut> none, Func<T, TOut> some) => HasValue ? some(_value) : none();
+        public TOut Match<TOut>(Func<TOut> none, Func<T, TOut> some) =>
+            AsAny.Select(x => some(x).ToAny()) ?? none();
 
-        public T GetValueOrDefault() => GetValueOrDefault(default(T));
+        public T GetValueOrDefault() => AsAny.GetValueOrDefault();
 
-        public T GetValueOrDefault([NotNull] Func<T> @default) =>
-            HasValue ? _value : CheckNotNull(@default, nameof(@default)).Invoke();
+        public T GetValueOrDefault(T @default) => AsAny ?? @default;
 
-        public T GetValueOrDefault(T @default) => HasValue ? _value : @default;
+        public T GetValueOrDefault(Func<T> @default) => 
+            AsAny ?? CheckNotNull(@default, nameof(@default)).Invoke();
 
         public bool Any() => HasValue;
 
-        public bool Any(Func<T, bool> p) => HasValue && p(_value);
+        public bool Any(Func<T, bool> p) => AsAny.Any(x => p(x));
 
 
-        public bool All(Func<T, bool> p) => !HasValue || p(_value);
+        public bool All(Func<T, bool> p) => AsAny.All(x => p(x));
 
         public void ForEach(Action<T> action)
         {
-            if (HasValue)
-            {
-                action(_value);
-            }
+            AsAny.ForEach(x => action(x));
         }
 
 
         public void ForEach(Action none, Action<T> some)
         {
-            if (HasValue)
-            {
-                some(_value);
-            }
-            else
-            {
-                none();
-            }
+            AsAny.ForEach(none, x => some(x));
         }
 
         IOption<TOut> IOption<T>.Select<TOut>(Func<T, TOut> f) => 
@@ -106,31 +107,32 @@ namespace InCube.Core.Functional
         IOption<TOut> IOption<T>.SelectMany<TOut>(Func<T, IOption<TOut>> f) => 
             SelectMany(x => f(x).ToOption());
 
-        public Option<TOut> Select<TOut>(Func<T, TOut> f) => 
-            HasValue ? Option.Some(f(_value)) : default(Option<TOut>);
+        public Option<TOut> Select<TOut>(Func<T, TOut> f) =>
+            new Option<TOut>(AsAny.Select(x => f(x).ToAny()));
 
-        public Option<TOut> SelectMany<TOut>(Func<T, Option<TOut>> f) => 
-            HasValue ? f(_value) : default(Option<TOut>);
+        public Option<TOut> SelectMany<TOut>(Func<T, Option<TOut>> f) =>
+            new Option<TOut>(AsAny.SelectMany(x => f(x).AsAny));
 
         IOption<T> IOption<T>.Where(Func<T, bool> p) => Where(p);
         
-        public Option<T> Where(Func<T, bool> p) => !HasValue || p(_value) ? this : default(Option<T>);
+        public Option<T> Where(Func<T, bool> p) => Any(p) ? this : default(Option<T>);
 
         public Option<TD> Cast<TD>() where TD : T => 
             SelectMany(x => x is TD d ? Option.Some(d) : default(Option<TD>));
 
         public int Count => HasValue ? 1 : 0;
 
-        public Option<T> OrElse([NotNull] Func<Option<T>> @default) =>
+        public Option<T> OrElse(Func<Option<T>> @default) =>
             HasValue ? this : @default();
 
         public Option<T> OrElse(Option<T> @default) =>
             HasValue ? this : @default;
 
-        public bool Contains(T elem) => Contains(elem, EqualityComparer<T>.Default);
+        public bool Contains(T elem) => 
+            Contains(elem, EqualityComparer<T>.Default);
 
         public bool Contains(T elem, IEqualityComparer<T> comparer) =>
-            HasValue && comparer.Equals(_value, elem);
+            AsAny.Select(x => comparer.Equals(x.Value, elem)) ?? false;
     }
 
     /// <summary>
@@ -153,13 +155,14 @@ namespace InCube.Core.Functional
         #region Conversion
 
         public static Option<T> ToOption<T>(this T value) where T : class =>
-            value != null ? Some(value) : default(Option<T>);
+            value?.Apply(Some) ?? default(Option<T>);
 
         public static Option<T> ToOption<T>(this in T? value) where T : struct =>
-            value.HasValue ? Some(value.Value) : default(Option<T>);
+            value?.Apply(Some) ?? default(Option<T>);
 
-        public static Option<T> ToOption<T>(this Maybe<T> value) where T : class =>
-            value.HasValue ? Some(value.Value) : default(Option<T>);
+        public static Option<T> ToOption<T>(this in Any<T>? any) => new Option<T>(any);
+
+        public static Option<T> ToOption<T>(this Maybe<T> maybe) where T : class => maybe;
 
         public static Option<T> ToOption<T>(this IOption<T> value) =>
             value is Option<T> opt ? opt : value.HasValue ? Some(value.Value) : default(Option<T>);
@@ -168,17 +171,17 @@ namespace InCube.Core.Functional
         public static Option<T> ToOption<T>(this in Option<T> value) => value;
 
         public static T? ToNullable<T>(this in Option<T> self) where T : struct =>
-            self.HasValue ? new T?(self.Value) : null;
+            self.AsAny?.Apply(x => x.Value);
 
         #endregion
 
         #region Flattening
         
         public static Option<T> Flatten<T>(this in Option<Option<T>> self) =>
-            self.HasValue ? self.Value : default(Option<T>);
+            self.AsAny?.Apply(x => x.Value) ?? default(Option<T>);
 
         public static T? Flatten<T>(this in Option<T?> self) where T : struct =>
-            self.HasValue ? self.Value : default(T?);
+            self.AsAny?.Apply(x => x.Value);
 
         public static Option<T> Flatten<T>(this in Option<T>? self) =>
             self ?? default(Option<T>);

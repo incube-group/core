@@ -50,10 +50,10 @@ namespace InCube.Core.Functional
         public bool IsRight { get; }
 
         public TL Left => IsLeft ? (TL) _value : 
-            throw new NotSupportedException($"not a {typeof(TL)}, but a {typeof(TR)}");
+            throw new NotSupportedException($"Either is not Left<{typeof(TL)}>, but Right<{typeof(TR)}>");
 
         public TR Right => IsRight ? (TR) _value : 
-            throw new NotSupportedException($"not a {typeof(TR)}, but a {typeof(TL)}");
+            throw new NotSupportedException($"Either is not Right<{typeof(TR)}>, but Left<{typeof(TL)}>");
 
         public Option<TL> LeftOption => IsLeft ? Option.Some((TL) _value) : Option.None;
 

@@ -18,20 +18,23 @@ namespace InCube.Core.Functional
     public readonly struct Maybe<T> : IOption<T>, IInvariantOption<T, Maybe<T>> 
         where T : class
     {
-        private readonly T _value;
+        private readonly T value;
 
         private Maybe(T value)
         {
-            _value = value;
+            this.value = value;
         }
 
-        public bool HasValue => this._value != null;
+        public bool HasValue => this.value != null;
 
-        public T Value => HasValue ? _value : throw new InvalidOperationException("None.Get");
+        public T Value => HasValue ? this.value : throw new InvalidOperationException("None.Get");
 
         public IEnumerator<T> GetEnumerator()
         {
-            if (HasValue) yield return _value;
+            if (HasValue)
+            {
+                yield return this.value;
+            }
         }
 
         IEnumerator IEnumerable.GetEnumerator()
@@ -40,8 +43,8 @@ namespace InCube.Core.Functional
         }
 
         public bool Equals(Maybe<T> that) =>
-            !HasValue && !that.HasValue ||
-            HasValue && that.HasValue && EqualityComparer<T>.Default.Equals(_value, that._value);
+            !this.HasValue && !that.HasValue ||
+            this.HasValue && that.HasValue && EqualityComparer<T>.Default.Equals(this.value, that.value);
 
         public override bool Equals(object obj)
         {
@@ -49,86 +52,87 @@ namespace InCube.Core.Functional
             return obj is Maybe<T> option && Equals(option);
         }
 
-        public override int GetHashCode() => HasValue ? EqualityComparer<T>.Default.GetHashCode(_value) : 0;
+        public override int GetHashCode() => EqualityComparer<T>.Default.GetHashCode(this.value);
 
-        public override string ToString() => HasValue ? $"Some({Value})" : "None";
+        public override string ToString()
+        {
+            var typeName = typeof(T).Name;
+            return Select(x => $"Some<${typeName}>({x})").GetValueOrDefault(() => $"None<{typeName}>");
+        }
 
         public static bool operator ==(Maybe<T> c1, Maybe<T> c2) => c1.Equals(c2);
 
         public static bool operator !=(Maybe<T> c1, Maybe<T> c2) => !(c1 == c2);
 
-        public static explicit operator T(Maybe<T> nullable) => nullable.Value;
+        public static explicit operator T(Maybe<T> maybe) => maybe.Value;
 
         public static implicit operator Maybe<T>(T value) => new Maybe<T>(value);
 
         public static implicit operator Maybe<T>(Option<T> option) => 
             option.GetValueOrDefault();
 
-        public static implicit operator Option<T>(Maybe<T> nullable) =>
-            nullable.ToOption();
+        public static implicit operator Option<T>(Maybe<T> maybe) =>
+            maybe.AsAny.ToOption();
 
         public static implicit operator Maybe<T>(Maybe<Nothing> _) => default(Maybe<T>);
 
-        public TOut Match<TOut>(Func<TOut> none, Func<T, TOut> some) => 
-            HasValue ? some(_value) : none();
+        public TOut Match<TOut>(Func<TOut> none, Func<T, TOut> some) =>
+            this.value?.Apply(x => some(x).ToAny()) ?? none();
 
-        public T GetValueOrDefault() => GetValueOrDefault(default(T));
+        public T GetValueOrDefault() => 
+            this.value;
 
-        public T GetValueOrDefault(T @default) => HasValue ? _value : @default;
+        public T GetValueOrDefault(T @default) => 
+            this.value ?? @default;
 
-        public T GetValueOrDefault([NotNull] Func<T> @default) =>
-            HasValue ? _value : CheckNotNull(@default, nameof(@default)).Invoke();
+        public T GetValueOrDefault(Func<T> @default) =>
+            this.value ?? CheckNotNull(@default, nameof(@default)).Invoke();
 
         public bool Any() => HasValue;
 
-        public bool Any(Func<T, bool> p) => HasValue && p(_value);
+        public bool Any(Func<T, bool> p) => this.value?.Apply(p) ?? false;
 
-
-        public bool All(Func<T, bool> p) => !HasValue || p(_value);
+        public bool All(Func<T, bool> p) => this.value?.Apply(p) ?? true;
 
         public void ForEach(Action<T> action)
         {
-            if (HasValue)
-            {
-                action(_value);
-            }
+            this.value?.Apply(action);
         }
 
 
         public void ForEach(Action none, Action<T> some)
         {
-            if (HasValue)
-            {
-                some(_value);
-            }
-            else
+            ForEach(some);
+            if (!HasValue)
             {
                 none();
             }
         }
 
         IOption<TOut> IOption<T>.Select<TOut>(Func<T, TOut> f) => 
-            this.HasValue ? Option.Some(f(_value)) : Option.None;
+            (this.value?.Apply(x => f(x).ToAny())).ToOption();
 
-        IOption<TOut> IOption<T>.SelectMany<TOut>(Func<T, IOption<TOut>> f) => 
-            HasValue ? f(_value).ToOption() : Option.None;
+        IOption<TOut> IOption<T>.SelectMany<TOut>(Func<T, IOption<TOut>> f) =>
+            this.value?.Apply(x => f(x)) ?? Option.Empty<TOut>();
 
         public Maybe<TOut> Select<TOut>(Func<T, TOut> f) where TOut : class =>
-            HasValue ? f(_value) : default(Maybe<TOut>);
+            this.value?.Apply(f); // implicit conversion
 
         public Maybe<TOut> SelectMany<TOut>(Func<T, Maybe<TOut>> f) where TOut : class =>
-            HasValue ? f(_value) : default(Maybe<TOut>);
+            this.value?.Apply(f) ?? default(Maybe<TOut>);
 
         IOption<T> IOption<T>.Where(Func<T, bool> p) => Where(p);
 
-        public Maybe<T> Where(Func<T, bool> p) => !HasValue || p(_value) ? this : default(Maybe<T>);
+        public Any<T>? AsAny => this.Select(x => x.ToAny());
+
+        public Maybe<T> Where(Func<T, bool> p) => !HasValue || p(this.value) ? this : default(Maybe<T>);
 
         public Maybe<TD> Cast<TD>() where TD : class, T =>
             SelectMany(x => x is TD d ? new Maybe<TD>(d) : default(Maybe<TD>));
 
         public int Count => HasValue ? 1 : 0;
 
-        public Maybe<T> OrElse([NotNull] Func<Maybe<T>> @default) =>
+        public Maybe<T> OrElse(Func<Maybe<T>> @default) =>
             HasValue ? this : @default();
 
         public Maybe<T> OrElse(Maybe<T> @default) =>
@@ -137,7 +141,7 @@ namespace InCube.Core.Functional
         public bool Contains(T elem) => Contains(elem, EqualityComparer<T>.Default);
 
         public bool Contains(T elem, IEqualityComparer<T> comparer) =>  
-            HasValue && comparer.Equals(_value, elem);
+            HasValue && comparer.Equals(this.value, elem);
     }
 
     public static class Maybe
@@ -155,14 +159,14 @@ namespace InCube.Core.Functional
 
         #region Conversion
 
-        public static Maybe<T> ToNullable<T>(this T value) where T : class => value;
+        public static Maybe<T> ToMaybe<T>(this T value) where T : class => value;
 
         #endregion
 
         #region Flattening
 
         public static Maybe<T> Flatten<T>(this in Option<Maybe<T>> self) where T : class =>
-            self.HasValue ? self.Value : default(Maybe<T>);
+            self.AsAny?.Apply(x => x.Value) ?? default(Maybe<T>);
 
         public static Maybe<T> Flatten<T>(this in Maybe<T>? self) where T : class =>
             self ?? default(Maybe<T>);
@@ -173,19 +177,19 @@ namespace InCube.Core.Functional
 
         public static TOut? Select<T, TOut>(this Maybe<T> @this, Func<T, TOut> f)
             where T : class where TOut : struct =>
-            @this.HasValue ? f(@this.Value).ToNullable() : default(TOut?);
+            @this.GetValueOrDefault()?.Apply(f);
 
         public static TOut? SelectMany<T, TOut>(this Maybe<T> @this, Func<T, TOut?> f)
             where T : class where TOut : struct =>
-            @this.HasValue ? f(@this.Value) : default(TOut?);
+            @this.GetValueOrDefault()?.Apply(f);
 
-        public static Maybe<TOut> Select<TIn, TOut>(this in TIn? self, Func<TIn, TOut> f) 
+        public static Maybe<TOut> Select<TIn, TOut>(this in TIn? self, Func<TIn, TOut> f)
             where TIn : struct where TOut : class =>
-            self.HasValue ? f(self.Value).ToNullable() : default(Maybe<TOut>);
+            self?.Apply(f); // implicit conversion
 
-        public static Maybe<TOut> SelectMany<TIn, TOut>(this in TIn? self, Func<TIn, Maybe<TOut>> f) 
+        public static Maybe<TOut> SelectMany<TIn, TOut>(this in TIn? self, Func<TIn, Maybe<TOut>> f)
             where TIn : struct where TOut : class =>
-            self.HasValue ? f(self.Value) : default(Maybe<TOut>);
+            self?.Apply(f) ?? default(Maybe<TOut>);
 
         #endregion
     }

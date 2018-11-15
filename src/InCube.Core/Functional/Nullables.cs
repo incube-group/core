@@ -18,7 +18,7 @@ namespace InCube.Core.Functional
 
         #endregion
 
-        #region IOption like extensions
+        #region IOption (Monad) like extensions
         
         public static T GetValueOrDefault<T>(this in T? self, [NotNull] Func<T> @default) where T : struct =>
             self ?? @default();
@@ -30,48 +30,44 @@ namespace InCube.Core.Functional
             self ?? @default;
 
         public static TOut Match<TOut, TIn>(this in TIn? self, Func<TOut> none, Func<TIn, TOut> some) where TIn : struct =>
-            self.HasValue ? some(self.Value) : none();
+            self.Select(x => some(x).ToAny()) ?? none();
 
         public static bool Contains<T>(this in T? self, T elem) where T : struct =>
             self.Contains(elem, EqualityComparer<T>.Default);
 
         public static bool Contains<T>(this in T? self, T elem, IEqualityComparer<T> comparer) where T : struct =>
-            self.HasValue && comparer.Equals(self.Value, elem);
+            self.Select(x => comparer.Equals(x, elem)) ?? false;
 
         public static T? Where<T>(this in T? self, Func<T, bool> p) where T : struct =>
-            !self.HasValue || p(self.Value) ? self : default(T?);
+            self.Any(p) ? self : default(T?);
 
         public static bool Any<T>(this in T? self) where T : struct => self.HasValue;
 
-        public static bool Any<T>(this in T? self, Func<T, bool> p) where T : struct => self.HasValue && p(self.Value);
+        public static bool Any<T>(this in T? self, Func<T, bool> p) where T : struct => self?.Apply(p) ?? false;
 
-        public static bool All<T>(this in T? self, Func<T, bool> p) where T : struct => !self.HasValue || p(self.Value);
+        public static bool All<T>(this in T? self, Func<T, bool> p) where T : struct => self?.Apply(p) ?? true;
 
         public static void ForEach<T>(this in T? self, Action<T> action) where T : struct
         {
-            if (self.HasValue)
-            {
-                action(self.Value);
-            }
+            self?.Apply(action);
         }
 
         public static void ForEach<T>(this in T? self, Action none, Action<T> some) where T : struct
         {
-            if (self.HasValue)
-            {
-                some(self.Value);
-            }
-            else
+            self.ForEach(some);
+            if (!self.HasValue)
             {
                 none();
             }
         }
 
-        public static TOut? Select<TIn, TOut>(this in TIn? self, Func<TIn, TOut> f) where TIn : struct where TOut : struct =>
-            self.HasValue ? f(self.Value).ToNullable() : null;
+        public static TOut? Select<TIn, TOut>(this in TIn? self, Func<TIn, TOut> f) 
+            where TIn : struct where TOut : struct =>
+            self?.Apply(f);
 
-        public static TOut? SelectMany<TIn, TOut>(this in TIn? self, Func<TIn, TOut?> f) where TIn : struct where TOut : struct =>
-            self.HasValue ? f(self.Value) : null;
+        public static TOut? SelectMany<TIn, TOut>(this in TIn? self, Func<TIn, TOut?> f) 
+            where TIn : struct where TOut : struct =>
+            self?.Apply(f);
 
         #endregion
     }

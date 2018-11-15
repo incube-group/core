@@ -103,6 +103,8 @@ namespace InCube.Core.Functional
                 ? this
                 : Try.Failure<T>(new ArgumentException("Predicate does not hold for value " + AsOption.Value));
 
+        public Any<T>? AsAny => AsOption.AsAny;
+
         ITry<T> ITry<T>.Where(Func<T, bool> p) => this.Where(p);
 
         IOption<T> IOption<T>.Where(Func<T, bool> p) => this.Where(p);
