@@ -377,7 +377,5 @@ namespace InCube.Core.Collections
 
             return freeIndex;
         }
-
-        public static T[] Empty<T>() => Array.Empty<T>();
     }
 }
