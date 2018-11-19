@@ -54,7 +54,7 @@ namespace InCube.Core.Functional
         
         public override bool Equals(object obj)
         {
-            if (obj == null) return !HasValue;
+            if (ReferenceEquals(obj, null)) return !HasValue;
             return obj is Option<T> option && Equals(option);
         }
 
@@ -73,7 +73,7 @@ namespace InCube.Core.Functional
         public static explicit operator T(Option<T> value) => value.Value;
 
         public static implicit operator Option<T>(T value) => 
-            typeof(T).IsValueType || value != null ? new Option<T>(value) : default(Option<T>);
+            typeof(T).IsValueType || !ReferenceEquals(value, null) ? new Option<T>(value) : default(Option<T>);
 
         [SuppressMessage("Usage",
             "CA1801: Review unused parameters",

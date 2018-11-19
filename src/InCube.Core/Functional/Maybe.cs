@@ -29,9 +29,9 @@ namespace InCube.Core.Functional
             this.value = value;
         }
 
-        public bool HasValue => this.value != null;
+        public bool HasValue => !ReferenceEquals(this.value, null);
 
-        public T Value => HasValue ? this.value : throw new InvalidOperationException("None.Get");
+        public T Value => this.value ?? throw new InvalidOperationException("None.Get");
 
         public IEnumerator<T> GetEnumerator()
         {
@@ -52,7 +52,7 @@ namespace InCube.Core.Functional
 
         public override bool Equals(object obj)
         {
-            if (obj == null) return !HasValue;
+            if (ReferenceEquals(obj, null)) return !HasValue;
             return obj is Maybe<T> option && Equals(option);
         }
 
@@ -147,7 +147,7 @@ namespace InCube.Core.Functional
         public bool Contains(T elem) => Contains(elem, EqualityComparer<T>.Default);
 
         public bool Contains(T elem, IEqualityComparer<T> comparer) =>  
-            HasValue && comparer.Equals(this.value, elem);
+            this.Select(x => comparer.Equals(x, elem)) ?? false;
     }
 
     public static class Maybe
