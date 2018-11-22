@@ -7,7 +7,7 @@ using NUnit.Framework;
 
 namespace InCube.Core.Test.Collections
 {
-    public class CollectionsTest
+    public class CollectionExtensionsTest
     {
         [Test]
         public void TestUpperBoundList()

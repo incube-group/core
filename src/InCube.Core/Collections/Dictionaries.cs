@@ -30,6 +30,15 @@ namespace InCube.Core.Collections
         public static Option<TV> GetOption<TK, TV>(this IReadOnlyDictionary<TK, TV> dict, TK key) =>
             dict.TryGetValue(key, out var value) ? Option.Some(value) : Option.None;
 
+        public static Maybe<TV> GetMaybe<TK, TV>(this IReadOnlyDictionary<TK, TV> dict, TK key) where TV : class =>
+            dict.TryGetValue(key, out var value) ? Maybe.Some(value) : Maybe.None;
+
+        public static TV? GetNullable<TK, TV>(this IReadOnlyDictionary<TK, TV> dict, TK key) where TV : struct =>
+            dict.TryGetValue(key, out var value) ? value : default(TV?);
+
+        public static bool IsEmpty<TK, TV>(this IReadOnlyDictionary<TK, TV> dict) =>
+            dict.Count == 0;
+
         [StringFormatMethod("format")]
         public static TV GetOrThrow<TK, TV>(this IReadOnlyDictionary<TK, TV> dict, string format, TK key) =>
             dict.GetOrDefault(key, () => throw new KeyNotFoundException(string.Format(format, key)));
