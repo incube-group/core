@@ -144,9 +144,9 @@ namespace InCube.Core.Functional
 
     public static class Either
     {
-        public static Either<TL, TR> OfLeft<TL, TR>(TL left) => left;
+        public static Either<TL, TR> OfLeft<TL, TR>(TL left, TR right = default) => left;
 
-        public static Either<TL, TR> OfRight<TL, TR>(TR right) => right;
+        public static Either<TL, TR> OfRight<TL, TR>(TR right, TL left = default) => right;
 
         public static IEither<TL, TOut> SelectMany<TL, TR, TOut>(
             this IEither<TL, TR> @this,
