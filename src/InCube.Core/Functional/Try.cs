@@ -36,7 +36,7 @@ namespace InCube.Core.Functional
         IEither<Exception, T> ITry<T>.AsEither => AsEither;
 
         public static implicit operator Either<Exception, T>(Try<T> t) =>
-            t.Match(failure => Either.OfLeft(failure, default(T)), success => Either.OfRight(success, default(Exception)));
+            t.Match(Either.OfLeft<Exception, T>, Either.OfRight<Exception, T>);
 
         public bool HasValue => AsOption.HasValue;
 
