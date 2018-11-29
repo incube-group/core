@@ -83,9 +83,19 @@ namespace InCube.Core.Collections
             enumerable.Select(keyValue => MakePair(keyValue.Key, mapper(keyValue.Value)));
 
         [PublicAPI]
+        public static IEnumerable<KeyValuePair<T, TV>> MapValues<T, TU, TV>(
+            this IEnumerable<KeyValuePair<T, TU>> enumerable, Func<T, TU, TV> mapper) =>
+            enumerable.Select(keyValue => MakePair(keyValue.Key, mapper(keyValue.Key, keyValue.Value)));
+
+        [PublicAPI]
         public static IEnumerable<(T Key, TV Value)> MapValues<T, TU, TV>(this IEnumerable<(T Key, TU Value)> enumerable,
             Func<TU, TV> mapper) =>
             enumerable.Select(kv => (kv.Key, mapper(kv.Value)));
+
+        [PublicAPI]
+        public static IEnumerable<(T Key, TV Value)> MapValues<T, TU, TV>(this IEnumerable<(T Key, TU Value)> enumerable,
+            Func<T, TU, TV> mapper) =>
+            enumerable.Select(kv => (kv.Key, mapper(kv.Key, kv.Value)));
 
         [PublicAPI]
         public static IEnumerable<TV> Values<T, TV>(
