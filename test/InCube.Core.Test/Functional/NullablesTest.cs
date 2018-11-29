@@ -1,7 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-using InCube.Core.Functional;
+﻿using InCube.Core.Functional;
 using NUnit.Framework;
 
 namespace InCube.Core.Test.Functional

@@ -1,7 +1,6 @@
 ﻿using System;
 using InCube.Core.Functional;
 using Newtonsoft.Json;
-using Nullable = System.Nullable;
 
 namespace InCube.Core.Format
 {

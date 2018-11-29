@@ -1,5 +1,4 @@
 ﻿using System;
-using InCube.Core.Functional;
 using NUnit.Framework;
 using static InCube.Core.Functional.Try;
 
