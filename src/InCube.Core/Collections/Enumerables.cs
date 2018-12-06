@@ -282,7 +282,20 @@ namespace InCube.Core.Collections
         {
             using (var enumerator = self.GetEnumerator())
             {
+                // ReSharper disable once AssignNullToNotNullAttribute
                 return enumerator.MoveNext() ? Option.Some(enumerator.Current) : Option.None;
+            }
+        }
+
+        public static Option<T> SingleOption<T>(this IEnumerable<T> self)
+        {
+            using (var enumerator = self.GetEnumerator())
+            {
+                return enumerator.MoveNext()
+                    // ReSharper disable once AccessToDisposedClosure
+                    // ReSharper disable once AssignNullToNotNullAttribute
+                    ? Option.Some(enumerator.Current).Where(_ => !enumerator.MoveNext())
+                    : Option.None;
             }
         }
 
