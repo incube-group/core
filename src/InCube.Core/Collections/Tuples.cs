@@ -78,12 +78,28 @@ namespace InCube.Core.Collections
             enumerable.Select(MakeValueTuple);
 
         [PublicAPI]
+        public static IEnumerable<TOut> ZipI<T1, T2, TOut>(
+            this IEnumerable<T1> e1,
+            IEnumerable<T2> e2,
+            Func<T1, T2, int, TOut> mapper) =>
+            e1.ZipAsTuple(e2).Select((x, i) => mapper(x.Item1, x.Item2, i));
+
+        [PublicAPI]
         public static IEnumerable<TOut> Zip3<T1, T2, T3, TOut>(
             this IEnumerable<T1> e1,
             IEnumerable<T2> e2,
             IEnumerable<T3> e3,
             Func<T1, T2, T3, TOut> mapper) =>
             e1.ZipAsTuple(e2).Zip(e3, (x, y) => mapper(x.Item1, x.Item2, y));
+
+        [PublicAPI]
+        public static IEnumerable<TOut> Zip4<T1, T2, T3, T4, TOut>(
+            this IEnumerable<T1> e1,
+            IEnumerable<T2> e2,
+            IEnumerable<T3> e3,
+            IEnumerable<T4> e4,
+            Func<T1, T2, T3, T4, TOut> mapper) =>
+            e1.ZipAsTuple(e2).Zip3(e3, e4, (x, y, z) => mapper(x.Item1, x.Item2, y, z));
 
         [PublicAPI]
         public static IEnumerable<KeyValuePair<T, TV>> MapValues<T, TU, TV>(

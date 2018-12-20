@@ -51,10 +51,12 @@ namespace InCube.Core.Collections
             return enumerable.ToDictionary(kv => kv.Key, kv => kv.Value);
         }
 
-        public static Dictionary<TK, TV> ToDictionary<TK, TV>(this IEnumerable<(TK key, TV value)> enumerable)
-        {
-            return enumerable.ToDictionary(kv => kv.key, kv => kv.value);
-        }
+        public static Dictionary<TK, TV> ToDictionary<TK, TV>(this IEnumerable<(TK key, TV value)> enumerable) => 
+            enumerable.ToDictionary(kv => kv.key, kv => kv.value);
+
+        public static Dictionary<TK, IEnumerable<TV>> ToDictionary<TK, TV>(
+            this IEnumerable<IGrouping<TK, TV>> enumerable) =>
+            enumerable.ToDictionary(kv => kv.Key, kv => kv as IEnumerable<TV>);
 
         public static IReadOnlyDictionary<TK, TV> AsReadOnly<TK, TV>(this IDictionary<TK, TV> dict)
         {

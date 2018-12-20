@@ -220,8 +220,14 @@ namespace InCube.Core.Collections
         public static IEnumerable<T> Flatten<T>(this IEnumerable<IEnumerable<T>> enumerable) =>
             enumerable.SelectMany(list => list);
 
+        public static IEnumerable<T> Flatten<T>(this IEnumerable<Maybe<T>> enumerable) where T : class =>
+            enumerable.SelectMany(opt => opt);
+
         public static IEnumerable<T> Flatten<T>(this IEnumerable<Option<T>> enumerable) =>
-            enumerable.SelectMany(list => list);
+            enumerable.SelectMany(opt => opt);
+
+        public static IEnumerable<T> Flatten<T>(this IEnumerable<T?> enumerable) where T : struct =>
+            enumerable.SelectMany(nullable => nullable.ToOption());
 
         public static bool IsEmpty<T>(this IEnumerable<T> col) => !col.Any();
 
@@ -298,6 +304,15 @@ namespace InCube.Core.Collections
                     : Option.None;
             }
         }
+
+        public static (IEnumerable<T> Left, IEnumerable<T> Right) Split<T>(this IEnumerable<T> self,
+            Func<T, bool> isLeft)
+        {
+            var groups = self.GroupBy(isLeft).ToDictionary();
+            return (groups.GetOption(true).GetValueOrDefault(Enumerable.Empty<T>()),
+                    groups.GetOption(false).GetValueOrDefault(Enumerable.Empty<T>()));
+        }
+
 
         public static bool IsSorted<T>(this IEnumerable<T> self, IComparer<T> comparer = null, bool strict = false)
         {
