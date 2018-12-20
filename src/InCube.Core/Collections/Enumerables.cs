@@ -313,7 +313,6 @@ namespace InCube.Core.Collections
                     groups.GetOption(false).GetValueOrDefault(Enumerable.Empty<T>()));
         }
 
-
         public static bool IsSorted<T>(this IEnumerable<T> self, IComparer<T> comparer = null, bool strict = false)
         {
             comparer = comparer ?? Comparer<T>.Default;
