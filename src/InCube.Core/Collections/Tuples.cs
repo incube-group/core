@@ -122,6 +122,11 @@ namespace InCube.Core.Collections
             enumerable.Select(kv => (kv.Key, mapper(kv.Key, kv.Value)));
 
         [PublicAPI]
+        public static IEnumerable<(T Key, TV Value)> MapValues<T, TU, TV>(
+            this IEnumerable<IGrouping<T, TU>> enumerable, Func<IEnumerable<TU>, TV> mapper) =>
+            enumerable.Select(keyValue => (keyValue.Key, mapper(keyValue)));
+
+        [PublicAPI]
         public static IEnumerable<TV> Values<T, TV>(
             this IEnumerable<(T Key, TV Value)> enumerable) =>
             enumerable.TupleSelect((_, value) => value);
