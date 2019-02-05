@@ -305,6 +305,15 @@ namespace InCube.Core.Collections
             }
         }
 
+        public static Option<T> MaxOption<T>(this IEnumerable<T> self) =>
+            self.AggregateOption(Enumerable.Max);
+
+        public static Option<T> MinOption<T>(this IEnumerable<T> self) => 
+            self.AggregateOption(Enumerable.Min);
+
+        public static Option<T> AggregateOption<T>(this IEnumerable<T> self, Func<IEnumerable<T>, T> aggregator) =>
+            Try.Execute(() => aggregator.Invoke(self)).AsOption;
+
         public static (IEnumerable<T> Left, IEnumerable<T> Right) Split<T>(this IEnumerable<T> self,
             Func<T, bool> isLeft)
         {
