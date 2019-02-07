@@ -8,25 +8,25 @@ namespace InCube.Core.Format
 {
     public class GenericOptionJsonConverter : JsonConverter
     {
-        private static readonly MethodInfo OptionEmptyMethod = typeof(Option).GetMethod("Empty");
-        private static readonly MethodInfo OptionSomeMethod = typeof(Option).
+        private const string OptionEmpty = "Empty";
+        private static readonly MethodInfo OptionSome = typeof(Option).
             GetMethods().Single(m => m.Name == "Some" && !m.ReturnType.GetGenericArguments()[0].IsGenericType);
 
-        private static readonly MethodInfo NullRefEmptyMethod = typeof(Maybe).GetMethod("Empty");
-        private static readonly MethodInfo NullRefSomeMethod = typeof(Maybe).GetMethod("Some");
+        private const string MaybeEmpty = "Empty";
+        private static readonly MethodInfo MaybeSome = typeof(Maybe).GetMethod("Some");
 
         public GenericOptionJsonConverter(Type optionType)
         {
-            this.OptionType = optionType;
+            OptionType = optionType;
             if (optionType == typeof(Option<>))
             {
-                EmptyMethod = OptionEmptyMethod;
-                SomeMethod = OptionSomeMethod;
+                Empty = OptionEmpty;
+                Some = OptionSome;
             } 
             else if (optionType == typeof(Maybe<>))
             {
-                EmptyMethod = NullRefEmptyMethod;
-                SomeMethod = NullRefSomeMethod;
+                Empty = MaybeEmpty;
+                Some = MaybeSome;
             }
             else
             {
@@ -36,9 +36,9 @@ namespace InCube.Core.Format
 
         private Type OptionType { get; }
 
-        private MethodInfo SomeMethod { get; }
+        private MethodInfo Some { get; }
         
-        private MethodInfo EmptyMethod { get; }
+        private string Empty { get; }
 
         public override void WriteJson(JsonWriter writer, object value, JsonSerializer serializer)
         {
@@ -59,14 +59,16 @@ namespace InCube.Core.Format
             object existingValue,
             JsonSerializer serializer)
         {
-            var paramType = objectType.GenericTypeArguments[0];
+            var typeArgs = objectType.GenericTypeArguments;
             if (reader.TokenType == JsonToken.Null)
             {
-                return EmptyMethod.MakeGenericMethod(paramType).Invoke(null, null);
+                var concreteType = OptionType.MakeGenericType(typeArgs);
+                return concreteType.GetField(Empty).GetValue(null);
             }
 
+            var paramType = typeArgs[0];
             var value = serializer.Deserialize(reader, paramType);
-            return SomeMethod.MakeGenericMethod(paramType).Invoke(null, new [] {value});
+            return Some.MakeGenericMethod(paramType).Invoke(null, new [] {value});
         }
 
         public sealed override bool CanConvert(Type objectType) => 
