@@ -46,7 +46,7 @@ namespace InCube.Core.Test.Functional
 #pragma warning disable CS1718 // Comparison made to same variable
             Assert.True(none == none);
 #pragma warning restore CS1718 // Comparison made to same variable
-            var intNone = Empty<Boxed<int>>();
+            var intNone = Maybe<Boxed<int>>.Empty;
             Assert.True(none == intNone);
             Assert.True(intNone == none);
             Assert.True(none == null);
@@ -98,9 +98,9 @@ namespace InCube.Core.Test.Functional
             Option<Boxed<int>> someOptInt = Some(one);
             Assert.True(someOptInt.HasValue);
 
-            Option<Maybe<object>> optOptObj = Empty<object>();
+            Option<Maybe<object>> optOptObj = Maybe<object>.Empty;
             Assert.True(optOptObj.HasValue);
-            Option<Boxed<int>> optOptInt = Empty<Boxed<int>>();
+            Option<Boxed<int>> optOptInt = Maybe<Boxed<int>>.Empty;
             Assert.False(optOptInt.HasValue);
         }
 
@@ -110,7 +110,8 @@ namespace InCube.Core.Test.Functional
             var opt = Some(Boxed.Of(1));
             Assert.True(opt.Where(x => x == 1).HasValue);
             Assert.False(opt.Where(x => x == 2).HasValue);
-            Assert.False(Empty<Boxed<int>>().Where(x => x == 2).HasValue);
+            // ReSharper disable once ImpureMethodCallOnReadonlyValueField
+            Assert.False(Maybe<Boxed<int>>.Empty.Where(x => x == 2).HasValue);
         }
 
         [Test]
@@ -139,7 +140,7 @@ namespace InCube.Core.Test.Functional
         {
             var one = Some(Boxed.Of(1));
             Assert.AreEqual(one, Option.Some(one).Flatten());
-            var none = Empty<Boxed<int>>();
+            var none = Maybe<Boxed<int>>.Empty;
             // ReSharper disable once ExpressionIsAlwaysNull
             // ReSharper disable once AssignNullToNotNullAttribute
             Assert.AreEqual(none, Option.Some(none).Flatten());
@@ -155,7 +156,7 @@ namespace InCube.Core.Test.Functional
             Assert.AreEqual(typeof(Maybe<Boxed<int>>), someOne.SelectMany(x => x.ToMaybe()).GetType());
             var some = Some(Boxed.Of(false));
             Assert.False(some.Select(x => x.Value).GetValueOrDefault(true));
-            var none = Empty<Boxed<bool>>();
+            var none = Maybe<Boxed<bool>>.Empty;
             Assert.True(none.Select(x => x.Value).GetValueOrDefault(true));
             Assert.True(some.Select(x => default(Boxed<bool>)).GetValueOrDefault(Boxed.Of(true)));
         }

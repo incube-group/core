@@ -32,7 +32,7 @@ namespace InCube.Core.Numerics
             var edgeCount = elements.Count;
 
             var (edges, optIndices) = Functions.If(elements.IsSorted(comparer: comparer),
-                ifBranch:   () => (elements, Option.Empty<int[]>()),
+                ifBranch:   () => (elements, Option<int[]>.Empty),
                 elseBranch: () =>
                 {
                     var edgeArray = elements.ToArray();

@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using InCube.Core.Functional;
 using static InCube.Core.Preconditions;
@@ -311,8 +312,9 @@ namespace InCube.Core.Collections
         public static Option<T> MinOption<T>(this IEnumerable<T> self) => 
             self.AggregateOption(Enumerable.Min);
 
+        [SuppressMessage("ReSharper", "PossibleMultipleEnumeration", Justification = "prevent unnecessary exceptions")]
         public static Option<T> AggregateOption<T>(this IEnumerable<T> self, Func<IEnumerable<T>, T> aggregator) =>
-            Try.Execute(() => aggregator.Invoke(self)).AsOption;
+            self.IsEmpty() ? Option<T>.Empty : Try.Execute(() => aggregator.Invoke(self)).AsOption;
 
         public static (IEnumerable<T> Left, IEnumerable<T> Right) Split<T>(this IEnumerable<T> self,
             Func<T, bool> isLeft)

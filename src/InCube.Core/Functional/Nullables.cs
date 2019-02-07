@@ -6,12 +6,6 @@ namespace InCube.Core.Functional
 {
     public static class Nullables
     {
-        #region construction
-        
-        public static T? Empty<T>() where T : struct => default(T?);
-
-        #endregion
-
         #region Conversion
 
         public static T? ToNullable<T>(this T self) where T : struct => self;

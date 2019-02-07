@@ -18,7 +18,7 @@ namespace InCube.Core.Functional
     [SuppressMessage("Managed Binary Analysis",
         "CA2225: Operator overloads have named alternates",
         Justification = "Methods are in static companion class.")]
-    public readonly struct Option<T> : IOption<T>, IInvariantOption<T, Option<T>>, IEquatable<Option<T>>
+    public readonly struct Option<T> : IOption<T>, IInvariantOption<T, Option<T>>
     {
         internal Option(T value)
         {
@@ -138,6 +138,8 @@ namespace InCube.Core.Functional
 
         public bool Contains(T elem, IEqualityComparer<T> comparer) =>
             AsAny.Select(x => comparer.Equals(x.Value, elem)) ?? false;
+
+        public static readonly Option<T> Empty = default(Option<T>);
     }
 
     /// <summary>
@@ -148,8 +150,6 @@ namespace InCube.Core.Functional
         #region Construction 
         
         public static readonly Option<Nothing> None = default(Option<Nothing>);
-
-        public static Option<T> Empty<T>() => default(Option<T>);
 
         public static Option<T> Some<T>([NotNull] T value) => new Option<T>(value);
 

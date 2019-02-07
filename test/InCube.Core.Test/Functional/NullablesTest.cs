@@ -10,7 +10,7 @@ namespace InCube.Core.Test.Functional
         {
             var some = false.ToNullable();
             Assert.False(some.Select(x => x).GetValueOrDefault(true));
-            var none = Nullables.Empty<bool>();
+            var none = default(bool?);
             Assert.True(none.Select(x => x).GetValueOrDefault(true));
         }
     }

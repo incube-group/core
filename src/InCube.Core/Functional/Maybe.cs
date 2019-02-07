@@ -119,7 +119,7 @@ namespace InCube.Core.Functional
             (this.value?.Apply(x => f(x).ToAny())).ToOption();
 
         IOption<TOut> IOption<T>.SelectMany<TOut>(Func<T, IOption<TOut>> f) =>
-            this.value?.Apply(x => f(x)) ?? Option.Empty<TOut>();
+            this.value?.Apply(x => f(x)) ?? Option<TOut>.Empty;
 
         public Maybe<TOut> Select<TOut>(Func<T, TOut> f) where TOut : class =>
             this.value?.Apply(f); // implicit conversion
@@ -148,6 +148,8 @@ namespace InCube.Core.Functional
 
         public bool Contains(T elem, IEqualityComparer<T> comparer) =>  
             this.Select(x => comparer.Equals(x, elem)) ?? false;
+
+        public static readonly Maybe<T> Empty = default(Maybe<T>);
     }
 
     public static class Maybe
@@ -155,8 +157,6 @@ namespace InCube.Core.Functional
         #region Construction 
 
         public static readonly Maybe<Nothing> None = default(Maybe<Nothing>);
-
-        public static Maybe<T> Empty<T>() where T : class => default(Maybe<T>);
 
         public static Maybe<T> Some<T>([NotNull] T value) where T : class => 
             CheckNotNull(value, nameof(value));
