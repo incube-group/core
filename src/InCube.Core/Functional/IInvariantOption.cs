@@ -9,7 +9,7 @@ namespace InCube.Core.Functional
     /// </summary>
     /// <typeparam name="T"></typeparam>
     /// <typeparam name="TOpt"></typeparam>
-    public interface IInvariantOption<T, TOpt> : IEquatable<TOpt> where TOpt : IOption<T>
+    public interface IInvariantOption<T, TOpt> : IOption<T>, IEquatable<TOpt> where TOpt : IInvariantOption<T, TOpt>
     {
         TOpt OrElse([NotNull] Func<TOpt> @default);
         
@@ -23,7 +23,7 @@ namespace InCube.Core.Functional
 
         bool Contains(T elem, IEqualityComparer<T> comparer);
 
-        TOpt Where(Func<T, bool> p);
+        new TOpt Where(Func<T, bool> p);
 
         Any<T>? AsAny { get; }
     }
