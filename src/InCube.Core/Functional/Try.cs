@@ -9,7 +9,7 @@ namespace InCube.Core.Functional
     [SuppressMessage("Managed Binary Analysis",
         "CA2225: Operator overloads have named alternates",
         Justification = "Methods are in static companion class.")]
-    public readonly struct Try<T> : ITry<T>, IInvariantOption<T, Try<T>>, IEquatable<Try<T>>
+    public readonly struct Try<T> : ITry<T>, IInvariantOption<T, Try<T>>
     {
         private readonly Maybe<Exception> exception;
 

@@ -19,7 +19,7 @@ namespace InCube.Core.Functional
     [SuppressMessage("Managed Binary Analysis",
         "CA2225: Operator overloads have named alternates",
         Justification = "Methods are in static companion class.")]
-    public readonly struct Maybe<T> : IOption<T>, IInvariantOption<T, Maybe<T>>, IEquatable<Maybe<T>>
+    public readonly struct Maybe<T> : IInvariantOption<T, Maybe<T>>
         where T : class
     {
         private readonly T value;
@@ -119,7 +119,7 @@ namespace InCube.Core.Functional
             (this.value?.Apply(x => f(x).ToAny())).ToOption();
 
         IOption<TOut> IOption<T>.SelectMany<TOut>(Func<T, IOption<TOut>> f) =>
-            this.value?.Apply(x => f(x)) ?? Option<TOut>.Empty;
+            this.value?.Apply(f) ?? default(Option<TOut>);
 
         public Maybe<TOut> Select<TOut>(Func<T, TOut> f) where TOut : class =>
             this.value?.Apply(f); // implicit conversion
@@ -156,7 +156,7 @@ namespace InCube.Core.Functional
     {
         #region Construction 
 
-        public static readonly Maybe<Nothing> None = default(Maybe<Nothing>);
+        public static readonly Maybe<Nothing> None = Maybe<Nothing>.Empty;
 
         public static Maybe<T> Some<T>([NotNull] T value) where T : class => 
             CheckNotNull(value, nameof(value));
