@@ -37,8 +37,8 @@ namespace InCube.Core.Functional
     {
         public static Any<T> ToAny<T>(this T t) => t;
 
-        public static TOut Apply<T, TOut>(this T self, Func<T, TOut> f) => f(self);
+        internal static TOut Apply<T, TOut>(this T self, Func<T, TOut> f) => f(self);
 
-        public static void Apply<T>(this T self, Action<T> f) => f(self);
+        internal static void Apply<T>(this T self, Action<T> f) => f(self);
     }
 }
