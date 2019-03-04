@@ -32,7 +32,7 @@ namespace InCube.Core.Test.Functional
                 return value;
             });
             Assert.False(t.HasValue);
-            Assert.Throws<ArgumentException>(() =>
+            Assert.Throws<InvalidOperationException>(() =>
             {
                 var x = t.Value;
             });
