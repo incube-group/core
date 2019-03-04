@@ -48,7 +48,7 @@ namespace InCube.Core.Functional
             get
             {
                 var @this = this;
-                return AsOption.GetValueOrDefault(() => throw @this.Exception);
+                return AsOption.GetValueOrDefault(() => throw new InvalidOperationException("Try failed", @this.Exception));
             }
         }
 
