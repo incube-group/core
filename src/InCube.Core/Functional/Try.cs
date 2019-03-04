@@ -77,7 +77,7 @@ namespace InCube.Core.Functional
         public Try<Exception> Failed()
         {
             var self = this; // in order to capture this in the following lambda
-            return Try.Execute(() => self.Exception);
+            return Try.Do(() => self.Exception);
         }
 
         public TOut Match<TOut>(Func<Exception, TOut> failure, Func<T, TOut> success) =>
@@ -113,7 +113,7 @@ namespace InCube.Core.Functional
             SelectMany(x => failure(x).ToTry(), x => success(x).ToTry());
 
         public Try<TOut> Select<TOut>(Func<T, TOut> f) =>
-            Match(Try.Failure<TOut>, value => Try.Execute(() => f(value)));
+            Match(Try.Failure<TOut>, value => Try.Do(() => f(value)));
 
         public Try<TOut> SelectMany<TOut>(Func<T, Try<TOut>> f) =>
             Match(Try.Failure<TOut>, f);
@@ -185,7 +185,7 @@ namespace InCube.Core.Functional
 
         public static Try<T> Failure<T>(Exception ex) => new Try<T>(ex);
 
-        public static Try<T> Execute<T>(Func<T> f)
+        public static Try<T> Do<T>(Func<T> f)
         {
             try
             {

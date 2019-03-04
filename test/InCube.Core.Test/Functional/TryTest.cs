@@ -10,7 +10,7 @@ namespace InCube.Core.Test.Functional
         public void TestSuccess()
         {
             const int value = 1;
-            var t = Execute(() => value);
+            var t = Do(() => value);
             Assert.True(t.HasValue);
             Assert.AreEqual(value, t.Value);
             Assert.Throws<InvalidOperationException>(() =>
@@ -26,7 +26,7 @@ namespace InCube.Core.Test.Functional
         public void TestFailure()
         {
             const int value = 1;
-            var t = Execute(() =>
+            var t = Do(() =>
             {
                 Preconditions.CheckArgument(value <= 0, "value is positive: {}", value);
                 return value;
