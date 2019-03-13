@@ -200,6 +200,8 @@ namespace InCube.Core.Collections
         [Obsolete("unnecessary call")]
         public static IReadOnlyList<T> AsReadOnly<T>(this IReadOnlyList<T> list) => list;
 
+        public static IReadOnlyList<T> ToReadOnlyList<T>(this IEnumerable<T> enumerable) => enumerable.ToList();
+
         public static TU[] ParallelMap<T, TU>(this IReadOnlyList<T> list, Func<T, TU> map, TU[] result = null) =>
             list.ParallelMap(map, 0, list.Count, result);
 

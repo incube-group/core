@@ -36,5 +36,8 @@ namespace InCube.Core.Functional
 
         [PublicAPI]
         public static T ApplyOpt<T>(this T self, Func<T, T?> f) where T : struct => f(self).GetValueOrDefault(self);
+
+        [PublicAPI]
+        public static Lazy<T> Lazy<T>(Func<T> func) => new Lazy<T>(func);
     }
 }

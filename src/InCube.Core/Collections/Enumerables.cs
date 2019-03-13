@@ -316,6 +316,10 @@ namespace InCube.Core.Collections
             self.AggregateOption(Enumerable.Min);
 
         [SuppressMessage("ReSharper", "PossibleMultipleEnumeration", Justification = "prevent unnecessary exceptions")]
+        public static Option<(T Min, T Max)> MinMaxOption<T>(this IEnumerable<T> self) =>
+            self.MinOption().SelectMany(min => self.MaxOption().Select(max => (min, max)));
+
+        [SuppressMessage("ReSharper", "PossibleMultipleEnumeration", Justification = "prevent unnecessary exceptions")]
         public static Option<T> AggregateOption<T>(this IEnumerable<T> self, Func<IEnumerable<T>, T> aggregator) =>
             self.IsEmpty() ? Option<T>.Empty : Try.Do(() => aggregator.Invoke(self)).AsOption;
 
