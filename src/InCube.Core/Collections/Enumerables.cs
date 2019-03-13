@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using System.Linq;
+using System.Runtime.InteropServices.ComTypes;
 using InCube.Core.Functional;
 using static InCube.Core.Preconditions;
 
@@ -265,6 +266,16 @@ namespace InCube.Core.Collections
             {
                 state = next(state, item);
                 yield return state;
+            }
+        }
+
+        public static IEnumerable<TOut> Scan<T, TState, TOut>(this IEnumerable<T> input, TState state, Func<TState, T, (TState, TOut)> next)
+        {
+            foreach (var item in input)
+            {
+                var (newState, result) = next(state, item);
+                state = newState;
+                yield return result;
             }
         }
 
