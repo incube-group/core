@@ -32,10 +32,18 @@ namespace InCube.Core.Functional
         }
 
         [PublicAPI]
-        public static T ApplyOpt<T>(this T self, Func<T, Option<T>> f) => f(self).GetValueOrDefault(self);
+        public static TU ApplyOpt<T, TU>(this T self, Func<T, Option<TU>> f) where T : TU => 
+            f(self).GetValueOrDefault(self);
 
         [PublicAPI]
-        public static T ApplyOpt<T>(this T self, Func<T, T?> f) where T : struct => f(self).GetValueOrDefault(self);
+        public static TU ApplyOpt<T, TU>(this T self, Func<T, Maybe<TU>> f) 
+            where TU : class 
+            where T : TU =>
+            f(self).GetValueOrDefault(self);
+
+        [PublicAPI]
+        public static T ApplyOpt<T>(this T self, Func<T, T?> f) where T : struct => 
+            f(self).GetValueOrDefault(self);
 
         [PublicAPI]
         public static Lazy<T> Lazy<T>(Func<T> func) => new Lazy<T>(func);
