@@ -58,7 +58,7 @@ namespace InCube.Core.Collections
             this IEnumerable<IGrouping<TK, TV>> enumerable) =>
             enumerable.ToDictionary(kv => kv.Key, kv => kv as IEnumerable<TV>);
 
-        public static IReadOnlyDictionary<TK, TV> AsReadOnly<TK, TV>(this IDictionary<TK, TV> dict)
+        public static IReadOnlyDictionary<TK, TV> AsReadOnlyDictionary<TK, TV>(this IDictionary<TK, TV> dict)
         {
             switch (dict)
             {
@@ -79,7 +79,15 @@ namespace InCube.Core.Collections
         /// The purpose of this method is to issue a compiler warning if someone calls this by mistake.
         /// </summary>
         [Obsolete("unnecessary call")]
-        public static IReadOnlyDictionary<TK, TV> AsReadOnly<TK, TV>(this IReadOnlyDictionary<TK, TV> dict) => dict;
+        public static IReadOnlyDictionary<TK, TV> AsReadOnlyDictionary<TK, TV>(this IReadOnlyDictionary<TK, TV> dict) => dict;
+
+        public static IReadOnlyDictionary<TK, TV> AsReadOnlyDictionary<TK, TV>(this Dictionary<TK, TV> dict) => dict;
+
+        public static IReadOnlyDictionary<TK, TV> AsReadOnlyDictionary<TK, TV>(this ConcurrentDictionary<TK, TV> dict) => dict;
+
+        public static IReadOnlyDictionary<TK, TV> AsReadOnlyDictionary<TK, TV>(this SortedDictionary<TK, TV> dict) => dict;
+
+        public static IReadOnlyDictionary<TK, TV> AsReadOnlyDictionary<TK, TV>(this SortedList<TK, TV> dict) => dict;
 
         private class EmptyDictionary<TKey, TValue> : IReadOnlyDictionary<TKey, TValue>
         {

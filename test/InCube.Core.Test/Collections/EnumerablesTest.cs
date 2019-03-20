@@ -12,7 +12,7 @@ namespace InCube.Core.Test.Collections
         private const int ElementCount = 1 << 8;
 
         private static readonly IReadOnlyList<int> ShuffledList = 
-            Enumerable.Range(0, ElementCount).ToList().Shuffle(new Random(0)).AsReadOnly();
+            Enumerable.Range(0, ElementCount).ToList().Shuffle(new Random(0)).AsReadOnlyList();
 
         [Test]
         public void TestMaxBy()

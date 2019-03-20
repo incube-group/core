@@ -162,7 +162,7 @@ namespace InCube.Core.Collections
         public static String MkString<T>(this IEnumerable<T> enumerable, string start, string separator, string end) =>
             $"{start}{enumerable.MkString(separator)}{end}";
 
-        public static IReadOnlyCollection<T> AsReadOnly<T>(this ICollection<T> col)
+        public static IReadOnlyCollection<T> AsReadOnlyCollection<T>(this ICollection<T> col)
         {
             switch (col)
             {
@@ -179,9 +179,13 @@ namespace InCube.Core.Collections
         /// The purpose of this method is to issue a compiler warning if someone calls this by mistake.
         /// </summary>
         [Obsolete("unnecessary call")]
-        public static IReadOnlyCollection<T> AsReadOnly<T>(this IReadOnlyCollection<T> col) => col;
+        public static IReadOnlyCollection<T> AsReadOnlyCollection<T>(this IReadOnlyCollection<T> col) => col;
 
-        public static IReadOnlyList<T> AsReadOnly<T>(this IList<T> list)
+        public static IReadOnlyCollection<T> AsReadOnlyCollection<T>(this List<T> col) => col;
+        
+        public static IReadOnlyCollection<T> AsReadOnlyCollection<T>(this T[] col) => col;
+
+        public static IReadOnlyList<T> AsReadOnlyList<T>(this IList<T> list)
         {
             switch (list)
             {
@@ -198,9 +202,11 @@ namespace InCube.Core.Collections
         /// The purpose of this method is to issue a compiler warning if someone calls this by mistake.
         /// </summary>
         [Obsolete("unnecessary call")]
-        public static IReadOnlyList<T> AsReadOnly<T>(this IReadOnlyList<T> list) => list;
+        public static IReadOnlyList<T> AsReadOnlyList<T>(this IReadOnlyList<T> list) => list;
 
-        public static IReadOnlyList<T> ToReadOnlyList<T>(this IEnumerable<T> enumerable) => enumerable.ToList();
+        public static IReadOnlyList<T> AsReadOnlyList<T>(this List<T> list) => list;
+
+        public static IReadOnlyList<T> AsReadOnlyList<T>(this T[] list) => list;
 
         public static TU[] ParallelMap<T, TU>(this IReadOnlyList<T> list, Func<T, TU> map, TU[] result = null) =>
             list.ParallelMap(map, 0, list.Count, result);
