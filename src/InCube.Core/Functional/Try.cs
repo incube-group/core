@@ -175,6 +175,11 @@ namespace InCube.Core.Functional
 
         public bool Contains(T elem, IEqualityComparer<T> comparer) =>
             AsOption.Contains(elem, comparer);
+
+        /// <see cref="Nullable{T}.Value"/>
+        /// <exception cref="InvalidOperationException">If this <see cref="Try"/> has an exception or the <paramref name="index"/> != 0.</exception>
+        // ReSharper disable once PossibleInvalidOperationException
+        public T this[int index] => index == 0 ? Value : throw new InvalidOperationException();
     }
 
     public static class Try

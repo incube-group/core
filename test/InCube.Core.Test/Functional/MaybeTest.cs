@@ -19,6 +19,10 @@ namespace InCube.Core.Test.Functional
             {
                 var x = none.Value;
             });
+            Assert.Throws<InvalidOperationException>(() =>
+            {
+                var x = none[0];
+            });
             Assert.AreEqual(null, none.GetValueOrDefault());
         }
 
@@ -32,6 +36,11 @@ namespace InCube.Core.Test.Functional
             Assert.AreEqual(one, some.GetValueOrDefault(0));
             Assert.AreEqual(one, some.GetValueOrDefault());
             Assert.AreEqual(Some(Boxed.Of(2)), some.Select(x => Boxed.Of(x + 1)));
+            Assert.AreEqual(one, some[0]);
+            Assert.Throws<InvalidOperationException>(() =>
+            {
+                var x = some[1];
+            });
 
             // ReSharper disable once AssignNullToNotNullAttribute
             Assert.Throws<ArgumentNullException>(() => Some(default(Boxed<int>)));

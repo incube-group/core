@@ -150,6 +150,11 @@ namespace InCube.Core.Functional
             this.Select(x => comparer.Equals(x, elem)) ?? false;
 
         public static readonly Maybe<T> Empty = default(Maybe<T>);
+
+        /// <see cref="Nullable{T}.Value"/>
+        /// <exception cref="InvalidOperationException">If this <see cref="Maybe"/> is undefined or the <paramref name="index"/> != 0.</exception>
+        // ReSharper disable once PossibleInvalidOperationException
+        public T this[int index] => index == 0 ? Value : throw new InvalidOperationException();
     }
 
     public static class Maybe

@@ -36,7 +36,7 @@ namespace InCube.Core.Functional
         public bool HasValue => AsAny.HasValue;
 
         /// <see cref="Nullable{T}.Value"/>
-        /// <exception cref="InvalidOperationException">If the maybe is undefined.</exception>
+        /// <exception cref="InvalidOperationException">If this option is undefined.</exception>
         // ReSharper disable once PossibleInvalidOperationException
         public T Value => AsAny.Value;
 
@@ -139,6 +139,11 @@ namespace InCube.Core.Functional
         public bool Contains(T elem, IEqualityComparer<T> comparer) =>
             AsAny.Select(x => comparer.Equals(x.Value, elem)) ?? false;
 
+        /// <see cref="Nullable{T}.Value"/>
+        /// <exception cref="InvalidOperationException">If this <see cref="Option"/> is undefined or the <paramref name="index"/> != 0.</exception>
+        // ReSharper disable once PossibleInvalidOperationException
+        public T this[int index] => index == 0 ? Value : throw new InvalidOperationException();
+        
         public static readonly Option<T> Empty = default(Option<T>);
     }
 

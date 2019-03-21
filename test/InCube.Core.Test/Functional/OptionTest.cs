@@ -20,6 +20,10 @@ namespace InCube.Core.Test.Functional
             {
                 var x = none.Value;
             });
+            Assert.Throws<InvalidOperationException>(() =>
+            {
+                var x = none[0];
+            });
             Assert.AreEqual(null, none.GetValueOrDefault());
         }
 
@@ -32,6 +36,11 @@ namespace InCube.Core.Test.Functional
             Assert.AreEqual(1, some.GetValueOrDefault(0));
             Assert.AreEqual(1, some.GetValueOrDefault());
             Assert.AreEqual(Some(2), some.AsEnumerable().Select(x => x + 1).FirstOption());
+            Assert.AreEqual(1, some[0]);
+            Assert.Throws<InvalidOperationException>(() =>
+            {
+                var x = some[1];
+            });
         }
 
         [Test]

@@ -9,7 +9,7 @@ namespace InCube.Core.Functional
     /// A covariant version of <see cref="Option{T}"/> and <see cref="Nullable{T}"/>.
     /// </summary>
     /// <typeparam name="T"></typeparam>
-    public interface IOption<out T> : IReadOnlyCollection<T>
+    public interface IOption<out T> : IReadOnlyList<T>
     {
         bool HasValue { get; }
 
