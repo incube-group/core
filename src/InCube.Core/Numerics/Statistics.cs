@@ -6,6 +6,9 @@ using InCube.Core.Functional;
 
 namespace InCube.Core.Numerics
 {
+    /// <summary>
+    /// Extension methods for computing rank statistics.
+    /// </summary>
     public static class Statistics
     {
         public static Histogram<T> MakeHistogram<T>(this IEnumerable<T> values,

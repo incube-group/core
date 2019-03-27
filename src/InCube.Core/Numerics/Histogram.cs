@@ -9,6 +9,10 @@ using static InCube.Core.Preconditions;
 namespace InCube.Core.Numerics
 {
 
+    /// <summary>
+    /// Represents a histogram type.
+    /// </summary>
+    /// <typeparam name="T"></typeparam>
     [SuppressMessage("StyleCop.CSharp.MaintainabilityRules",
         "SA1402:FileMayOnlyContainASingleType",
         Justification = "Companion object.")]

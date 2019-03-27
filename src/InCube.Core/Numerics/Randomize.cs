@@ -4,6 +4,9 @@ using InCube.Core.Functional;
 
 namespace InCube.Core.Numerics
 {
+    /// <summary>
+    /// Extension methods for randomization.
+    /// </summary>
     public static class Randomize
     {
         public static IList<T> Shuffle<T>(this IList<T> list, Option<Random> rngOpt = default)

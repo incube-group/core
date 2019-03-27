@@ -1,9 +1,14 @@
 ﻿using System;
 using System.Collections.Generic;
+using InCube.Core.Functional;
 using Newtonsoft.Json;
 
 namespace InCube.Core.Numerics
 {
+    /// <summary>
+    /// A range type representing a closed interval.
+    /// </summary>
+    /// <typeparam name="T"></typeparam>
     public readonly struct Range<T> : IInvariantRange<T, Range<T>> where T : IComparable<T>
     {
         [JsonConstructor]
@@ -14,19 +19,22 @@ namespace InCube.Core.Numerics
             Max = max;
         }
 
+        public Range<T> With(Option<T> min = default, Option<T> max = default) =>
+            new Range<T>(min.GetValueOrDefault(Min), max.GetValueOrDefault(Max));
+
         public T Min { get; }
 
         public T Max { get; }
 
-        public bool IsInside(T x) => Min.CompareTo(x) <= 0 && x.CompareTo(Max) <= 0;
+        public bool Contains(T x) => Min.CompareTo(x) <= 0 && x.CompareTo(Max) <= 0;
 
-        public bool IsInside(Range<T> that) => 
+        public bool Contains(Range<T> that) => 
             this.Min.CompareTo(that.Min) <= 0 && that.Max.CompareTo(this.Max) <= 0;
 
-        public bool IsOverlapping(Range<T> that) =>
+        public bool OverlapsWith(Range<T> that) =>
             this.Min.CompareTo(that.Max) <= 0 && that.Min.CompareTo(this.Max) <= 0;
 
-        public Range<T> Intersection(Range<T> that) => 
+        public Range<T> IntersectWith(Range<T> that) => 
             Comparables.Max(this.Min, that.Min).ToRange(Comparables.Min(this.Max, that.Max));
 
         #pragma warning disable CA2225 // Operator overloads have named alternates
@@ -66,5 +74,17 @@ namespace InCube.Core.Numerics
         public static bool operator !=(Range<T> left, Range<T> right) => !(left == right);
 
         public override string ToString() => $"[{Min}, {Max}]";
+    }
+
+    public static class Range
+    {
+        public static Range<T> ToRange<T>(this T min, T max) where T : IComparable<T> =>
+            new Range<T>(min, max);
+
+        public static Range<T> ToRange<T>(this IRange<T> range) where T : IComparable<T> =>
+            range.Min.ToRange(range.Max);
+
+        [Obsolete("unnecessary call")]
+        public static Range<T> ToRange<T>(this Range<T> range) where T : IComparable<T> => range;
     }
 }

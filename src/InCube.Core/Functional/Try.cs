@@ -6,6 +6,10 @@ using JetBrains.Annotations;
 
 namespace InCube.Core.Functional
 {
+    /// <summary>
+    /// Functional representation of a try/catch block. Holds either the result of the computation or an exception.
+    /// </summary>
+    /// <typeparam name="T"></typeparam>
     [SuppressMessage("Managed Binary Analysis",
         "CA2225: Operator overloads have named alternates",
         Justification = "Methods are in static companion class.")]
