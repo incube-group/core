@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using System.Linq;
-using System.Runtime.InteropServices.ComTypes;
 using InCube.Core.Functional;
 using static InCube.Core.Preconditions;
 
@@ -17,10 +16,8 @@ namespace InCube.Core.Collections
         /// <param name="enumerable">The source enumerable.</param>
         /// <param name="predicate">The predicate to evaluate.</param>
         /// <returns>True, if none of the elements fulfills the predicate, false otherwise.</returns>
-        public static bool None<T>(this IEnumerable<T> enumerable, Func<T, bool> predicate)
-        {
-            return !enumerable.Any(predicate);
-        }
+        public static bool None<T>(this IEnumerable<T> enumerable, Func<T, bool> predicate) => 
+            !enumerable.Any(predicate);
 
         /// <summary>
         /// Selects two enumerables while iterating over <paramref name="zipped" /> only once.
@@ -34,15 +31,10 @@ namespace InCube.Core.Collections
         /// <returns>A tuple containing the two enumerables extracted.</returns>
         /// 
         /// <remarks>This method is very expensive since all elements need to be cached in temporary lists.</remarks>
-        public static (IEnumerable<T1>, IEnumerable<T2>) Unzip<T, T1, T2>(this IEnumerable<T> zipped, Func<T, T1> selector1, Func<T, T2> selector2)
-        {
-            if (zipped is IReadOnlyCollection<T> col)
-            {
-                return col.Unzip(selector1, selector2);
-            }
-
-            return zipped.ToList().Unzip(selector1, selector2);
-        }
+        public static (IEnumerable<T1>, IEnumerable<T2>) Unzip<T, T1, T2>(this IEnumerable<T> zipped,
+            Func<T, T1> selector1,
+            Func<T, T2> selector2) =>
+            zipped is IReadOnlyCollection<T> col ? col.Unzip(selector1, selector2) : zipped.ToList().Unzip(selector1, selector2);
 
         public static (IEnumerable<T1>, IEnumerable<T2>) Unzip<T, T1, T2>(this IReadOnlyCollection<T> zipped,
             Func<T, T1> selector1,
@@ -66,15 +58,10 @@ namespace InCube.Core.Collections
             this IEnumerable<T> zipped,
             Func<T, T1> selector1,
             Func<T, T2> selector2,
-            Func<T, T3> selector3)
-        {
-            if (zipped is IReadOnlyCollection<T> col)
-            {
-                return col.Unzip(selector1, selector2, selector3);
-            }
-
-            return zipped.ToList().Unzip(selector1, selector2, selector3);
-        }
+            Func<T, T3> selector3) =>
+            zipped is IReadOnlyCollection<T> col
+                ? col.Unzip(selector1, selector2, selector3)
+                : zipped.ToList().Unzip(selector1, selector2, selector3);
 
         public static (IEnumerable<T1>, IEnumerable<T2>, IEnumerable<T3>) Unzip<T, T1, T2, T3>(
             this IReadOnlyCollection<T> zipped,
@@ -100,9 +87,6 @@ namespace InCube.Core.Collections
             yield return t;
         }
 
-        public static EnumerableCollection<T> ToCollection<T>(this IEnumerable<T> enumerable, int count) =>
-            new EnumerableCollection<T>(enumerable, count);
-
         public static IEnumerable<T> Iterate<T>(T start, Func<T, T> f)
         {
             T next = start;
@@ -112,6 +96,7 @@ namespace InCube.Core.Collections
                 next = f(next);
                 yield return next;
             }
+            // ReSharper disable once IteratorNeverReturns
         }
 
         public static IEnumerable<T> Repeat<T>(T value)
