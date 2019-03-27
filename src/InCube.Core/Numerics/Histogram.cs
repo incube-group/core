@@ -22,11 +22,11 @@ namespace InCube.Core.Numerics
             Func<T, int> binSelector)
         {
             CheckArgument(binLowerEdges.Count == binCounts.Count,
-                "number of bin lower edges {} must match the number of bin count {}",
+                "number of bin lower edges {0} must match the number of bin count {1}",
                 binLowerEdges.Count,
                 binCounts.Count);
             CheckArgument(discardedCount <= binIndices.Count,
-                "number of discarded elements {} must be at most the total number of elements {}",
+                "number of discarded elements {0} must be at most the total number of elements {1}",
                 discardedCount,
                 binIndices.Count);
             BinLowerEdges = binLowerEdges;

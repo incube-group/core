@@ -10,7 +10,7 @@ namespace InCube.Core.Test
         public void TestCheckArgument()
         {
             var expression = true;
-            var errorMessageTemplate = "expression was {}";
+            var errorMessageTemplate = "expression was {0}";
             // ReSharper disable ConditionIsAlwaysTrueOrFalse
             Assert.DoesNotThrow(() => CheckArgument(expression, errorMessageTemplate, expression));
             expression = false;

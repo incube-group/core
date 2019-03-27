@@ -9,7 +9,7 @@ namespace InCube.Core.Numerics
         [JsonConstructor]
         public Range(T min, T max)
         {
-            Preconditions.CheckArgumentF(min.CompareTo(max) <= 0, "min {0} > max {1}", min, max);
+            Preconditions.CheckArgument(min.CompareTo(max) <= 0, "min {0} > max {1}", min, max);
             Min = min;
             Max = max;
         }

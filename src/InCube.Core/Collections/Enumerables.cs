@@ -183,23 +183,23 @@ namespace InCube.Core.Collections
             var rowStop = rowStopExclusive ?? srcRowCount;
 
 #pragma warning disable SA1131 // Use readable conditions
-            CheckArgumentF(0 <= rowStop && rowStop <= srcRowCount, "invalid row stop {0}", rowStop);
+            CheckArgument(0 <= rowStop && rowStop <= srcRowCount, "invalid row stop {0}", rowStop);
             var srcColCount = elems.GetLength(1);
             var colStop = colStopExclusive ?? srcColCount;
-            CheckArgumentF(0 <= colStop && colStop <= srcColCount, "invalid col stop {0}", colStop);
+            CheckArgument(0 <= colStop && colStop <= srcColCount, "invalid col stop {0}", colStop);
             var rowCount = rowStop - rowStartInclusive;
-            CheckArgumentF(0 <= rowCount && rowCount <= srcRowCount, "invalid row count {0}", rowCount);
+            CheckArgument(0 <= rowCount && rowCount <= srcRowCount, "invalid row count {0}", rowCount);
             var colCount = colStop - colStartInclusive;
-            CheckArgumentF(0 <= colCount && colCount <= srcRowCount, "invalid col count {0}", colCount);
+            CheckArgument(0 <= colCount && colCount <= srcRowCount, "invalid col count {0}", colCount);
 #pragma warning restore SA1131 // Use readable conditions
 
             result = result ?? new T[rowCount, colCount];
             if (rowCount == 0 || colCount == 0) return result;
 
             var dstRowCount = result.GetLength(0);
-            CheckArgumentF(rowCount <= dstRowCount, "insufficient space for {0} rows", rowCount);
+            CheckArgument(rowCount <= dstRowCount, "insufficient space for {0} rows", rowCount);
             var dstColCount = result.GetLength(1);
-            CheckArgumentF(colCount <= dstColCount, "insufficient space for {0} columns", colCount);
+            CheckArgument(colCount <= dstColCount, "insufficient space for {0} columns", colCount);
 
             unsafe
             {

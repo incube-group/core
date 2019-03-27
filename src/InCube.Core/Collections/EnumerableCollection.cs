@@ -47,7 +47,7 @@ namespace InCube.Core.Collections
         public void CopyTo(T[] array, int arrayIndex)
         {
             CheckArgument(Count <= array.Length - arrayIndex,
-                "insufficient space for {} elements in array of length {} at index {}",
+                "insufficient space for {0} elements in array of length {1} at index {2}",
                 Count,
                 array.Length,
                 arrayIndex);

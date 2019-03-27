@@ -15,6 +15,7 @@ namespace InCube.Core.Test.Functional
             Assert.AreEqual(value, t.Value);
             Assert.Throws<InvalidOperationException>(() =>
             {
+                // ReSharper disable once UnusedVariable
                 var x = t.Exception;
             });
             Assert.AreEqual(value, t.GetValueOrDefault(value - 1));
@@ -28,12 +29,13 @@ namespace InCube.Core.Test.Functional
             const int value = 1;
             var t = Do(() =>
             {
-                Preconditions.CheckArgument(value <= 0, "value is positive: {}", value);
+                Preconditions.CheckArgument(value <= 0, "value is positive: {0}", value);
                 return value;
             });
             Assert.False(t.HasValue);
             Assert.Throws<InvalidOperationException>(() =>
             {
+                // ReSharper disable once UnusedVariable
                 var x = t.Value;
             });
             Assert.AreEqual("value is positive: " + value, t.Exception.Message);
