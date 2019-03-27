@@ -10,7 +10,7 @@ using static InCube.Core.Preconditions;
 namespace InCube.Core.Functional
 {
     /// <summary>
-    /// Implements an option data type. this in is essentially an extension of <see cref="Nullable{T}"/> that works for
+    /// Implements an option data type. This in is essentially an extension of <see cref="Nullable{T}"/> that works for
     /// both struct and class types.
     /// </summary>
     /// <typeparam name="T"></typeparam>

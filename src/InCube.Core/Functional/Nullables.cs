@@ -4,6 +4,9 @@ using JetBrains.Annotations;
 
 namespace InCube.Core.Functional
 {
+    /// <summary>
+    /// Extension methods for <see cref="Nullable{T}"/> types.
+    /// </summary>
     public static class Nullables
     {
         #region Conversion

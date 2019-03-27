@@ -6,7 +6,7 @@ using static InCube.Core.Preconditions;
 namespace InCube.Core.Functional
 {
     /// <summary>
-    /// A covariant version of <see cref="Option{T}"/> and <see cref="Nullable{T}"/>.
+    /// A covariant version of <see cref="Option{T}"/>, <see cref="Maybe"/> and <see cref="Nullable{T}"/>.
     /// </summary>
     /// <typeparam name="T"></typeparam>
     public interface IOption<out T> : IReadOnlyList<T>

@@ -4,6 +4,11 @@ using System.Diagnostics.CodeAnalysis;
 
 namespace InCube.Core.Functional
 {
+    /// <summary>
+    /// A struct wrapper for any type (class or struct). The use is primarily to allow reference types to be used as <see cref="Nullable{T}"/>.
+    /// </summary>
+    /// <seealso cref="Option{T}"/>
+    /// <typeparam name="T"></typeparam>
     [SuppressMessage("Managed Binary Analysis",
         "CA2225: Operator overloads have named alternates",
         Justification = "Methods are in static companion class.")]
