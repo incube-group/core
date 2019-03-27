@@ -16,9 +16,9 @@ namespace InCube.Core.Collections
 
         public static SortedDictionary<TK, TV> AsSorted<TK, TV>(this IReadOnlyDictionary<TK, TV> dict, IComparer<TK> comparer = null)
         {
-            return !(dict is SortedDictionary<TK, TV> sorted) || comparer != null
-                ? new SortedDictionary<TK, TV>(dict.ToDictionary())
-                : sorted;
+            comparer = comparer ?? Comparer<TK>.Default;
+            return dict is SortedDictionary<TK, TV> sorted && sorted.Comparer == comparer ? sorted :
+                new SortedDictionary<TK, TV>(dict.ToDictionary(), default);
         }
 
         public static TV GetOrDefault<TK, TV>(this IReadOnlyDictionary<TK, TV> dict, TK key, TV @default) =>
@@ -89,17 +89,20 @@ namespace InCube.Core.Collections
 
         public static IReadOnlyDictionary<TK, TV> AsReadOnlyDictionary<TK, TV>(this SortedList<TK, TV> dict) => dict;
 
-        private class EmptyDictionary<TKey, TValue> : IReadOnlyDictionary<TKey, TValue>
-        {
-            public IEnumerator<KeyValuePair<TKey, TValue>> GetEnumerator()
-            {
-                return Enumerable.Empty<KeyValuePair<TKey, TValue>>().GetEnumerator();
-            }
+        public static IReadOnlyDictionary<TKey, TValue> Empty<TKey, TValue>() => Dictionaries<TKey, TValue>.Empty;
+    }
 
-            IEnumerator IEnumerable.GetEnumerator()
-            {
-                return GetEnumerator();
-            }
+#pragma warning disable SA1402 // File may only contain a single type
+    public sealed class Dictionaries<TKey, TValue>
+#pragma warning restore SA1402 // File may only contain a single type
+    {
+        private class EmptyDictionary : IReadOnlyDictionary<TKey, TValue>
+        {
+            public IEnumerator<KeyValuePair<TKey, TValue>> GetEnumerator() => 
+                Enumerable.Empty<KeyValuePair<TKey, TValue>>().GetEnumerator();
+
+            IEnumerator IEnumerable.GetEnumerator() => 
+                GetEnumerator();
 
             public int Count => 0;
 
@@ -118,6 +121,6 @@ namespace InCube.Core.Collections
             public IEnumerable<TValue> Values => Enumerable.Empty<TValue>();
         }
 
-        public static IReadOnlyDictionary<TKey, TValue> Empty<TKey, TValue>() => new EmptyDictionary<TKey, TValue>();
+        public static readonly IReadOnlyDictionary<TKey, TValue> Empty = new EmptyDictionary();
     }
 }
