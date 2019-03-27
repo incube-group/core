@@ -105,6 +105,7 @@ namespace InCube.Core.Collections
             {
                 yield return value;
             }
+            // ReSharper disable once IteratorNeverReturns
         }
 
         public static IEnumerable<T> Generate<T>(Func<T> generator)
@@ -113,6 +114,7 @@ namespace InCube.Core.Collections
             {
                 yield return generator();
             }
+            // ReSharper disable once IteratorNeverReturns
         }
 
         public static T[] Enumerate<T>(params T[] elems) => elems;
@@ -124,7 +126,7 @@ namespace InCube.Core.Collections
             Enumerable.Range(0, stopExclusive);
 
         public static IEnumerable<T> Slice<T>(
-            this IEnumerable<T> elems, 
+            this IEnumerable<T> elems,  
             int? startInclusive = default, 
             int? stopExclusive = default)
         {

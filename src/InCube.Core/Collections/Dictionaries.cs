@@ -9,6 +9,9 @@ using JetBrains.Annotations;
 
 namespace InCube.Core.Collections
 {
+    /// <summary>
+    /// A variety of useful extension methods for dictionaries.
+    /// </summary>
     public static class Dictionaries
     {
         public static SortedDictionary<TK, TV> AsSorted<TK, TV>(this Dictionary<TK, TV> dict, IComparer<TK> comparer = null) =>
