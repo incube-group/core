@@ -4,20 +4,17 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
 using System.Threading.Tasks;
-using JetBrains.Annotations;
 using static InCube.Core.Preconditions;
 
 namespace InCube.Core.Collections
 {
-
+    /// <summary>
+    /// A variety of useful extension methods for collections.
+    /// </summary>
     public static class CollectionExtensions
     {
         /// <returns>the last element of a list</returns>
         public static T Last<T>(this IReadOnlyList<T> list) => list[list.Count - 1];
-
-        [PublicAPI]
-        public static IComparer<T> DefaultComparer<T>() where T : IComparable<T> =>
-            Comparer<T>.Create((x, y) => x.CompareTo(y));
 
         /// <summary>
         /// Sorts an item into a list of buckets. The method calls <see cref="List{T}.BinarySearch(T)"/> and makes
@@ -32,8 +29,9 @@ namespace InCube.Core.Collections
         /// <seealso cref="UpperBound{T}(T[],T)"/>
         /// <returns>the last bucket of the element</returns>
         public static int UpperBound<T>(this List<T> input, T item) where T : IComparable<T> =>
-            input.UpperBound(item, DefaultComparer<T>());
+            input.UpperBound(item, Comparer<T>.Default);
 
+        /// <seealso cref="UpperBound{T}(List{T},T)"/>
         public static int UpperBound<T>(this List<T> input, T item, IComparer<T> comparer)
         {
             var idx = input.BinarySearch(item, comparer);
@@ -50,11 +48,12 @@ namespace InCube.Core.Collections
         /// <param name="input">buckets must be sorted in ascending order</param>
         /// <param name="item">the item to place into the buckets</param>
         /// <seealso cref="Array.BinarySearch(System.Array,int,int,object)"/>
-        /// <seealso cref="UpperBound{T}(System.Collections.Generic.List{T},T)"/>
+        /// <seealso cref="UpperBound{T}(List{T},T)"/>
         /// <returns>the last bucket of the element</returns>
         public static int UpperBound<T>(this T[] input, T item) where T : IComparable<T> =>
-            input.UpperBound(item, DefaultComparer<T>());
+            input.UpperBound(item, Comparer<T>.Default);
 
+        /// <seealso cref="UpperBound{T}(T[],T)"/>
         public static int UpperBound<T>(this T[] input, T item, IComparer<T> comparer)
         {
             var idx = Array.BinarySearch(input, item, comparer);
@@ -96,8 +95,9 @@ namespace InCube.Core.Collections
         /// <seealso cref="LowerBound{T}(T[],T)"/>
         /// <returns>the last bucket of the element</returns>
         public static int LowerBound<T>(this List<T> input, T item) where T : IComparable<T> =>
-            input.LowerBound(item, DefaultComparer<T>());
+            input.LowerBound(item, Comparer<T>.Default);
 
+        /// <see cref="LowerBound{T}(List{T},T)"/>
         public static int LowerBound<T>(this List<T> input, T item, IComparer<T> comparer)
         {
             var idx = input.BinarySearch(item, comparer);
@@ -117,8 +117,9 @@ namespace InCube.Core.Collections
         /// <seealso cref="LowerBound{T}(System.Collections.Generic.List{T},T)"/>
         /// <returns>the last bucket of the element</returns>
         public static int LowerBound<T>(this T[] input, T item) where T : IComparable<T> =>
-            input.LowerBound(item, DefaultComparer<T>());
+            input.LowerBound(item, Comparer<T>.Default);
 
+        /// <see cref="LowerBound{T}(T[],T)"/>
         public static int LowerBound<T>(this T[] input, T item, IComparer<T> comparer)
         {
             var idx = Array.BinarySearch(input, item, comparer);
@@ -149,7 +150,7 @@ namespace InCube.Core.Collections
         /// <summary>
         /// Joins the strings in the enumerable with the specified separator (default: ", ").
         /// </summary>
-        public static String MkString<T>(this IEnumerable<T> enumerable, string separator = ", ") =>
+        public static string MkString<T>(this IEnumerable<T> enumerable, string separator = ", ") =>
             string.Join(separator, enumerable);
 
         /// <summary>
@@ -159,7 +160,7 @@ namespace InCube.Core.Collections
         /// <param name="start">The string to place in front of the joined output.</param>
         /// <param name="separator">The separator to be placed between elements.</param>
         /// <param name="end">The string to place at the end of the joined output.</param>
-        public static String MkString<T>(this IEnumerable<T> enumerable, string start, string separator, string end) =>
+        public static string MkString<T>(this IEnumerable<T> enumerable, string start, string separator, string end) =>
             $"{start}{enumerable.MkString(separator)}{end}";
 
         public static IReadOnlyCollection<T> AsReadOnlyCollection<T>(this ICollection<T> col)
@@ -245,7 +246,7 @@ namespace InCube.Core.Collections
 
         public static TSource MaxBy<TSource, TKey>(this IEnumerable<TSource> source, Func<TSource, TKey> selector)
             where TKey : IComparable<TKey> =>
-            source.MaxBy(selector, DefaultComparer<TKey>());
+            source.MaxBy(selector, Comparer<TKey>.Default);
 
         public static TSource MaxBy<TSource, TKey>(this IEnumerable<TSource> source,
             Func<TSource, TKey> selector,
@@ -277,7 +278,7 @@ namespace InCube.Core.Collections
 
         public static TSource MinBy<TSource, TKey>(this IEnumerable<TSource> source, Func<TSource, TKey> selector)
             where TKey : IComparable<TKey> =>
-            source.MinBy(selector, DefaultComparer<TKey>());
+            source.MinBy(selector, Comparer<TKey>.Default);
 
         public static TSource MinBy<TSource, TKey>(this IEnumerable<TSource> source,
             Func<TSource, TKey> selector,
@@ -288,19 +289,19 @@ namespace InCube.Core.Collections
             source.ZipWithIndex().MaxBy(x => x.value, comparer).index;
 
         public static int ArgMax<T>(this IEnumerable<T> source) where T : IComparable<T> =>
-            source.ArgMax(DefaultComparer<T>());
+            source.ArgMax(Comparer<T>.Default);
 
         public static int ArgMin<T>(this IEnumerable<T> source, IComparer<T> comparer) =>
             source.ZipWithIndex().MinBy(x => x.value, comparer).index;
 
         public static int ArgMin<T>(this IEnumerable<T> source) where T : IComparable<T> =>
-            source.ArgMax(DefaultComparer<T>());
+            source.ArgMax(Comparer<T>.Default);
 
-        public static IEnumerable<T> Get<T>(this IReadOnlyList<T> list, IEnumerable<int> indices) =>
+        public static IEnumerable<T> Items<T>(this IReadOnlyList<T> list, IEnumerable<int> indices) =>
             indices.Select(i => list[i]);
 
-        public static IEnumerable<IEnumerable<T>> GetCols<T>(this IEnumerable<IReadOnlyList<T>> enumerable, IEnumerable<int> indices) =>
-            enumerable.Select(list => indices.Select(i => list[i]));
+        public static IEnumerable<IEnumerable<T>> Cols<T>(this IEnumerable<IReadOnlyList<T>> enumerable, IEnumerable<int> indices) =>
+            enumerable.Select(list => list.Items(indices));
 
         public static bool CollectionEqual<T>(this IReadOnlyCollection<T> x, IReadOnlyCollection<T> y, IEqualityComparer<T> comparer) =>
             x.Count == y.Count && x.SequenceEqual(y, comparer);

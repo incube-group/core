@@ -12,7 +12,7 @@ namespace InCube.Core.Numerics
             IReadOnlyList<T> edges,
             bool lowerBoundEquals = Histogram.DefaultLowerEdgeEquals)
             where T : IComparable<T> =>
-            MakeHistogram(values, edges, Collections.CollectionExtensions.DefaultComparer<T>(), lowerBoundEquals);
+            MakeHistogram(values, edges, Comparer<T>.Default, lowerBoundEquals);
 
         public static Histogram<T> MakeHistogram<T>(this IEnumerable<T> values,
             IReadOnlyList<T> edges,
@@ -25,7 +25,7 @@ namespace InCube.Core.Numerics
 
         public static int[] VectorRank<T>(this IEnumerable<T> values, IReadOnlyList<T> elements)
             where T : IComparable<T> =>
-            values.VectorRank(elements, Collections.CollectionExtensions.DefaultComparer<T>());
+            values.VectorRank(elements, Comparer<T>.Default);
 
         public static int[] VectorRank<T>(this IEnumerable<T> values, IReadOnlyList<T> elements, IComparer<T> comparer)
         {
@@ -54,7 +54,7 @@ namespace InCube.Core.Numerics
                 ranks[i] = ranks[i + 1] - binCounts[i];
             }
 
-            return optIndices.Select(indices => ranks.Get(indices).ToArray()).GetValueOrDefault(ranks);
+            return optIndices.Select(indices => ranks.Items(indices).ToArray()).GetValueOrDefault(ranks);
         }
 
         public static double RelativeRank<T>(this IReadOnlyCollection<T> values, T element) where T : IComparable<T> =>
