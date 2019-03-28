@@ -1,4 +1,5 @@
-﻿using InCube.Core.Numerics;
+﻿using System;
+using InCube.Core.Numerics;
 using NUnit.Framework;
 
 namespace InCube.Core.Test.Numerics
@@ -54,6 +55,7 @@ namespace InCube.Core.Test.Numerics
             Assert.True(range.IntersectWith(right).Contains(max));
             Assert.False(range.IntersectWith(right).Contains(min));
             Assert.AreEqual(range, range.IntersectWith(range));
+            Assert.Throws<ArgumentException>(() => left.IntersectWith(right));
         }
     }
 }
