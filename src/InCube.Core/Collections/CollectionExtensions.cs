@@ -209,10 +209,10 @@ namespace InCube.Core.Collections
 
         public static IReadOnlyList<T> AsReadOnlyList<T>(this T[] list) => list;
 
-        public static TU[] ParallelMap<T, TU>(this IReadOnlyList<T> list, Func<T, TU> map, TU[] result = null) =>
-            list.ParallelMap(map, 0, list.Count, result);
+        public static TU[] ParSelect<T, TU>(this IReadOnlyList<T> list, Func<T, TU> map, TU[] result = null) =>
+            list.ParSelect(map, 0, list.Count, result);
 
-        public static TU[] ParallelMap<T, TU>(this IReadOnlyList<T> list,
+        public static TU[] ParSelect<T, TU>(this IReadOnlyList<T> list,
             Func<T, TU> map,
             int fromInclusive,
             int toExclusive,
@@ -319,7 +319,7 @@ namespace InCube.Core.Collections
         /// <param name="startIdx"></param>
         /// <param name="stopIdx"></param>
         /// <returns>The index of the first element in <paramref name="elems"/> that matches the predicate.</returns>
-        public static int RemoveSeq<T>(this IList<T> elems, Predicate<T> match, int startIdx = 0, int stopIdx = -1)
+        public static int SeqRemoveAll<T>(this IList<T> elems, Predicate<T> match, int startIdx = 0, int stopIdx = -1)
         {
             if (stopIdx < 0) stopIdx = elems.Count;
 
@@ -348,7 +348,7 @@ namespace InCube.Core.Collections
         }
 
         /// <summary>
-        /// A parallel version of <see cref="RemoveSeq{T}"/>.
+        /// A parallel version of <see cref="SeqRemoveAll{T}"/>.
         /// </summary>
         /// <typeparam name="T"></typeparam>
         /// <param name="elems"></param>
@@ -356,7 +356,7 @@ namespace InCube.Core.Collections
         /// <param name="startIdx"></param>
         /// <param name="stopIdx"></param>
         /// <returns></returns>
-        public static int RemovePar<T>(this T[] elems, Predicate<T> match, int startIdx = 0, int stopIdx = -1)
+        public static int ParRemoveAll<T>(this T[] elems, Predicate<T> match, int startIdx = 0, int stopIdx = -1)
         {
             if (stopIdx < 0) stopIdx = elems.Length;
 
@@ -367,7 +367,7 @@ namespace InCube.Core.Collections
             Parallel.ForEach(partitioner, range =>
             {
                 var (start, stop) = range;
-                sections[start] = elems.RemoveSeq(match, start, stop);
+                sections[start] = elems.SeqRemoveAll(match, start, stop);
             });
 
             var freeIndex = 0;

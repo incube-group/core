@@ -115,14 +115,14 @@ namespace InCube.Core.Test.Collections
         {
             const int count = 100;
             var seq = Enumerable.Range(0, count).ToArray();
-            Assert.AreEqual(count, seq.RemoveSeq(x => false));
-            var nextFree = seq.RemoveSeq(x => x % 2 == 0);
+            Assert.AreEqual(count, seq.SeqRemoveAll(x => false));
+            var nextFree = seq.SeqRemoveAll(x => x % 2 == 0);
             Assert.AreEqual(count / 2, nextFree);
             for (var i = 0; i < nextFree; ++i)
             {
                 Assert.True(seq[i] % 2 == 1);
             }
-            Assert.AreEqual(0, seq.RemoveSeq(x => true, stopIdx: nextFree));
+            Assert.AreEqual(0, seq.SeqRemoveAll(x => true, stopIdx: nextFree));
         }
 
         [Test]
@@ -130,14 +130,15 @@ namespace InCube.Core.Test.Collections
         {
             const int count = 1024;
             var seq = Enumerable.Range(0, count).ToArray();
-            Assert.AreEqual(count, seq.RemovePar(x => false));
-            var nextFree = seq.RemovePar(x => x % 2 == 0);
+            Assert.AreEqual(count, seq.ParRemoveAll(x => false));
+            var nextFree = seq.ParRemoveAll(x => x % 2 == 0);
             Assert.AreEqual(count / 2, nextFree);
             for (var i = 0; i < nextFree; ++i)
             {
                 Assert.True(seq[i] % 2 == 1);
             }
-            Assert.AreEqual(0, seq.RemovePar(x => true, stopIdx: nextFree));
+            Assert.AreEqual(0, seq.ParRemoveAll(x => true, stopIdx: nextFree));
+            Enumerables.Repeat(4).Select(x => x * 2);
         }
 
         [Test]
