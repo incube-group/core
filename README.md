@@ -5,7 +5,8 @@ collection types, functional programming, value parsing and formatting and more.
 
 ## Functional Programming
 
-The [Functional] package of [InCube] Core provides read-only wrapper types in C# that are common in functional programming languages.
+The [Functional] package of [InCube] Core provides read-only wrapper types in C#
+that are common in other functional programming languages.
 
 | Type | Description |
 | --- | --- |
@@ -38,10 +39,11 @@ as well as for the standard type [`Nullable<T>`].
 
 The [Collections] package of [InCube] Core contains [LINQ] type extension methods for many standard collection.
 
-### Extensions for Enumerables and Lists
+### Extensions for Enumerable Types and Lists
 
 | Method | Description |
 | --- | --- |
+| `Empty` | Create an empty wrapper. |
 | `MkString` | String formatting of an [`IEnumerable`].|
 | `AsReadOnlyCollection`, `AsReadOnlyList` | Efficiently convert any [`ICollection`] and [`IList`] into [`IReadOnlyCollection`] and [`IReadOnlyList`], respectively.|
 | `ForEach` | Apply an action to all elements of an [`IEnumerable`]. |
@@ -56,16 +58,19 @@ The [Collections] package of [InCube] Core contains [LINQ] type extension method
 | `Slice` | Select segments of arrays and lists. |
 | `Scan` | Generate a new sequence by mapping an [`IEnumerable`] with state. This is essentially a mix of [`Select`] and [`Aggregate`].
 | `FirstOption`, `SingleOption` | Access the first or single element of this [`IEnumerable`] as an `Option<T>`.
+| `Flatten` | Join an [`IEnumerable`] of containers into a single container. |
 
 ### Extensions for Dictionaries
 
 | Method | Description |
 | --- | --- |
+| `Empty` | Create an empty read-only dictionary. |
 | `GetOrDefault` | Return a default value if a key is not found. |
 | `GetOrThrow` | Throw a meaningful exception if a key is not found. |
-| `GetOption` | Return an empty option if the 
+| `GetOption`, `GetMaybe`, `GetNullable` | Return an empty wrapper type if a key is not found. |
 | `ToDictionary` | Convert an [`IEnumerable`] of tuples to a dictionary. |
 | `AsReadOnlyDictionary` | Efficiently convert any [`IDictionary`] into [`IReadOnlyDictionary`].
+| `AsSorted` | Convert any any [`IDictionary`] into [`SortedDictionary`]
 
 <!-- 
 ## Adding InCube Core to your build
@@ -91,7 +96,7 @@ The [Collections] package of [InCube] Core contains [LINQ] type extension method
 [`std::upper_bound`]: https://en.cppreference.com/w/cpp/algorithm/upper_bound
 [`BinarySearch`]: https://docs.microsoft.com/en-us/dotnet/api/system.array.binarysearch
 [`RemoveAll`]: https://docs.microsoft.com/en-us/dotnet/api/system.collections.generic.list-1.removeall
-[`IEnumerable`]: https://docs.microsoft.com/en-us/dotnet/api/system.collections.ienumerable
+[`IEnumerable`]: https://docs.microsoft.com/en-us/dotnet/api/system.collections.generic.ienumerable-1
 [`Select`]: https://docs.microsoft.com/en-us/dotnet/api/system.linq.enumerable.select
 [`Aggregate`]: https://docs.microsoft.com/en-us/dotnet/api/system.linq.enumerable.aggregate
 [`IDictionary`]: https://docs.microsoft.com/en-us/dotnet/api/system.collections.generic.idictionary-2
@@ -102,3 +107,4 @@ The [Collections] package of [InCube] Core contains [LINQ] type extension method
 [`IReadOnlyDictionary`]: https://docs.microsoft.com/en-us/dotnet/api/system.collections.generic.ireadonlydictionary-2
 [`Nullable<T>`]: https://docs.microsoft.com/en-us/dotnet/api/system.nullable-1
 [`Action`]: https://docs.microsoft.com/en-us/dotnet/api/system.action-1
+[`SortedDictionary`]: https://docs.microsoft.com/en-us/dotnet/api/system.collections.generic.sorteddictionary-2

@@ -14,16 +14,6 @@ namespace InCube.Core.Collections
     /// </summary>
     public static class Dictionaries
     {
-        public static SortedDictionary<TK, TV> AsSorted<TK, TV>(this Dictionary<TK, TV> dict, IComparer<TK> comparer = null) =>
-            new SortedDictionary<TK, TV>(dict, comparer);
-
-        public static SortedDictionary<TK, TV> AsSorted<TK, TV>(this IReadOnlyDictionary<TK, TV> dict, IComparer<TK> comparer = null)
-        {
-            comparer = comparer ?? Comparer<TK>.Default;
-            return dict is SortedDictionary<TK, TV> sorted && sorted.Comparer == comparer ? sorted :
-                new SortedDictionary<TK, TV>(dict.ToDictionary(), default);
-        }
-
         public static TV GetOrDefault<TK, TV>(this IReadOnlyDictionary<TK, TV> dict, TK key, TV @default) =>
             dict.TryGetValue(key, out var value) ? value : @default;
 
@@ -91,6 +81,13 @@ namespace InCube.Core.Collections
         public static IReadOnlyDictionary<TK, TV> AsReadOnlyDictionary<TK, TV>(this SortedDictionary<TK, TV> dict) => dict;
 
         public static IReadOnlyDictionary<TK, TV> AsReadOnlyDictionary<TK, TV>(this SortedList<TK, TV> dict) => dict;
+
+        public static SortedDictionary<TK, TV> AsSorted<TK, TV>(this IDictionary<TK, TV> dict, IComparer<TK> comparer = null)
+        {
+            comparer = comparer ?? Comparer<TK>.Default;
+            return dict is SortedDictionary<TK, TV> sorted && sorted.Comparer == comparer ? sorted :
+                new SortedDictionary<TK, TV>(dict.ToDictionary(), default);
+        }
 
         public static IReadOnlyDictionary<TKey, TValue> Empty<TKey, TValue>() => Dictionaries<TKey, TValue>.Empty;
     }
