@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
 using System.Threading.Tasks;
+using InCube.Core.Functional;
 using static InCube.Core.Preconditions;
 
 namespace InCube.Core.Collections
@@ -11,7 +12,7 @@ namespace InCube.Core.Collections
     /// <summary>
     /// A variety of useful extension methods for collections.
     /// </summary>
-    public static class CollectionExtensions
+    public static class Lists
     {
         /// <returns>the last element of a list</returns>
         public static T Last<T>(this IReadOnlyList<T> list) => list[list.Count - 1];
@@ -148,35 +149,6 @@ namespace InCube.Core.Collections
         }
 
         /// <summary>
-        /// Joins the strings in the enumerable with the specified separator (default: ", ").
-        /// </summary>
-        public static string MkString<T>(this IEnumerable<T> enumerable, string separator = ", ") =>
-            string.Join(separator, enumerable);
-
-        /// <summary>
-        /// Joins the strings in the enumerable with the specified separator (default: ", "), wrapped by with a string in the beginning and the end.
-        /// </summary>
-        /// <param name="enumerable">The enumerable.</param>
-        /// <param name="start">The string to place in front of the joined output.</param>
-        /// <param name="separator">The separator to be placed between elements.</param>
-        /// <param name="end">The string to place at the end of the joined output.</param>
-        public static string MkString<T>(this IEnumerable<T> enumerable, string start, string separator, string end) =>
-            $"{start}{enumerable.MkString(separator)}{end}";
-
-        public static IReadOnlyCollection<T> AsReadOnlyCollection<T>(this ICollection<T> col)
-        {
-            switch (col)
-            {
-                case List<T> l:
-                    return l;
-                case T[] a:
-                    return a;
-                default:
-                    return new ReadOnlyCollection<T>(col);
-            }
-        }
-
-        /// <summary>
         /// The purpose of this method is to issue a compiler warning if someone calls this by mistake.
         /// </summary>
         [Obsolete("unnecessary call")]
@@ -209,6 +181,19 @@ namespace InCube.Core.Collections
 
         public static IReadOnlyList<T> AsReadOnlyList<T>(this T[] list) => list;
 
+        public static IReadOnlyCollection<T> AsReadOnlyCollection<T>(this ICollection<T> col)
+        {
+            switch (col)
+            {
+                case List<T> l:
+                    return l;
+                case T[] a:
+                    return a;
+                default:
+                    return new ReadOnlyCollection<T>(col);
+            }
+        }
+
         public static TU[] ParSelect<T, TU>(this IReadOnlyList<T> list, Func<T, TU> map, TU[] result = null) =>
             list.ParSelect(map, 0, list.Count, result);
 
@@ -223,10 +208,10 @@ namespace InCube.Core.Collections
             return result;
         }
 
-        public static TU[] ParallelMapI<T, TU>(this IReadOnlyList<T> list, Func<T, int, TU> map, TU[] result = null) =>
-            list.ParallelMapI(map, 0, list.Count, result);
+        public static TU[] ParSelect<T, TU>(this IReadOnlyList<T> list, Func<T, int, TU> map, TU[] result = null) =>
+            list.ParSelect(map, 0, list.Count, result);
 
-        public static TU[] ParallelMapI<T, TU>(this IReadOnlyList<T> list,
+        public static TU[] ParSelect<T, TU>(this IReadOnlyList<T> list,
             Func<T, int, TU> map,
             int fromInclusive,
             int toExclusive,
@@ -237,71 +222,100 @@ namespace InCube.Core.Collections
             return result;
         }
 
-        public static T[] ParallelGenerate<T>(int count, Func<int, T> generator)
+        public static T[] ParGenerate<T>(int count, Func<int, T> generator)
         {
             var result = new T[count];
             Parallel.For(0, count, i => result[i] = generator(i));
             return result;
         }
 
-        public static TSource MaxBy<TSource, TKey>(this IEnumerable<TSource> source, Func<TSource, TKey> selector)
-            where TKey : IComparable<TKey> =>
-            source.MaxBy(selector, Comparer<TKey>.Default);
-
-        public static TSource MaxBy<TSource, TKey>(this IEnumerable<TSource> source,
-            Func<TSource, TKey> selector,
-            IComparer<TKey> comparer)
-        {
-            using (var iterator = source.GetEnumerator())
-            {
-                if (!iterator.MoveNext())
-                    throw new InvalidOperationException("empty source sequence");
-
-                var opt = iterator.Current;
-                var optValue = selector(opt);
-
-                while (iterator.MoveNext())
-                {
-                    var current = iterator.Current;
-                    var currentValue = selector(current);
-
-                    if (comparer.Compare(currentValue, optValue) > 0)
-                    {
-                        opt = current;
-                        optValue = currentValue;
-                    }
-                }
-
-                return opt;
-            }
-        }
-
-        public static TSource MinBy<TSource, TKey>(this IEnumerable<TSource> source, Func<TSource, TKey> selector)
-            where TKey : IComparable<TKey> =>
-            source.MinBy(selector, Comparer<TKey>.Default);
-
-        public static TSource MinBy<TSource, TKey>(this IEnumerable<TSource> source,
-            Func<TSource, TKey> selector,
-            IComparer<TKey> comparer) =>
-            source.MaxBy(selector, Comparer<TKey>.Create((x, y) => comparer.Compare(y, x)));
-
-        public static int ArgMax<T>(this IEnumerable<T> source, IComparer<T> comparer) =>
-            source.ZipWithIndex().MaxBy(x => x.value, comparer).index;
-
-        public static int ArgMax<T>(this IEnumerable<T> source) where T : IComparable<T> =>
-            source.ArgMax(Comparer<T>.Default);
-
-        public static int ArgMin<T>(this IEnumerable<T> source, IComparer<T> comparer) =>
-            source.ZipWithIndex().MinBy(x => x.value, comparer).index;
-
-        public static int ArgMin<T>(this IEnumerable<T> source) where T : IComparable<T> =>
-            source.ArgMax(Comparer<T>.Default);
-
         public static IEnumerable<T> Items<T>(this IReadOnlyList<T> list, IEnumerable<int> indices) =>
             indices.Select(i => list[i]);
 
         public static IEnumerable<IEnumerable<T>> Cols<T>(this IEnumerable<IReadOnlyList<T>> enumerable, IEnumerable<int> indices) =>
             enumerable.Select(list => list.Items(indices));
+
+        public static IEnumerable<T> Slice<T>(
+            this IEnumerable<T> elems,
+            int? startInclusive = default,
+            int? stopExclusive = default)
+        {
+            switch (elems)
+            {
+                case IReadOnlyList<T> list:
+                    return list.Slice(startInclusive, stopExclusive);
+                default:
+                    var skip = startInclusive ?? 0;
+                    return elems.Skip(skip).ApplyOpt(e => stopExclusive.Select(stop => e.Take(stop - skip)));
+            }
+        }
+
+        public static IEnumerable<T> Slice<T>(
+            this IReadOnlyList<T> list,
+            int startInclusive = default,
+            int? stopExclusive = default) =>
+            Enumerables.IntRange(startInclusive, stopExclusive ?? list.Count).Select(i => list[i]);
+
+        public static ArraySegment<T> Slice<T>(
+            this T[] elems,
+            int startInclusive = default,
+            int? stopExclusive = default) =>
+            new ArraySegment<T>(elems, startInclusive, (stopExclusive ?? elems.Length) - startInclusive);
+
+        public static ArraySegment<T> Slice<T>(
+            this ArraySegment<T> elems,
+            int startInclusive = default,
+            int? stopExclusive = default) =>
+            // ReSharper disable once AssignNullToNotNullAttribute
+            new ArraySegment<T>(elems.Array, elems.Offset + startInclusive, (stopExclusive ?? elems.Count) - startInclusive);
+
+        public static T[,] Slice<T>(
+            this T[,] elems,
+            int rowStartInclusive = default,
+            int? rowStopExclusive = default,
+            int colStartInclusive = default,
+            int? colStopExclusive = default,
+            T[,] result = null) where T : unmanaged
+        {
+            var srcRowCount = elems.GetLength(0);
+            var rowStop = rowStopExclusive ?? srcRowCount;
+
+#pragma warning disable SA1131 // Use readable conditions
+            CheckArgument(0 <= rowStop && rowStop <= srcRowCount, "invalid row stop {0}", rowStop);
+            var srcColCount = elems.GetLength(1);
+            var colStop = colStopExclusive ?? srcColCount;
+            CheckArgument(0 <= colStop && colStop <= srcColCount, "invalid col stop {0}", colStop);
+            var rowCount = rowStop - rowStartInclusive;
+            CheckArgument(0 <= rowCount && rowCount <= srcRowCount, "invalid row count {0}", rowCount);
+            var colCount = colStop - colStartInclusive;
+            CheckArgument(0 <= colCount && colCount <= srcRowCount, "invalid col count {0}", colCount);
+#pragma warning restore SA1131 // Use readable conditions
+
+            result = result ?? new T[rowCount, colCount];
+            if (rowCount == 0 || colCount == 0) return result;
+
+            var dstRowCount = result.GetLength(0);
+            CheckArgument(rowCount <= dstRowCount, "insufficient space for {0} rows", rowCount);
+            var dstColCount = result.GetLength(1);
+            CheckArgument(colCount <= dstColCount, "insufficient space for {0} columns", colCount);
+
+            unsafe
+            {
+                var rowSize = colCount * sizeof(T);
+                fixed (T* src = &elems[rowStartInclusive, colStartInclusive])
+                fixed (T* dst = &result[0, 0])
+                {
+                    for (var r = 0; r < rowCount; ++r)
+                    {
+                        var srcP = src + srcColCount * r;
+                        var dstP = dst + dstColCount * r;
+                        Buffer.MemoryCopy(srcP, dstP, rowSize, rowSize);
+                    }
+                }
+            }
+
+            return result;
+        }
 
         public static bool CollectionEqual<T>(this IReadOnlyCollection<T> x, IReadOnlyCollection<T> y, IEqualityComparer<T> comparer) =>
             x.Count == y.Count && x.SequenceEqual(y, comparer);

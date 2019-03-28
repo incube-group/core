@@ -64,6 +64,10 @@ namespace InCube.Core.Collections
         }
 
         [PublicAPI]
+        public static IEnumerable<(T value, int index)> ZipWithIndex<T>(this IEnumerable<T> enumerable) =>
+            enumerable.Select(MakeValueTuple);
+
+        [PublicAPI]
         public static IEnumerable<TU> TupleSelect<TK, TV, TU>(this IEnumerable<(TK Key, TV Value)> enumerable,
             Func<TK, TV, TU> mapper) =>
             enumerable.Select(kv => mapper(kv.Key, kv.Value));
@@ -72,10 +76,6 @@ namespace InCube.Core.Collections
         public static IEnumerable<TU> TupleSelect<TK, TV, TU>(this IEnumerable<KeyValuePair<TK, TV>> enumerable,
             Func<TK, TV, TU> mapper) =>
             enumerable.Select(kv => mapper(kv.Key, kv.Value));
-
-        [PublicAPI]
-        public static IEnumerable<(T value, int index)> ZipWithIndex<T>(this IEnumerable<T> enumerable) =>
-            enumerable.Select(MakeValueTuple);
 
         [PublicAPI]
         public static IEnumerable<TOut> ZipI<T1, T2, TOut>(
@@ -100,6 +100,69 @@ namespace InCube.Core.Collections
             IEnumerable<T4> e4,
             Func<T1, T2, T3, T4, TOut> mapper) =>
             e1.ZipAsTuple(e2).Zip3(e3, e4, (x, y, z) => mapper(x.Item1, x.Item2, y, z));
+
+        /// <summary>
+        /// Selects two enumerables while iterating over <paramref name="zipped" /> only once.
+        /// </summary>
+        /// <typeparam name="T">The type of the source enumerable.</typeparam>
+        /// <typeparam name="T1">The type of the 1st output enumerable.</typeparam>
+        /// <typeparam name="T2">The type of the 2nd output enumerable.</typeparam>
+        /// <param name="zipped">The input enumerable.</param>
+        /// <param name="selector1">The selector for the first enumerable to return.</param>
+        /// <param name="selector2">The selector for the second enumerable to return.</param>
+        /// <returns>A tuple containing the two enumerables extracted.</returns>
+        /// 
+        /// <remarks>This method is very expensive since all elements need to be cached in temporary lists.</remarks>
+        public static (IEnumerable<T1>, IEnumerable<T2>) Unzip<T, T1, T2>(this IEnumerable<T> zipped,
+            Func<T, T1> selector1,
+            Func<T, T2> selector2) =>
+            zipped is IReadOnlyCollection<T> col ? col.Unzip(selector1, selector2) : zipped.ToList().Unzip(selector1, selector2);
+
+        public static (IEnumerable<T1>, IEnumerable<T2>) Unzip<T, T1, T2>(this IReadOnlyCollection<T> zipped,
+            Func<T, T1> selector1,
+            Func<T, T2> selector2) => (zipped.Select(selector1), zipped.Select(selector2));
+
+        /// <summary>
+        /// Selects three enumerables while iterating over <paramref name="zipped" /> only once.
+        /// </summary>
+        /// <typeparam name="T">The type of the source enumerable.</typeparam>
+        /// <typeparam name="T1">The type of the 1st output enumerable.</typeparam>
+        /// <typeparam name="T2">The type of the 2nd output enumerable.</typeparam>
+        /// <typeparam name="T3">The type of the 3rd output enumerable.</typeparam>
+        /// <param name="zipped">The input enumerable.</param>
+        /// <param name="selector1">The selector for the first enumerable to return (Item1 in the tuple).</param>
+        /// <param name="selector2">The selector for the second enumerable to return (Item2 in the tuple).</param>
+        /// <param name="selector3">The selector for the third enumerable to return (Item3 in the tuple).</param>
+        /// <returns> A tuple containing the three enumerables extracted. </returns>
+        /// 
+        /// <remarks>This method is very expensive since all elements need to be cached in temporary lists.</remarks>
+        public static (IEnumerable<T1>, IEnumerable<T2>, IEnumerable<T3>) Unzip<T, T1, T2, T3>(
+            this IEnumerable<T> zipped,
+            Func<T, T1> selector1,
+            Func<T, T2> selector2,
+            Func<T, T3> selector3) =>
+            zipped is IReadOnlyCollection<T> col
+                ? col.Unzip(selector1, selector2, selector3)
+                : zipped.ToList().Unzip(selector1, selector2, selector3);
+
+        public static (IEnumerable<T1>, IEnumerable<T2>, IEnumerable<T3>) Unzip<T, T1, T2, T3>(
+            this IReadOnlyCollection<T> zipped,
+            Func<T, T1> selector1,
+            Func<T, T2> selector2,
+            Func<T, T3> selector3) =>
+            (zipped.Select(selector1), zipped.Select(selector2), zipped.Select(selector3));
+
+        public static (IEnumerable<T1>, IEnumerable<T2>) Unzip<T1, T2>(this IEnumerable<(T1, T2)> zipped) =>
+            zipped.Unzip(t => t.Item1, t => t.Item2);
+
+        public static (IEnumerable<T1>, IEnumerable<T2>) Unzip<T1, T2>(this IReadOnlyCollection<(T1, T2)> zipped) =>
+            zipped.Unzip(t => t.Item1, t => t.Item2);
+
+        public static (IEnumerable<T1>, IEnumerable<T2>, IEnumerable<T3>) Unzip<T1, T2, T3>(this IEnumerable<(T1, T2, T3)> zipped) =>
+            zipped.Unzip(t => t.Item1, t => t.Item2, t => t.Item3);
+
+        public static (IEnumerable<T1>, IEnumerable<T2>, IEnumerable<T3>) Unzip<T1, T2, T3>(this IReadOnlyCollection<(T1, T2, T3)> zipped) =>
+            zipped.Unzip(t => t.Item1, t => t.Item2, t => t.Item3);
 
         [PublicAPI]
         public static IEnumerable<KeyValuePair<T, TV>> MapValues<T, TU, TV>(

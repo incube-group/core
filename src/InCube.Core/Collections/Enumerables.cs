@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using InCube.Core.Functional;
-using static InCube.Core.Preconditions;
 
 namespace InCube.Core.Collections
 {
@@ -18,69 +17,6 @@ namespace InCube.Core.Collections
         /// <returns>True, if none of the elements fulfills the predicate, false otherwise.</returns>
         public static bool None<T>(this IEnumerable<T> enumerable, Func<T, bool> predicate) => 
             !enumerable.Any(predicate);
-
-        /// <summary>
-        /// Selects two enumerables while iterating over <paramref name="zipped" /> only once.
-        /// </summary>
-        /// <typeparam name="T">The type of the source enumerable.</typeparam>
-        /// <typeparam name="T1">The type of the 1st output enumerable.</typeparam>
-        /// <typeparam name="T2">The type of the 2nd output enumerable.</typeparam>
-        /// <param name="zipped">The input enumerable.</param>
-        /// <param name="selector1">The selector for the first enumerable to return.</param>
-        /// <param name="selector2">The selector for the second enumerable to return.</param>
-        /// <returns>A tuple containing the two enumerables extracted.</returns>
-        /// 
-        /// <remarks>This method is very expensive since all elements need to be cached in temporary lists.</remarks>
-        public static (IEnumerable<T1>, IEnumerable<T2>) Unzip<T, T1, T2>(this IEnumerable<T> zipped,
-            Func<T, T1> selector1,
-            Func<T, T2> selector2) =>
-            zipped is IReadOnlyCollection<T> col ? col.Unzip(selector1, selector2) : zipped.ToList().Unzip(selector1, selector2);
-
-        public static (IEnumerable<T1>, IEnumerable<T2>) Unzip<T, T1, T2>(this IReadOnlyCollection<T> zipped,
-            Func<T, T1> selector1,
-            Func<T, T2> selector2) => (zipped.Select(selector1), zipped.Select(selector2));
-
-        /// <summary>
-        /// Selects three enumerables while iterating over <paramref name="zipped" /> only once.
-        /// </summary>
-        /// <typeparam name="T">The type of the source enumerable.</typeparam>
-        /// <typeparam name="T1">The type of the 1st output enumerable.</typeparam>
-        /// <typeparam name="T2">The type of the 2nd output enumerable.</typeparam>
-        /// <typeparam name="T3">The type of the 3rd output enumerable.</typeparam>
-        /// <param name="zipped">The input enumerable.</param>
-        /// <param name="selector1">The selector for the first enumerable to return (Item1 in the tuple).</param>
-        /// <param name="selector2">The selector for the second enumerable to return (Item2 in the tuple).</param>
-        /// <param name="selector3">The selector for the third enumerable to return (Item3 in the tuple).</param>
-        /// <returns> A tuple containing the three enumerables extracted. </returns>
-        /// 
-        /// <remarks>This method is very expensive since all elements need to be cached in temporary lists.</remarks>
-        public static (IEnumerable<T1>, IEnumerable<T2>, IEnumerable<T3>) Unzip<T, T1, T2, T3>(
-            this IEnumerable<T> zipped,
-            Func<T, T1> selector1,
-            Func<T, T2> selector2,
-            Func<T, T3> selector3) =>
-            zipped is IReadOnlyCollection<T> col
-                ? col.Unzip(selector1, selector2, selector3)
-                : zipped.ToList().Unzip(selector1, selector2, selector3);
-
-        public static (IEnumerable<T1>, IEnumerable<T2>, IEnumerable<T3>) Unzip<T, T1, T2, T3>(
-            this IReadOnlyCollection<T> zipped,
-            Func<T, T1> selector1,
-            Func<T, T2> selector2,
-            Func<T, T3> selector3) =>
-            (zipped.Select(selector1), zipped.Select(selector2), zipped.Select(selector3));
-
-        public static (IEnumerable<T1>, IEnumerable<T2>) Unzip<T1, T2>(this IEnumerable<(T1, T2)> zipped) =>
-            zipped.Unzip(t => t.Item1, t => t.Item2);
-
-        public static (IEnumerable<T1>, IEnumerable<T2>) Unzip<T1, T2>(this IReadOnlyCollection<(T1, T2)> zipped) =>
-            zipped.Unzip(t => t.Item1, t => t.Item2);
-
-        public static (IEnumerable<T1>, IEnumerable<T2>, IEnumerable<T3>) Unzip<T1, T2, T3>(this IEnumerable<(T1, T2, T3)> zipped) =>
-            zipped.Unzip(t => t.Item1, t => t.Item2, t => t.Item3);
-
-        public static (IEnumerable<T1>, IEnumerable<T2>, IEnumerable<T3>) Unzip<T1, T2, T3>(this IReadOnlyCollection<(T1, T2, T3)> zipped) =>
-            zipped.Unzip(t => t.Item1, t => t.Item2, t => t.Item3);
 
         public static IEnumerable<T> ToEnumerable<T>(T t)
         {
@@ -125,86 +61,74 @@ namespace InCube.Core.Collections
         public static IEnumerable<int> IntRange(int stopExclusive) =>
             Enumerable.Range(0, stopExclusive);
 
-        public static IEnumerable<T> Slice<T>(
-            this IEnumerable<T> elems,  
-            int? startInclusive = default, 
-            int? stopExclusive = default)
+        /// <summary>
+        /// Joins the strings in the enumerable with the specified separator (default: ", ").
+        /// </summary>
+        public static string MkString<T>(this IEnumerable<T> enumerable, string separator = ", ") =>
+            String.Join(separator, enumerable);
+
+        /// <summary>
+        /// Joins the strings in the enumerable with the specified separator (default: ", "), wrapped by with a string in the beginning and the end.
+        /// </summary>
+        /// <param name="enumerable">The enumerable.</param>
+        /// <param name="start">The string to place in front of the joined output.</param>
+        /// <param name="separator">The separator to be placed between elements.</param>
+        /// <param name="end">The string to place at the end of the joined output.</param>
+        public static string MkString<T>(this IEnumerable<T> enumerable, string start, string separator, string end) =>
+            $"{start}{enumerable.MkString(separator)}{end}";
+
+        public static TSource MaxBy<TSource, TKey>(this IEnumerable<TSource> source, Func<TSource, TKey> selector)
+            where TKey : IComparable<TKey> =>
+            source.MaxBy(selector, Comparer<TKey>.Default);
+
+        public static TSource MaxBy<TSource, TKey>(this IEnumerable<TSource> source,
+            Func<TSource, TKey> selector,
+            IComparer<TKey> comparer)
         {
-            switch (elems)
+            using (var iterator = source.GetEnumerator())
             {
-                case IReadOnlyList<T> list:
-                    return list.Slice(startInclusive, stopExclusive);
-                default:
-                    var skip = startInclusive ?? 0;
-                    return elems.Skip(skip).ApplyOpt(e => stopExclusive.Select(stop => e.Take(stop - skip)));
-            }
-        }
+                if (!iterator.MoveNext())
+                    throw new InvalidOperationException("empty source sequence");
 
-        public static IEnumerable<T> Slice<T>(
-            this IReadOnlyList<T> list, 
-            int startInclusive = default, 
-            int? stopExclusive = default) =>
-            IntRange(startInclusive, stopExclusive ?? list.Count).Select(i => list[i]);
+                var opt = iterator.Current;
+                var optValue = selector(opt);
 
-        public static ArraySegment<T> Slice<T>(
-            this T[] elems,
-            int startInclusive = default,
-            int? stopExclusive = default) => 
-            new ArraySegment<T>(elems, startInclusive, (stopExclusive ?? elems.Length) - startInclusive);
-
-        public static ArraySegment<T> Slice<T>(
-            this ArraySegment<T> elems,
-            int startInclusive = default,
-            int? stopExclusive = default) => 
-            new ArraySegment<T>(elems.Array, elems.Offset + startInclusive, (stopExclusive ?? elems.Count) - startInclusive);
-
-        public static T[,] Slice<T>(
-            this T[,] elems,
-            int rowStartInclusive = default,
-            int? rowStopExclusive = default,
-            int colStartInclusive = default,
-            int? colStopExclusive = default,
-            T[,] result = null) where T : unmanaged
-        {
-            var srcRowCount = elems.GetLength(0);
-            var rowStop = rowStopExclusive ?? srcRowCount;
-
-#pragma warning disable SA1131 // Use readable conditions
-            CheckArgument(0 <= rowStop && rowStop <= srcRowCount, "invalid row stop {0}", rowStop);
-            var srcColCount = elems.GetLength(1);
-            var colStop = colStopExclusive ?? srcColCount;
-            CheckArgument(0 <= colStop && colStop <= srcColCount, "invalid col stop {0}", colStop);
-            var rowCount = rowStop - rowStartInclusive;
-            CheckArgument(0 <= rowCount && rowCount <= srcRowCount, "invalid row count {0}", rowCount);
-            var colCount = colStop - colStartInclusive;
-            CheckArgument(0 <= colCount && colCount <= srcRowCount, "invalid col count {0}", colCount);
-#pragma warning restore SA1131 // Use readable conditions
-
-            result = result ?? new T[rowCount, colCount];
-            if (rowCount == 0 || colCount == 0) return result;
-
-            var dstRowCount = result.GetLength(0);
-            CheckArgument(rowCount <= dstRowCount, "insufficient space for {0} rows", rowCount);
-            var dstColCount = result.GetLength(1);
-            CheckArgument(colCount <= dstColCount, "insufficient space for {0} columns", colCount);
-
-            unsafe
-            {
-                var rowSize = colCount * sizeof(T);
-                fixed (T* src = &elems[rowStartInclusive, colStartInclusive])
-                fixed (T* dst = &result[0, 0])
+                while (iterator.MoveNext())
                 {
-                    for (var r = 0; r < rowCount; ++r)
+                    var current = iterator.Current;
+                    var currentValue = selector(current);
+
+                    if (comparer.Compare(currentValue, optValue) > 0)
                     {
-                        var srcP = src + srcColCount * r;
-                        var dstP = dst + dstColCount * r;
-                        Buffer.MemoryCopy(srcP, dstP, rowSize, rowSize);
+                        opt = current;
+                        optValue = currentValue;
                     }
                 }
-            }
 
-            return result;
+                return opt;
+            }
         }
+
+        public static TSource MinBy<TSource, TKey>(this IEnumerable<TSource> source, Func<TSource, TKey> selector)
+            where TKey : IComparable<TKey> =>
+            source.MinBy(selector, Comparer<TKey>.Default);
+
+        public static TSource MinBy<TSource, TKey>(this IEnumerable<TSource> source,
+            Func<TSource, TKey> selector,
+            IComparer<TKey> comparer) =>
+            source.MaxBy(selector, Comparer<TKey>.Create((x, y) => comparer.Compare(y, x)));
+
+        public static int ArgMax<T>(this IEnumerable<T> source, IComparer<T> comparer) =>
+            source.ZipWithIndex().MaxBy(x => x.value, comparer).index;
+
+        public static int ArgMax<T>(this IEnumerable<T> source) where T : IComparable<T> =>
+            source.ArgMax(Comparer<T>.Default);
+
+        public static int ArgMin<T>(this IEnumerable<T> source, IComparer<T> comparer) =>
+            source.ZipWithIndex().MinBy(x => x.value, comparer).index;
+
+        public static int ArgMin<T>(this IEnumerable<T> source) where T : IComparable<T> =>
+            source.ArgMax(Comparer<T>.Default);
 
         public static IEnumerable<T> Flatten<T>(this IEnumerable<IEnumerable<T>> enumerable) =>
             enumerable.SelectMany(list => list);
@@ -361,7 +285,7 @@ namespace InCube.Core.Collections
         /// <param name="keySelector">A function projecting each item to a value used for determining whether an item is present in both sets.</param>
         public static IEnumerable<T> Union<T, TKey>(this IEnumerable<T> self, IEnumerable<T> other, Func<T, TKey> keySelector)
         {
-            return self.Concat(other).GroupBy(keySelector, x => x, (key, group) => group.First());
+            return self.Concat(other).GroupBy(keySelector, x => x, (key, group) => @group.First());
         }
 
         public static IEnumerable<bool> And(this IEnumerable<bool> xs, IEnumerable<bool> ys) =>
