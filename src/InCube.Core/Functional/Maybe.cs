@@ -76,7 +76,7 @@ namespace InCube.Core.Functional
             option.GetValueOrDefault();
 
         public static implicit operator Option<T>(Maybe<T> maybe) =>
-            maybe.AsAny.ToOption();
+            maybe.Select(x => x.ToAny()).ToOption();
 
         [SuppressMessage("Usage",
             "CA1801: Review unused parameters",
@@ -128,8 +128,6 @@ namespace InCube.Core.Functional
             this.value?.Apply(f) ?? default(Maybe<TOut>);
 
         IOption<T> IOption<T>.Where(Func<T, bool> p) => Where(p);
-
-        public Any<T>? AsAny => this.Select(x => x.ToAny());
 
         public Maybe<T> Where(Func<T, bool> p) => !HasValue || p(this.value) ? this : default(Maybe<T>);
 

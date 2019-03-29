@@ -30,7 +30,7 @@ namespace InCube.Core.Functional
             AsAny = any;
         }
 
-        public Any<T>? AsAny { get; }
+        internal Any<T>? AsAny { get; }
 
         /// <see cref="Nullable{T}.HasValue"/>
         public bool HasValue => AsAny.HasValue;
@@ -170,7 +170,7 @@ namespace InCube.Core.Functional
         public static Option<T> ToOption<T>(this in T? value) where T : struct =>
             value?.Apply(Some) ?? default(Option<T>);
 
-        public static Option<T> ToOption<T>(this in Any<T>? any) => new Option<T>(any);
+        internal static Option<T> ToOption<T>(this in Any<T>? any) => new Option<T>(any);
 
         public static Option<T> ToOption<T>(this Maybe<T> maybe) where T : class => maybe;
 

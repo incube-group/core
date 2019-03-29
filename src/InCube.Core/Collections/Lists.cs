@@ -17,6 +17,9 @@ namespace InCube.Core.Collections
         /// <returns>the last element of a list</returns>
         public static T Last<T>(this IReadOnlyList<T> list) => list[list.Count - 1];
 
+        public static Option<T> LastOption<T>(this IReadOnlyList<T> list) => 
+            list.Any() ? list[list.Count - 1] : default;
+
         /// <summary>
         /// Sorts an item into a list of buckets. The method calls <see cref="List{T}.BinarySearch(T)"/> and makes
         /// sure to return the greatest boundary in case of ties.

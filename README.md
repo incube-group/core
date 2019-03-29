@@ -57,6 +57,7 @@ The [Collections] package of [InCube] Core provides [LINQ] type extension method
 
 | Method | Description |
 | --- | --- |
+| `Last`, `LastOption` | Access to the last element of a list either directly or as an [`Option<T>`], respectively. |
 | `AsReadOnlyCollection`, `AsReadOnlyList` | Efficiently convert any [`ICollection`] and [`IList`] into [`IReadOnlyCollection`] and [`IReadOnlyList`], respectively.|
 | `Items`, `Slice` | Select indexed subsets and segments of sequences. |
 | `LowerBound`, `UpperBound` | Correspond to [`std::lower_bound`] and [`std::upper_bound`] from the [C++ Algorithms Library]. The implementation is based on [`BinarySearch`].|

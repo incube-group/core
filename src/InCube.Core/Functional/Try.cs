@@ -95,7 +95,7 @@ namespace InCube.Core.Functional
         public T GetValueOrDefault([NotNull] Func<Exception, T> @default) =>
             HasValue ? Value : @default(Exception);
 
-        public T GetValueOrDefault([NotNull] Func<T> @default) =>
+        public T GetValueOrDefault(Func<T> @default) =>
             AsOption.GetValueOrDefault(@default);
 
         public T GetValueOrDefault(T @default) =>
@@ -129,8 +129,6 @@ namespace InCube.Core.Functional
             !this.HasValue || p(AsOption.Value)
                 ? this
                 : Try.Failure<T>(new ArgumentException("Predicate does not hold for value " + AsOption.Value));
-
-        public Any<T>? AsAny => AsOption.AsAny;
 
         ITry<T> ITry<T>.Where(Func<T, bool> p) => this.Where(p);
 
@@ -169,7 +167,7 @@ namespace InCube.Core.Functional
         public Try<T> OrElse([NotNull] Func<Exception, Try<T>> @default) =>
             HasValue ? this : @default(Exception);
 
-        public Try<T> OrElse([NotNull] Func<Try<T>> @default) =>
+        public Try<T> OrElse(Func<Try<T>> @default) =>
             HasValue ? this : @default();
 
         public Try<T> OrElse(Try<T> @default) =>

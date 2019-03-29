@@ -17,11 +17,11 @@ namespace InCube.Core.Test.Functional
             Assert.False(none.HasValue);
             Assert.Throws<InvalidOperationException>(() =>
             {
-                var x = none.Value;
+                var _ = none.Value;
             });
             Assert.Throws<InvalidOperationException>(() =>
             {
-                var x = none[0];
+                var _ = none[0];
             });
             Assert.AreEqual(null, none.GetValueOrDefault());
         }
@@ -39,7 +39,7 @@ namespace InCube.Core.Test.Functional
             Assert.AreEqual(one, some[0]);
             Assert.Throws<InvalidOperationException>(() =>
             {
-                var x = some[1];
+                var _ = some[1];
             });
 
             // ReSharper disable once AssignNullToNotNullAttribute
@@ -99,13 +99,15 @@ namespace InCube.Core.Test.Functional
         [Test]
         public void TestImplicitConversion()
         {
-            Maybe<Boxed<int>> Convert(Maybe<Boxed<int>> opt = default) => opt;
+            Maybe<T> Convert<T>(Maybe<T> opt = default) where T : class => opt;
 
-            Assert.True(Convert() == None);
+            Assert.True(Convert<Boxed<int>>() == None);
             var one = Boxed.Of(1);
-            Assert.True(Convert(one) == Some(one));
+            Assert.True(Convert<Boxed<int>>(one) == Some(one));
             Option<Boxed<int>> someOptInt = Some(one);
             Assert.True(someOptInt.HasValue);
+            Option<Boxed<int>> noneOptInt = Maybe<Boxed<int>>.Empty;
+            Assert.False(noneOptInt.HasValue);
 
             Option<Maybe<object>> optOptObj = Maybe<object>.Empty;
             Assert.True(optOptObj.HasValue);

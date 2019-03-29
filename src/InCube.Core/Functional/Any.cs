@@ -13,7 +13,7 @@ namespace InCube.Core.Functional
         "CA2225: Operator overloads have named alternates",
         Justification = "Methods are in static companion class.")]
     [Serializable]
-    public readonly struct Any<T> : IEquatable<Any<T>>
+    internal readonly struct Any<T> : IEquatable<Any<T>>
     {
         public Any(T value)
         {
@@ -40,7 +40,7 @@ namespace InCube.Core.Functional
 
     public static class Any
     {
-        public static Any<T> ToAny<T>(this T t) => t;
+        internal static Any<T> ToAny<T>(this T t) => t;
 
         internal static TOut Apply<T, TOut>(this T self, Func<T, TOut> f) => f(self);
 
