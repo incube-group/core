@@ -55,7 +55,7 @@ namespace InCube.Core.Test.Functional
 #pragma warning disable CS1718 // Comparison made to same variable
             Assert.True(none == none);
 #pragma warning restore CS1718 // Comparison made to same variable
-            var intNone = Maybe<Boxed<int>>.Empty;
+            var intNone = Maybe<Boxed<int>>.None;
             Assert.True(none == intNone);
             Assert.True(intNone == none);
             Assert.True(none == null);
@@ -106,12 +106,12 @@ namespace InCube.Core.Test.Functional
             Assert.True(Convert<Boxed<int>>(one) == Some(one));
             Option<Boxed<int>> someOptInt = Some(one);
             Assert.True(someOptInt.HasValue);
-            Option<Boxed<int>> noneOptInt = Maybe<Boxed<int>>.Empty;
+            Option<Boxed<int>> noneOptInt = Maybe<Boxed<int>>.None;
             Assert.False(noneOptInt.HasValue);
 
-            Option<Maybe<object>> optOptObj = Maybe<object>.Empty;
+            Option<Maybe<object>> optOptObj = Maybe<object>.None;
             Assert.True(optOptObj.HasValue);
-            Option<Boxed<int>> optOptInt = Maybe<Boxed<int>>.Empty;
+            Option<Boxed<int>> optOptInt = Maybe<Boxed<int>>.None;
             Assert.False(optOptInt.HasValue);
         }
 
@@ -122,7 +122,7 @@ namespace InCube.Core.Test.Functional
             Assert.True(opt.Where(x => x == 1).HasValue);
             Assert.False(opt.Where(x => x == 2).HasValue);
             // ReSharper disable once ImpureMethodCallOnReadonlyValueField
-            Assert.False(Maybe<Boxed<int>>.Empty.Where(x => x == 2).HasValue);
+            Assert.False(Maybe<Boxed<int>>.None.Where(x => x == 2).HasValue);
         }
 
         [Test]
@@ -151,7 +151,7 @@ namespace InCube.Core.Test.Functional
         {
             var one = Some(Boxed.Of(1));
             Assert.AreEqual(one, Option.Some(one).Flatten());
-            var none = Maybe<Boxed<int>>.Empty;
+            var none = Maybe<Boxed<int>>.None;
             // ReSharper disable once ExpressionIsAlwaysNull
             // ReSharper disable once AssignNullToNotNullAttribute
             Assert.AreEqual(none, Option.Some(none).Flatten());
@@ -167,7 +167,7 @@ namespace InCube.Core.Test.Functional
             Assert.AreEqual(typeof(Maybe<Boxed<int>>), someOne.SelectMany(x => x.ToMaybe()).GetType());
             var some = Some(Boxed.Of(false));
             Assert.False(some.Select(x => x.Value).GetValueOrDefault(true));
-            var none = Maybe<Boxed<bool>>.Empty;
+            var none = Maybe<Boxed<bool>>.None;
             Assert.True(none.Select(x => x.Value).GetValueOrDefault(true));
             Assert.True(some.Select(x => default(Boxed<bool>)).GetValueOrDefault(Boxed.Of(true)));
         }

@@ -243,7 +243,7 @@ namespace InCube.Core.Collections
 
         [SuppressMessage("ReSharper", "PossibleMultipleEnumeration", Justification = "prevent unnecessary exceptions")]
         public static Option<T> AggregateOption<T>(this IEnumerable<T> self, Func<IEnumerable<T>, T> aggregator) =>
-            self.IsEmpty() ? Option<T>.Empty : Try.Do(() => aggregator.Invoke(self)).AsOption;
+            self.IsEmpty() ? Option<T>.None : Try.Do(() => aggregator.Invoke(self)).AsOption;
 
         public static (IEnumerable<T> Left, IEnumerable<T> Right) Split<T>(this IEnumerable<T> self,
             Func<T, bool> isLeft)

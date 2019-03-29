@@ -14,6 +14,8 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution 
 		CodeAnalysis.Testing.ruleset = CodeAnalysis.Testing.ruleset
 	EndProjectSection
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "InCube.Core.Demo", "src\InCube.Core.Demo\InCube.Core.Demo.csproj", "{E1359C59-0707-4BDA-892D-1D4DACDF8136}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -28,6 +30,10 @@ Global
 		{5C52B7E7-4611-43CA-8438-D41CE4EFB0FC}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{5C52B7E7-4611-43CA-8438-D41CE4EFB0FC}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{5C52B7E7-4611-43CA-8438-D41CE4EFB0FC}.Release|Any CPU.Build.0 = Release|Any CPU
+		{E1359C59-0707-4BDA-892D-1D4DACDF8136}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{E1359C59-0707-4BDA-892D-1D4DACDF8136}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{E1359C59-0707-4BDA-892D-1D4DACDF8136}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{E1359C59-0707-4BDA-892D-1D4DACDF8136}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

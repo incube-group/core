@@ -144,7 +144,7 @@ namespace InCube.Core.Functional
         // ReSharper disable once PossibleInvalidOperationException
         public T this[int index] => index == 0 ? Value : throw new InvalidOperationException();
         
-        public static readonly Option<T> Empty = default(Option<T>);
+        public static readonly Option<T> None = default(Option<T>);
     }
 
     /// <summary>
@@ -154,7 +154,7 @@ namespace InCube.Core.Functional
     {
         #region Construction 
         
-        public static readonly Option<Nothing> None = Option<Nothing>.Empty;
+        public static readonly Option<Nothing> None = Option<Nothing>.None;
 
         public static Option<T> Some<T>([NotNull] T value) => new Option<T>(value);
 

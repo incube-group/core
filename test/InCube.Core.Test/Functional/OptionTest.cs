@@ -51,7 +51,7 @@ namespace InCube.Core.Test.Functional
 #pragma warning disable CS1718 // Comparison made to same variable
             Assert.True(none == none);
 #pragma warning restore CS1718 // Comparison made to same variable
-            var intNone = Option<int>.Empty;
+            var intNone = Option<int>.None;
             Assert.True(none == intNone);
             Assert.True(intNone == none);
             Assert.True(none == null);
@@ -99,9 +99,9 @@ namespace InCube.Core.Test.Functional
             Assert.True(Convert() == None);
             Assert.True(Convert(1) == Some(1));
 
-            Option<Option<object>> optOptObj = Option<object>.Empty;
+            Option<Option<object>> optOptObj = Option<object>.None;
             Assert.True(optOptObj.HasValue);
-            Option<Option<int>> optOptInt = Option<int>.Empty;
+            Option<Option<int>> optOptInt = Option<int>.None;
             Assert.True(optOptInt.HasValue);
             Option<int?> optNullableInt = default(int?);
             Assert.True(optNullableInt.HasValue);
@@ -114,7 +114,7 @@ namespace InCube.Core.Test.Functional
             Assert.True(opt.Where(x => x == 1).HasValue);
             Assert.False(opt.Where(x => x == 2).HasValue);
             // ReSharper disable once ImpureMethodCallOnReadonlyValueField
-            Assert.False(Option<int>.Empty.Where(x => x == 2).HasValue);
+            Assert.False(Option<int>.None.Where(x => x == 2).HasValue);
         }
 
         [Test]
@@ -174,7 +174,7 @@ namespace InCube.Core.Test.Functional
         {
             var some = Some(false);
             Assert.False(some.Select(x => x).GetValueOrDefault(true));
-            var none = Option<bool>.Empty;
+            var none = Option<bool>.None;
             Assert.True(none.Select(x => x).GetValueOrDefault(true));
         }
 

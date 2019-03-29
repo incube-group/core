@@ -147,7 +147,7 @@ namespace InCube.Core.Functional
         public bool Contains(T elem, IEqualityComparer<T> comparer) =>  
             this.Select(x => comparer.Equals(x, elem)) ?? false;
 
-        public static readonly Maybe<T> Empty = default(Maybe<T>);
+        public static readonly Maybe<T> None = default(Maybe<T>);
 
         /// <see cref="Nullable{T}.Value"/>
         /// <exception cref="InvalidOperationException">If this <see cref="Maybe"/> is undefined or the <paramref name="index"/> != 0.</exception>
@@ -159,7 +159,7 @@ namespace InCube.Core.Functional
     {
         #region Construction 
 
-        public static readonly Maybe<Nothing> None = Maybe<Nothing>.Empty;
+        public static readonly Maybe<Nothing> None = Maybe<Nothing>.None;
 
         public static Maybe<T> Some<T>([NotNull] T value) where T : class => 
             CheckNotNull(value, nameof(value));
