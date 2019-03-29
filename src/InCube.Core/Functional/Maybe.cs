@@ -61,7 +61,7 @@ namespace InCube.Core.Functional
         public override string ToString()
         {
             var typeName = typeof(T).Name;
-            return Select(x => $"Some<${typeName}>({x})").GetValueOrDefault(() => $"None<{typeName}>");
+            return Match(some: x => $"Some<{typeName}>({x})", none: () => $"None<{typeName}>");
         }
 
         public static bool operator ==(Maybe<T> c1, Maybe<T> c2) => c1.Equals(c2);
@@ -92,7 +92,7 @@ namespace InCube.Core.Functional
         public T GetValueOrDefault(T @default) => 
             this.value ?? @default;
 
-        public T GetValueOrDefault(Func<T> @default) =>
+        public T GetValueOr(Func<T> @default) =>
             this.value ?? CheckNotNull(@default, nameof(@default)).Invoke();
 
         public bool Any() => HasValue;

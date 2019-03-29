@@ -17,7 +17,7 @@ namespace InCube.Core.Functional
 
         #region IOption (Monad) like extensions
         
-        public static T GetValueOrDefault<T>(this in T? self, [NotNull] Func<T> @default) where T : struct =>
+        public static T GetValueOr<T>(this in T? self, [NotNull] Func<T> @default) where T : struct =>
             self ?? @default();
 
         public static T? OrElse<T>(this in T? self, [NotNull] Func<T?> @default) where T : struct =>

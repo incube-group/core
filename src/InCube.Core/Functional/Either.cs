@@ -105,6 +105,9 @@ namespace InCube.Core.Functional
         public override int GetHashCode() => 
             LeftOption.GetHashCode() + RightOption.GetHashCode();
 
+        public override string ToString() => 
+            Match(left: x => $"Left<{typeof(TL).Name}>({x})", right: x => $"Right<{typeof(TR).Name}>({x})");
+
         public static bool operator ==(Either<TL, TR> left, Either<TL, TR> right) => left.Equals(right);
 
         public static bool operator !=(Either<TL, TR> left, Either<TL, TR> right) => !left.Equals(right);

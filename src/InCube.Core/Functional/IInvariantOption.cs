@@ -15,7 +15,7 @@ namespace InCube.Core.Functional
         
         TOpt OrElse(TOpt @default);
 
-        T GetValueOrDefault([NotNull] Func<T> @default);
+        T GetValueOr([NotNull] Func<T> @default);
         
         T GetValueOrDefault(T @default);
 

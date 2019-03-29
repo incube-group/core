@@ -1,12 +1,13 @@
 ﻿using System;
+using InCube.Core.Demo.Functional;
 
 namespace InCube.Core.Demo
 {
-    class Program
+    internal class Program
     {
-        static void Main(string[] args)
+        public static void Main(string[] args)
         {
-            Console.WriteLine("Hello World!");
+            OptionDemo.Run();
         }
     }
 }

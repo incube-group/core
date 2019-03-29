@@ -11,7 +11,7 @@ namespace InCube.Core.Numerics
     {
         public static IList<T> Shuffle<T>(this IList<T> list, Option<Random> rngOpt = default)
         {
-            var rng = rngOpt.GetValueOrDefault(() => new Random());
+            var rng = rngOpt.GetValueOr(() => new Random());
             for (var n = list.Count - 1; n > 0; --n)
             {
                 var k = rng.Next(n + 1);

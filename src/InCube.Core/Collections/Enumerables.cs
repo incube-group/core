@@ -229,7 +229,7 @@ namespace InCube.Core.Collections
         }
 
         public static T SingleOrDefault<T>(this IEnumerable<T> self, Func<T> provider) => 
-            self.SingleOption().GetValueOrDefault(provider);
+            self.SingleOption().GetValueOr(provider);
 
         public static Option<T> MaxOption<T>(this IEnumerable<T> self) =>
             self.AggregateOption(Enumerable.Max);

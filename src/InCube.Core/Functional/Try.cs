@@ -52,7 +52,7 @@ namespace InCube.Core.Functional
             get
             {
                 var @this = this;
-                return AsOption.GetValueOrDefault(() => throw new InvalidOperationException("Try failed", @this.Exception));
+                return AsOption.GetValueOr(() => throw new InvalidOperationException("Try failed", @this.Exception));
             }
         }
 
@@ -76,7 +76,9 @@ namespace InCube.Core.Functional
 
         public static bool operator !=(Try<T> left, Try<T> right) => !left.Equals(right);
 
-        public override string ToString() => HasValue ? $"Success({Value})" : $"Failure({this.exception.GetValueOrDefault()})";
+        public override string ToString() => Match(
+            success: x => $"Success({x})",
+            failure: ex => $"Failure({ex})");
 
         public Try<Exception> Failed()
         {
@@ -95,8 +97,8 @@ namespace InCube.Core.Functional
         public T GetValueOrDefault([NotNull] Func<Exception, T> @default) =>
             HasValue ? Value : @default(Exception);
 
-        public T GetValueOrDefault(Func<T> @default) =>
-            AsOption.GetValueOrDefault(@default);
+        public T GetValueOr(Func<T> @default) =>
+            AsOption.GetValueOr(@default);
 
         public T GetValueOrDefault(T @default) =>
             AsOption.GetValueOrDefault(@default);
