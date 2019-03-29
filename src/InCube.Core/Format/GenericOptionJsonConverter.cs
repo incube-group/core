@@ -8,11 +8,11 @@ namespace InCube.Core.Format
 {
     public class GenericOptionJsonConverter : JsonConverter
     {
-        private const string OptionEmpty = "Empty";
+        private const string OptionEmpty = "None";
         private static readonly MethodInfo OptionSome = typeof(Option).
             GetMethods().Single(m => m.Name == "Some" && !m.ReturnType.GetGenericArguments()[0].IsGenericType);
 
-        private const string MaybeEmpty = "Empty";
+        private const string MaybeEmpty = "None";
         private static readonly MethodInfo MaybeSome = typeof(Maybe).GetMethod("Some");
 
         public GenericOptionJsonConverter(Type optionType)
