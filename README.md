@@ -25,7 +25,8 @@ as well as for [`Nullable<T>`].
 | `Empty` | Create an empty wrapper. |
 | `HasValue` | Indicates whether a wrapper holds a valid element `t`.
 | `Value` | Returns either `t` or throws an [`InvalidOperationException`].
-| `GetValueOrDefault` | Returns either `t` or a default value, which may be produced by a function delegate. The delegate may be used to throw a more meaningful exception than by accessing `Value` directly.
+| `GetValueOrDefault` | Returns either `t` or a default value. |
+| `GetValueOr` | Returns either `t` or produces a new value by calling a function delegate. The delegate may be used to throw a more meaningful exception than by accessing `Value` directly.
 | `Select` | Apply a mapping function to `t`.
 | `SelectMany` | Apply a mapping function to `t` that returns a wrapper type and flatten (corresponds to `flatMap`).|
 | `ForEach` | Consume `t` in an [`Action`]. |
@@ -48,7 +49,7 @@ The [Collections] package of [InCube] Core provides [LINQ] type extension method
 | `MaxBy`, `MinBy` | Search for the maximum / minimum of an [`IEnumerable`] by a selection key. |
 | `ArgMax`, `ArgMin` | Find the index of the maximum / minimum in an [`IEnumerable`]. |
 | `Split` | Separate an [`IEnumerable`] into two parts by means of a predicate. |
-| `Iterate`, `Repeat`, `Generate` | Produce a new [`IEnumerable`].
+| `ToEnumerable`, `Iterate`, `Generate` | Produce a new [`IEnumerable`].
 | `Scan` | Generate a new sequence by mapping an [`IEnumerable`] with state. This is essentially a mix of [`Select`] and [`Aggregate`].
 | `FirstOption`, `SingleOption` | Access the first or single element of this [`IEnumerable`] as an [`Option<T>`].
 | `Flatten` | Join an [`IEnumerable`] of containers into a single sequence. |

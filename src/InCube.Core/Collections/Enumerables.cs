@@ -35,15 +35,6 @@ namespace InCube.Core.Collections
             // ReSharper disable once IteratorNeverReturns
         }
 
-        public static IEnumerable<T> Repeat<T>(T value)
-        {
-            while (true)
-            {
-                yield return value;
-            }
-            // ReSharper disable once IteratorNeverReturns
-        }
-
         public static IEnumerable<T> Generate<T>(Func<T> generator)
         {
             while (true)

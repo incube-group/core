@@ -58,11 +58,7 @@ namespace InCube.Core.Functional
 
         public override int GetHashCode() => EqualityComparer<T>.Default.GetHashCode(this.value);
 
-        public override string ToString()
-        {
-            var typeName = typeof(T).Name;
-            return Match(some: x => $"Some<{typeName}>({x})", none: () => $"None<{typeName}>");
-        }
+        public override string ToString() => Match(some: x => x.ToString(), none: () => null);
 
         public static bool operator ==(Maybe<T> c1, Maybe<T> c2) => c1.Equals(c2);
 

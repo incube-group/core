@@ -37,7 +37,7 @@ namespace InCube.Core.Test.Collections
             var reverse = range.Reverse().ToArray();
             Assert.False(reverse.IsSorted(strict: false));
             Assert.False(reverse.IsSorted(strict: true));
-            var constant = Enumerables.Repeat(1).Take(100).ToArray();
+            var constant = Enumerable.Repeat(1, 100).ToArray();
             Assert.True(constant.IsSorted(strict: false));
             Assert.True(constant.Reverse().IsSorted(strict: false));
             Assert.False(constant.IsSorted(strict: true));

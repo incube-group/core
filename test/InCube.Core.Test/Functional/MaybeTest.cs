@@ -5,6 +5,7 @@ using InCube.Core.Functional;
 using static InCube.Core.Functional.Maybe;
 
 #pragma warning disable SA1131 // Use readable conditions
+#pragma warning disable SA1312 // Variable names should begin with lower-case letter
 
 namespace InCube.Core.Test.Functional
 {

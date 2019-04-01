@@ -60,11 +60,7 @@ namespace InCube.Core.Functional
 
         public override int GetHashCode() => AsAny.GetHashCode();
 
-        public override string ToString()
-        {
-            var typeName = typeof(T).Name;
-            return Match(some: x => $"Some<{typeName}>({x})", none: () => $"None<{typeName}>");
-        }
+        public override string ToString() => Match(some: x => x.ToString(), none: () => null);
 
         public static bool operator ==(Option<T> c1, Option<T> c2) => c1.Equals(c2);
 
@@ -183,10 +179,13 @@ namespace InCube.Core.Functional
         public static T? ToNullable<T>(this in Option<T> self) where T : struct =>
             self.AsAny?.Apply(x => x.Value);
 
+        public static TOut? ToNullable<T, TOut>(this in Option<T> self, Func<T, TOut> f) where TOut : struct =>
+            self.AsAny?.Apply(x => f(x.Value));
+
         #endregion
 
         #region Flattening
-        
+
         public static Option<T> Flatten<T>(this in Option<Option<T>> self) =>
             self.AsAny?.Apply(x => x.Value) ?? default(Option<T>);
 
@@ -197,5 +196,6 @@ namespace InCube.Core.Functional
             self ?? default(Option<T>);
 
         #endregion
+
     }
 }

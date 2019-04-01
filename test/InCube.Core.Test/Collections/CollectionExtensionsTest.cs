@@ -138,7 +138,6 @@ namespace InCube.Core.Test.Collections
                 Assert.True(seq[i] % 2 == 1);
             }
             Assert.AreEqual(0, seq.ParRemoveAll(x => true, stopIdx: nextFree));
-            Enumerables.Repeat(4).Select(x => x * 2);
         }
 
         [Test]
