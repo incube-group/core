@@ -23,7 +23,7 @@
     <EmbedAllSources>true</EmbedAllSources>
     <Authors>InCube Group AG</Authors>
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
-    <Version>1.0.0-beta</Version>
+    <Version>1.0.0</Version>
   </PropertyGroup>
 
   <ItemGroup>

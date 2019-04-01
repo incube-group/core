@@ -9,7 +9,7 @@ Binary packages of [InCube] Core are available on [nuget.org]. Add the following
 
 ```xml
   <ItemGroup>
-    <PackageReference Include="InCube.Core" Version="1.0.0-beta" />
+    <PackageReference Include="InCube.Core" Version="1.0.0" />
   </ItemGroup>
 ```
 
