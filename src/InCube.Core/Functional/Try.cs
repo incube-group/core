@@ -44,9 +44,6 @@ namespace InCube.Core.Functional
 
         public bool HasValue => AsOption.HasValue;
 
-        [SuppressMessage("Design",
-            "CA1065: Do not raise exceptions in unexpected locations",
-            Justification = "by design")]
         public T Value
         {
             get
