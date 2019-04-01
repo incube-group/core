@@ -11,6 +11,19 @@
 
   <PropertyGroup>
     <CodeAnalysisRuleSet>..\..\CodeAnalysis.ruleset</CodeAnalysisRuleSet>
+    <Company>InCube Group AG</Company>
+    <Product>InCube Core Library</Product>
+    <Description>InCube Core is a set of C# libraries that provides extensions for functional programming, standard collection types, value parsing and formatting, and more.</Description>
+    <Copyright>2019 InCube Group AG</Copyright>
+    <PackageLicenseExpression>MIT</PackageLicenseExpression>
+    <PackageProjectUrl>https://github.com/incube-group/core</PackageProjectUrl>
+    <RepositoryUrl>https://github.com/incube-group/core</RepositoryUrl>
+    <IncludeSymbols>true</IncludeSymbols>
+    <SymbolPackageFormat>snupkg</SymbolPackageFormat>
+    <EmbedAllSources>true</EmbedAllSources>
+    <Version>1.0.0-alpha</Version>
+    <Authors>InCube Group AG</Authors>
+    <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
   </PropertyGroup>
 
   <ItemGroup>
