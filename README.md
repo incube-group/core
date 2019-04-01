@@ -10,7 +10,7 @@ which are common in other functional programming languages.
 
 | Type | Description |
 | --- | --- |
-| [`Option<T>`] | A wrapper designed along the lines of [`Nullable<T>`] that supports *struct and reference types*. |
+| [`Option<T>`] | A wrapper designed along the lines of [`Nullable<T>`] that supports *struct and reference types*. See [`OptionDemo`] for examples.|
 | [`Maybe<T>`] | An optimized version of [`Option<T>`] that supports *reference types* only. |
 | [`Either<TL, T>`] | A union type of either `TL` or `T`. |
 | [`Try<T>`] | Holds the result of some computation of type `T` or an `Exception`. |
@@ -126,6 +126,7 @@ The [Collections] package of [InCube] Core provides [LINQ] type extension method
 [InCube Core Explained]: https://github.com/incube-group/core/wiki/Home
 [Functional]: src/InCube.Core/Functional/
 [`Option<T>`]: src/InCube.Core/Functional/Option.cs
+[`OptionDemo`]: src/InCube.Core.Demo/Functional/OptionDemo.cs
 [`Maybe<T>`]: src/InCube.Core/Functional/Maybe.cs
 [`Try<T>`]: src/InCube.Core/Functional/Try.cs
 [`Either<TL, T>`]: src/InCube.Core/Functional/Either.cs
