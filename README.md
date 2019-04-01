@@ -3,6 +3,16 @@
 [InCube] Core is a set of C# libraries that provides extensions for functional
 programming, standard collection types, value parsing and formatting, and more.
 
+## Adding InCube Core to your build
+
+Binary packages of [InCube] Core are available on [nuget.org]. Add the following lines to your `.csproj` in order to use the library in your [.Net Core] build:
+
+```xml
+  <ItemGroup>
+    <PackageReference Include="InCube.Core" Version="1.0.0-beta" />
+  </ItemGroup>
+```
+
 ## Functional Programming
 
 The [Functional] package of [InCube] Core provides read-only wrapper types in C#
@@ -167,3 +177,5 @@ The [Collections] package of [InCube] Core provides [LINQ] type extension method
 [`Preconditions`]: src/InCube.Core/Preconditions.cs
 [`Disposables`]: src/InCube.Core/Disposables.cs
 [`InvalidOperationException`]: https://docs.microsoft.com/en-us/dotnet/api/system.invalidoperationexception
+[nuget.org]: https://www.nuget.org/packages/InCube.Core
+[.Net Core]: https://dotnet.microsoft.com/download
