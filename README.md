@@ -113,7 +113,7 @@ The [Collections] package of [InCube] Core provides [LINQ] type extension method
 
 ## Utility Classes
 
-| Type / Method | Description |
+| Type | Description |
 | --- | --- |
 | [`Preconditions`] | Provides methods for checking input arguments very similar to [`Preconditions.java`] in [Google Guava].
 | [`Disposables`] | Manage many [`IDisposable`] objects as a single disposable collection. |
@@ -129,10 +129,11 @@ The [Collections] package of [InCube] Core provides [LINQ] type extension method
 
 ## Links
 
-- [GitHub project](https://github.com/incube-group/core)
+- [GitHub project]
 - [Issue tracker: Report a defect or feature request](https://github.com/incube-group/core/issues/new)
 
 [InCube]: https://www.incubegroup.com
+[Github project]: https://github.com/incube-group/core
 [InCube Core Explained]: https://github.com/incube-group/core/wiki/Home
 [Functional]: src/InCube.Core/Functional/
 [`Option<T>`]: src/InCube.Core/Functional/Option.cs
