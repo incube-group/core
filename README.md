@@ -31,9 +31,10 @@ viewed as a container which holds at most one valid element `t` of type `T`.
 [InCube] Core provides container-like extension methods for all these data types
 as well as for [`Nullable<T>`].
 
-| Method | Description |
+| Property / Method | Description |
 | --- | --- |
-| `Empty` | Create an empty wrapper. |
+| `None` | Create an empty wrapper. |
+| `Some` | Create a wrapper holding a valid element `t`. |
 | `HasValue` | Indicates whether a wrapper holds a valid element `t`.
 | `Value` | Returns either `t` or throws an [`InvalidOperationException`].
 | `GetValueOrDefault` | Returns either `t` or a default value. |
