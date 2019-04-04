@@ -2,6 +2,7 @@
 
 [InCube] Core is a set of C# libraries that provides extensions for functional
 programming, standard collection types, value parsing and formatting, and more.
+Consult the [wiki] for additional resources.
 
 ## Adding InCube Core to your build
 
@@ -20,8 +21,8 @@ which are common in other functional programming languages.
 
 | Type | Description |
 | --- | --- |
-| [`Option<T>`] | A wrapper designed along the lines of [`Nullable<T>`] that supports *struct and reference types*. See [`OptionDemo`] for examples.|
-| [`Maybe<T>`] | An optimized version of [`Option<T>`] that supports *reference types* only. |
+| [`Option<T>`] | A wrapper designed along the lines of [`Nullable<T>`] that supports *struct and reference types*. See the [Option User Guide] and [`OptionDemo`] for an introduction and examples. [`AnyDemo`] shows a simplified implementation.|
+| [`Maybe<T>`] | An optimized version of [`Option<T>`] that supports *reference types* only. See [`MaybeDemo`] for a simplified implementation.|
 | [`Either<TL, T>`] | A union type of either `TL` or `T`. |
 | [`Try<T>`] | Holds the result of some computation of type `T` or an `Exception`. |
 
@@ -118,15 +119,6 @@ The [Collections] package of [InCube] Core provides [LINQ] type extension method
 | [`Preconditions`] | Provides methods for checking input arguments very similar to [`Preconditions.java`] in [Google Guava].
 | [`Disposables`] | Manage many [`IDisposable`] objects as a single disposable collection. |
 
-<!-- 
-## Adding InCube Core to your build
-
-## Learn about InCube Core
-
-- Our user guide, [InCube Core Explained]
-
--->
-
 ## Links
 
 - [GitHub project]
@@ -134,11 +126,14 @@ The [Collections] package of [InCube] Core provides [LINQ] type extension method
 
 [InCube]: https://www.incubegroup.com
 [Github project]: https://github.com/incube-group/core
-[InCube Core Explained]: https://github.com/incube-group/core/wiki/Home
+[wiki]: wiki/Home
 [Functional]: src/InCube.Core/Functional/
 [`Option<T>`]: src/InCube.Core/Functional/Option.cs
 [`OptionDemo`]: src/InCube.Core.Demo/Functional/OptionDemo.cs
+[`AnyDemo`]: src/InCube.Core.Demo/Functional/AnyDemo.cs
+[Option User Guide]: wiki/Option-User-Guide
 [`Maybe<T>`]: src/InCube.Core/Functional/Maybe.cs
+[`MaybeDemo`]: src/InCube.Core.Demo/Functional/MaybeDemo.cs
 [`Try<T>`]: src/InCube.Core/Functional/Try.cs
 [`Either<TL, T>`]: src/InCube.Core/Functional/Either.cs
 [`Histogram<T>`]: src/InCube.Core/Numerics/Histogram.cs
