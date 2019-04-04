@@ -7,6 +7,7 @@ namespace InCube.Core.Demo
         public static void Main()
         {
             OptionDemo.Run();
+            MaybeDemo.Run();
         }
     }
 }

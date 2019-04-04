@@ -46,10 +46,6 @@ namespace InCube.Core.Demo.Functional
             Print(nameof(UseCaseOptionalParameters));
             UseCaseOptionalParameters();
             Print();
-
-            Print(nameof(MemoryOptimizationForReferenceTypes));
-            MemoryOptimizationForReferenceTypes();
-            Print();
         }
 
         // ReSharper disable InconsistentNaming
@@ -194,6 +190,17 @@ namespace InCube.Core.Demo.Functional
             Some<Double>(1.77200451466693)
             Some<Char>(f)
              */
+
+            Print(from x in nullDouble where x >= 0 select Math.Sqrt(x));
+            Print(from x in nullString where x.Length > 0 select x[0]);
+            Print(from x in someDouble where x >= 0 select Math.Sqrt(x));
+            Print(from x in someString where x.Length > 0 select x[0]);
+            /* Output
+            None<Double>
+            None<Char>
+            Some<Double>(1.77200451466693)
+            Some<Char>(f)
+             */
         }
 
         static void MatchExpressions()
@@ -215,14 +222,14 @@ namespace InCube.Core.Demo.Functional
         static void UseCaseOptionalReturnTypes()
         {
             var asciiTable = Enumerable.Range(0, 128).ToDictionary(i => (char)i, i => i);
-            Print(asciiTable['A']);
+            Print(asciiTable.TryGetValue('A', out var x) ? x : default(int?));
             Print(asciiTable.GetOption('A'));
-            Print(TryCatch(() => asciiTable['é']));
+            Print(asciiTable.TryGetValue('é', out var y) ? y : default(int?));
             Print(asciiTable.GetOption('é'));
             /* Output
-            65
             Some<Int32>(65)
-            System.Collections.Generic.KeyNotFoundException: The given key 'é' was not present in the dictionary.
+            Some<Int32>(65)
+            None<Int32>
             None<Int32>
              */
         }
@@ -243,24 +250,6 @@ namespace InCube.Core.Demo.Functional
              */
         }
 
-        static void MemoryOptimizationForReferenceTypes()
-        {
-            Print(SizeOf<double>());
-            Print(SizeOf<double?>());
-            Print(SizeOf<Option<double>>());
-            Print(SizeOf<string>());
-            Print(SizeOf<Option<string>>());
-            Print(SizeOf<Maybe<string>>());
-            /* Output
-            8
-            16
-            16
-            8
-            16
-            8             
-             */
-        }
-
         static object TryCatch<T>(Func<T> func)
         {
             try { return func(); } catch (Exception ex) { return $"{ex.GetType()}: {ex.Message}"; }
@@ -272,7 +261,7 @@ namespace InCube.Core.Demo.Functional
             return value;
         }
 
-        static void Print(object value = default) => Console.WriteLine(value);
+        internal static void Print(object value = default) => Console.WriteLine(value);
 
         static void Print<T>(Option<T> opt)
         {
@@ -284,15 +273,6 @@ namespace InCube.Core.Demo.Functional
         {
             var typename = typeof(T).Name;
             Print(opt.HasValue ? $"Some<{typename}>({opt})" : $"None<{typename}>");
-        }
-
-        private static int SizeOf<T>()
-        {
-            var dm = new DynamicMethod("SizeOfType", typeof(int), Array.Empty<Type>());
-            var il = dm.GetILGenerator();
-            il.Emit(OpCodes.Sizeof, typeof(T));
-            il.Emit(OpCodes.Ret);
-            return (int)dm.Invoke(null, null);
         }
     }
 }

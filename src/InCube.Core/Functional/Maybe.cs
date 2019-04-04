@@ -31,7 +31,7 @@ namespace InCube.Core.Functional
 
         public bool HasValue => !ReferenceEquals(this.value, null);
 
-        public T Value => this.value ?? throw new InvalidOperationException("None.Get");
+        public T Value => this.value ?? throw new InvalidOperationException("Nullable object must have a value");
 
         public IEnumerator<T> GetEnumerator()
         {
