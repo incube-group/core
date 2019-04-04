@@ -126,12 +126,12 @@ The [Collections] package of [InCube] Core provides [LINQ] type extension method
 
 [InCube]: https://www.incubegroup.com
 [Github project]: https://github.com/incube-group/core
-[wiki]: wiki/Home
+[wiki]: https://github.com/incube-group/core/wiki
 [Functional]: src/InCube.Core/Functional/
 [`Option<T>`]: src/InCube.Core/Functional/Option.cs
 [`OptionDemo`]: src/InCube.Core.Demo/Functional/OptionDemo.cs
 [`AnyDemo`]: src/InCube.Core.Demo/Functional/AnyDemo.cs
-[Option User Guide]: wiki/Option-User-Guide
+[Option User Guide]: https://github.com/incube-group/core/wiki/Option-User-Guide
 [`Maybe<T>`]: src/InCube.Core/Functional/Maybe.cs
 [`MaybeDemo`]: src/InCube.Core.Demo/Functional/MaybeDemo.cs
 [`Try<T>`]: src/InCube.Core/Functional/Try.cs
