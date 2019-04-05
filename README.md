@@ -128,22 +128,22 @@ The [Collections] package of [InCube] Core provides [LINQ] type extension method
 [InCube]: https://www.incubegroup.com
 [Github project]: https://github.com/incube-group/core
 [wiki]: https://github.com/incube-group/core/wiki
-[Functional]: src/InCube.Core/Functional/
-[`Option<T>`]: src/InCube.Core/Functional/Option.cs
-[`OptionDemo`]: src/InCube.Core.Demo/Functional/OptionDemo.cs
-[`AnyDemo`]: src/InCube.Core.Demo/Functional/AnyDemo.cs
+[Functional]: https://github.com/incube-group/core/blob/master/src/InCube.Core/Functional/
+[`Option<T>`]: https://github.com/incube-group/core/blob/master/src/InCube.Core/Functional/Option.cs
+[`OptionDemo`]: https://github.com/incube-group/core/blob/master/src/InCube.Core.Demo/Functional/OptionDemo.cs
+[`AnyDemo`]: https://github.com/incube-group/core/blob/master/src/InCube.Core.Demo/Functional/AnyDemo.cs
 [Option User Guide]: https://github.com/incube-group/core/wiki/Option-User-Guide
-[`Maybe<T>`]: src/InCube.Core/Functional/Maybe.cs
-[`MaybeDemo`]: src/InCube.Core.Demo/Functional/MaybeDemo.cs
-[`Try<T>`]: src/InCube.Core/Functional/Try.cs
-[`Either<TL, T>`]: src/InCube.Core/Functional/Either.cs
-[`Histogram<T>`]: src/InCube.Core/Numerics/Histogram.cs
-[`Range<T>`]: src/InCube.Core/Numerics/Range.cs
-[Collections]: src/InCube.Core/Collections/
-[Enumerables]: src/InCube.Core/Collections/Enumerables.cs
-[Lists]: src/InCube.Core/Collections/Lists.cs
-[Dictionaries]: src/InCube.Core/Collections/Dictionaries.cs
-[Tuples]: src/InCube.Core/Collections/Tuples.cs
+[`Maybe<T>`]: https://github.com/incube-group/core/blob/master/src/InCube.Core/Functional/Maybe.cs
+[`MaybeDemo`]: https://github.com/incube-group/core/blob/master/src/InCube.Core.Demo/Functional/MaybeDemo.cs
+[`Try<T>`]: https://github.com/incube-group/core/blob/master/src/InCube.Core/Functional/Try.cs
+[`Either<TL, T>`]: https://github.com/incube-group/core/blob/master/src/InCube.Core/Functional/Either.cs
+[`Histogram<T>`]: https://github.com/incube-group/core/blob/master/src/InCube.Core/Numerics/Histogram.cs
+[`Range<T>`]: https://github.com/incube-group/core/blob/master/src/InCube.Core/Numerics/Range.cs
+[Collections]: https://github.com/incube-group/core/blob/master/src/InCube.Core/Collections/
+[Enumerables]: https://github.com/incube-group/core/blob/master/src/InCube.Core/Collections/Enumerables.cs
+[Lists]: https://github.com/incube-group/core/blob/master/src/InCube.Core/Collections/Lists.cs
+[Dictionaries]: https://github.com/incube-group/core/blob/master/src/InCube.Core/Collections/Dictionaries.cs
+[Tuples]: https://github.com/incube-group/core/blob/master/src/InCube.Core/Collections/Tuples.cs
 [LINQ]: https://docs.microsoft.com/en-us/dotnet/api/system.linq
 [C++ Algorithms Library]: https://en.cppreference.com/w/cpp/algorithm
 [`std::lower_bound`]: https://en.cppreference.com/w/cpp/algorithm/lower_bound
@@ -171,8 +171,8 @@ The [Collections] package of [InCube] Core provides [LINQ] type extension method
 [`Preconditions.java`]: https://github.com/google/guava/blob/master/guava/src/com/google/common/base/Preconditions.java
 [Google Guava]: https://github.com/google/guava
 [`IDisposable`]: https://docs.microsoft.com/en-us/dotnet/api/system.idisposable
-[`Preconditions`]: src/InCube.Core/Preconditions.cs
-[`Disposables`]: src/InCube.Core/Disposables.cs
+[`Preconditions`]: https://github.com/incube-group/core/blob/master/src/InCube.Core/Preconditions.cs
+[`Disposables`]: https://github.com/incube-group/core/blob/master/src/InCube.Core/Disposables.cs
 [`InvalidOperationException`]: https://docs.microsoft.com/en-us/dotnet/api/system.invalidoperationexception
 [nuget.org]: https://www.nuget.org/packages/InCube.Core
 [.Net Core]: https://dotnet.microsoft.com/download
