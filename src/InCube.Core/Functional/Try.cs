@@ -2,6 +2,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
+using System.Threading.Tasks;
 using JetBrains.Annotations;
 
 namespace InCube.Core.Functional
@@ -196,6 +197,18 @@ namespace InCube.Core.Functional
             try
             {
                 return Success(f());
+            }
+            catch (Exception ex)
+            {
+                return Failure<T>(ex);
+            }
+        }
+
+        public static async Task<Try<T>> DoAsync<T>(Func<Task<T>> f)
+        {
+            try
+            {
+                return Success(await f());
             }
             catch (Exception ex)
             {
