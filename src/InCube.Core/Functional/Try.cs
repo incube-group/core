@@ -92,7 +92,7 @@ namespace InCube.Core.Functional
 
         public T GetValueOrDefault() => AsOption.GetValueOrDefault();
 
-        public T GetValueOrDefault([System.Diagnostics.CodeAnalysis.NotNull] Func<Exception, T> @default) =>
+        public T GetValueOrDefault([NotNull] Func<Exception, T> @default) =>
             HasValue ? Value : @default(Exception);
 
         public T GetValueOr(Func<T> @default) =>
@@ -164,7 +164,7 @@ namespace InCube.Core.Functional
 
         public int Count => AsOption.Count;
 
-        public Try<T> OrElse([System.Diagnostics.CodeAnalysis.NotNull] Func<Exception, Try<T>> @default) =>
+        public Try<T> OrElse([NotNull] Func<Exception, Try<T>> @default) =>
             HasValue ? this : @default(Exception);
 
         public Try<T> OrElse(Func<Try<T>> @default) =>

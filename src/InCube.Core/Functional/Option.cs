@@ -152,7 +152,7 @@ namespace InCube.Core.Functional
         
         public static readonly Option<Nothing> None = Option<Nothing>.None;
 
-        public static Option<T> Some<T>([System.Diagnostics.CodeAnalysis.NotNull] T value) => new Option<T>(value);
+        public static Option<T> Some<T>([NotNull] T value) => new Option<T>(value);
 
         public static Option<T?> Some<T>([CanBeNull] T? value) where T : struct => new Option<T?>(value);
 
