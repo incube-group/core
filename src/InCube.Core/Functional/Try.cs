@@ -87,6 +87,9 @@ namespace InCube.Core.Functional
         public TOut Match<TOut>(Func<Exception, TOut> failure, Func<T, TOut> success) =>
             HasValue ? success(AsOption.Value) : failure(Exception);
 
+        public async Task<TOut> Match<TOut>(Func<Exception, Task<TOut>> failure, Func<T, Task<TOut>> success) =>
+            HasValue ? await success(AsOption.Value) : await failure(Exception);
+
         TOut IOption<T>.Match<TOut>(Func<TOut> none, Func<T, TOut> some) =>
             Match(_ => none(), some);
 
@@ -119,8 +122,14 @@ namespace InCube.Core.Functional
         public Try<TOut> Select<TOut>(Func<T, TOut> f) =>
             Match(Try.Failure<TOut>, value => Try.Do(() => f(value)));
 
+        public async Task<Try<TOut>> Select<TOut>(Func<T, Task<TOut>> f) =>
+            await Match(Try.FailureAsync<TOut>, value => Try.DoAsync(() => f(value)));
+
         public Try<TOut> SelectMany<TOut>(Func<T, Try<TOut>> f) =>
             Match(Try.Failure<TOut>, f);
+
+        public async Task<Try<TOut>> SelectMany<TOut>(Func<T, Task<Try<TOut>>> f) =>
+            await Match(failure: Try.FailureAsync<TOut>, success: f);
 
         public Try<TOut> SelectMany<TOut>(Func<Exception, Try<TOut>> failure, Func<T, Try<TOut>> success) =>
             Match(failure, success);
@@ -191,6 +200,8 @@ namespace InCube.Core.Functional
         public static Try<T> Success<T>(T t) => new Try<T>(t);
 
         public static Try<T> Failure<T>(Exception ex) => new Try<T>(ex);
+
+        public static Task<Try<T>> FailureAsync<T>(Exception ex) => Task.Run(() => new Try<T>(ex));
 
         public static Try<T> Do<T>(Func<T> f)
         {
