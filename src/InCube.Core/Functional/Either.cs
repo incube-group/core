@@ -2,6 +2,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
+using System.Threading.Tasks;
 
 namespace InCube.Core.Functional
 {
@@ -57,6 +58,8 @@ namespace InCube.Core.Functional
 
         public T Match<T>(Func<TL, T> left, Func<TR, T> right) =>
             IsLeft ? left(Left) : right(Right);
+
+        public async Task<T> MatchAsync<T>(Func<TL, Task<T>> left, Func<TR, Task<T>> right) => IsLeft ? await left(Left) : await right(Right);
 
         IEither<TL, TOut> IEither<TL, TR>.Select<TOut>(Func<TR, TOut> f) => Select(f);
 

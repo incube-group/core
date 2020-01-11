@@ -2,6 +2,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
+using System.Threading.Tasks;
 using InCube.Core.Format;
 using JetBrains.Annotations;
 using Newtonsoft.Json;
@@ -82,6 +83,9 @@ namespace InCube.Core.Functional
         public TOut Match<TOut>(Func<TOut> none, Func<T, TOut> some) =>
             this.value?.Apply(x => some(x).ToAny()) ?? none();
 
+        public async Task<TOut> MatchAsync<TOut>(Func<Task<TOut>> none, Func<T, Task<TOut>> some) =>
+            await this.value?.ApplyAsync(async x => await some(x)) ?? (await none()).ToAny();
+
         public T GetValueOrDefault() => 
             this.value;
 
@@ -120,8 +124,14 @@ namespace InCube.Core.Functional
         public Maybe<TOut> Select<TOut>(Func<T, TOut> f) where TOut : class =>
             this.value?.Apply(f); // implicit conversion
 
+        public async Task<Maybe<TOut>> SelectAsync<TOut>(Func<T, Task<TOut>> f) where TOut : class =>
+            await this.value?.Apply(f); // implicit conversion
+
         public Maybe<TOut> SelectMany<TOut>(Func<T, Maybe<TOut>> f) where TOut : class =>
             this.value?.Apply(f) ?? default(Maybe<TOut>);
+
+        public async Task<Maybe<TOut>> SelectManyAsync<TOut>(Func<T, Task<Maybe<TOut>>> f) where TOut : class =>
+            (await this.value?.Apply(f)).GetValueOrDefault();
 
         IOption<T> IOption<T>.Where(Func<T, bool> p) => Where(p);
 

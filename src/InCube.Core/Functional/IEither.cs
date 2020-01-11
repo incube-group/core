@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Threading.Tasks;
 
 namespace InCube.Core.Functional
 {
@@ -26,6 +27,8 @@ namespace InCube.Core.Functional
         IOption<TR> RightOption { get; }
 
         T Match<T>(Func<TL, T> left, Func<TR, T> right);
+
+        Task<T> MatchAsync<T>(Func<TL, Task<T>> left, Func<TR, Task<T>> right);
 
         IEither<TL, TOut> Select<TOut>(Func<TR, TOut> f);
 
