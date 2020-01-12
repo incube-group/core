@@ -66,6 +66,9 @@ namespace InCube.Core.Functional
         public Either<TL, TOut> Select<TOut>(Func<TR, TOut> f) =>
             Match<Either<TL, TOut>>(left => left, right => f(right));
 
+        public async Task<Either<TL, TOut>> SelectAsync<TOut>(Func<TR, Task<TOut>> f) =>
+            await Match<Task<Either<TL, TOut>>>(left => Task.FromResult(new Either<TL, TOut>(left)), async right => await f(right));
+
         public Either<TL, TOut> SelectMany<TOut>(Func<TR, Either<TL, TOut>> f) => 
             Match(left => left, f);
 
