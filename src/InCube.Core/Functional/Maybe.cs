@@ -131,7 +131,9 @@ namespace InCube.Core.Functional
             this.value?.Apply(f) ?? default(Maybe<TOut>);
 
         public async Task<Maybe<TOut>> SelectManyAsync<TOut>(Func<T, Task<Maybe<TOut>>> f) where TOut : class =>
-            (await this.value?.Apply(f)).GetValueOrDefault();
+            this.HasValue
+                ? await this.value.ApplyAsync(f)
+                : await Task.FromResult(default(Maybe<TOut>));
 
         IOption<T> IOption<T>.Where(Func<T, bool> p) => Where(p);
 
