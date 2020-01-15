@@ -147,6 +147,9 @@ namespace InCube.Core.Functional
         public Maybe<T> OrElse(Func<Maybe<T>> @default) =>
             HasValue ? this : @default();
 
+        public async Task<Maybe<T>> OrElseAsync(Func<Task<Maybe<T>>> @default) =>
+            HasValue ? this : await @default();
+
         public Maybe<T> OrElse(Maybe<T> @default) =>
             HasValue ? this : @default;
 
