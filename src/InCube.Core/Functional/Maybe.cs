@@ -84,7 +84,7 @@ namespace InCube.Core.Functional
             this.value?.Apply(x => some(x).ToAny()) ?? none();
 
         public async Task<TOut> MatchAsync<TOut>(Func<Task<TOut>> none, Func<T, Task<TOut>> some) =>
-            await this.value?.ApplyAsync(async x => await some(x)) ?? (await none()).ToAny();
+            (this.value == null ? default(TOut) : await this.value.ApplyAsync(some)) ?? (await none()).ToAny();
 
         public T GetValueOrDefault() => 
             this.value;
