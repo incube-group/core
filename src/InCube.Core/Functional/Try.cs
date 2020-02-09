@@ -134,6 +134,8 @@ namespace InCube.Core.Functional
         public Try<TOut> SelectMany<TOut>(Func<Exception, Try<TOut>> failure, Func<T, Try<TOut>> success) =>
             Match(failure, success);
 
+        public async Task ForEachAsync(Func<Task> none, Func<T, Task> some) => await AsOption.ForEachAsync(none, some);
+
         public Try<T> Where(Func<T, bool> p) =>
             !this.HasValue || p(AsOption.Value)
                 ? this
@@ -149,15 +151,11 @@ namespace InCube.Core.Functional
 
         public bool All(Func<T, bool> p) => AsOption.All(p);
 
-        public void ForEach(Action<T> action)
-        {
-            AsOption.ForEach(action);
-        }
+        public void ForEach(Action<T> action) => AsOption.ForEach(action);
 
-        public void ForEach(Action failure, Action<T> success)
-        {
-            AsOption.ForEach(failure, success);
-        }
+        public async Task ForEachAsync(Func<T, Task> action) => await AsOption.ForEachAsync(action);
+
+        public void ForEach(Action failure, Action<T> success) => AsOption.ForEach(failure, success);
 
         public void ForEach(Action<Exception> failure, Action<T> success)
         {

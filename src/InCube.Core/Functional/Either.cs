@@ -92,6 +92,18 @@ namespace InCube.Core.Functional
             }
         }
 
+        public async Task ForEachAsync(Func<TL, Task> left, Func<TR, Task> right)
+        {
+            if (IsLeft)
+            {
+                await left(Left);
+            }
+            else
+            {
+                await right(Right);
+            }
+        }
+
         public static implicit operator Either<TL, TR>(TL left) => new Either<TL, TR>(left);
 
         public static implicit operator Either<TL, TR>(TR right) => new Either<TL, TR>(right);

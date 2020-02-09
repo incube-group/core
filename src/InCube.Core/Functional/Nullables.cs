@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Threading.Tasks;
 using JetBrains.Annotations;
 
 namespace InCube.Core.Functional
@@ -49,6 +50,8 @@ namespace InCube.Core.Functional
             self?.Apply(action);
         }
 
+        public static Task ForEachAsync<T>(this in T? self, Func<T, Task> action) where T : struct => self?.Apply(action);
+
         public static void ForEach<T>(this in T? self, Action none, Action<T> some) where T : struct
         {
             self.ForEach(some);
@@ -57,6 +60,8 @@ namespace InCube.Core.Functional
                 none();
             }
         }
+
+        public static Task ForEachAsync<T>(this in T? self, Func<Task> none, Func<T, Task> some) where T : struct => self.HasValue ? self.ForEachAsync(some) : none();
 
         public static TOut? Select<TIn, TOut>(this in TIn? self, Func<TIn, TOut> f) 
             where TIn : struct where TOut : struct =>

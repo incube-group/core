@@ -106,12 +106,26 @@ namespace InCube.Core.Functional
             this.value?.Apply(action);
         }
 
+        public async Task ForEachAsync(Func<T, Task> action)
+        {
+            await this.value?.Apply(action);
+        }
+
         public void ForEach(Action none, Action<T> some)
         {
             ForEach(some);
             if (!HasValue)
             {
                 none();
+            }
+        }
+
+        public async Task ForEachAsync(Func<Task> none, Func<T, Task> some)
+        {
+            await ForEachAsync(some);
+            if (!HasValue)
+            {
+                await none();
             }
         }
 

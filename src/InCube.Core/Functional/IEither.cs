@@ -36,6 +36,8 @@ namespace InCube.Core.Functional
 
         void ForEach(Action<TL> left, Action<TR> right);
 
+        Task ForEachAsync(Func<TL, Task> left, Func<TR, Task> right);
+
         Type Type { get; }
     }
 }

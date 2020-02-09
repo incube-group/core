@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Threading.Tasks;
 using JetBrains.Annotations;
 using static InCube.Core.Preconditions;
 
@@ -32,7 +33,11 @@ namespace InCube.Core.Functional
 
         void ForEach(Action<T> action);
 
+        Task ForEachAsync(Func<T, Task> action);
+
         void ForEach(Action none, Action<T> some);
+
+        Task ForEachAsync(Func<Task> none, Func<T, Task> some);
 
         IOption<T> Where(Func<T, bool> p);
     }

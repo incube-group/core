@@ -2,6 +2,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
+using System.Threading.Tasks;
 using InCube.Core.Format;
 using JetBrains.Annotations;
 using Newtonsoft.Json;
@@ -92,15 +93,13 @@ namespace InCube.Core.Functional
 
         public bool All(Func<T, bool> p) => AsAny.All(x => p(x));
 
-        public void ForEach(Action<T> action)
-        {
-            AsAny.ForEach(x => action(x));
-        }
+        public void ForEach(Action<T> action) => AsAny.ForEach(x => action(x));
 
-        public void ForEach(Action none, Action<T> some)
-        {
-            AsAny.ForEach(none, x => some(x));
-        }
+        public async Task ForEachAsync(Func<T, Task> action) => await AsAny.ForEachAsync(x => action(x));
+
+        public void ForEach(Action none, Action<T> some) => AsAny.ForEach(none, x => some(x));
+
+        public async Task ForEachAsync(Func<Task> none, Func<T, Task> some) => await AsAny.ForEachAsync(none, x => some(x));
 
         IOption<TOut> IOption<T>.Select<TOut>(Func<T, TOut> f) => 
             Select(f);
