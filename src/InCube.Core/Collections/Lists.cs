@@ -161,13 +161,18 @@ namespace InCube.Core.Collections
         
         public static IReadOnlyCollection<T> AsReadOnlyCollection<T>(this T[] col) => col;
 
-        public static IReadOnlyList<T> AsReadOnlyList<T>(this IList<T> list) =>
-            list switch
+        public static IReadOnlyList<T> AsReadOnlyList<T>(this IList<T> list)
+        {
+            switch (list)
             {
-                List<T> l => l,
-                T[] a => a,
-                _ => new ReadOnlyList<T>(list)
-            };
+                case List<T> l:
+                    return l;
+                case T[] a:
+                    return a;
+                default:
+                    return new ReadOnlyList<T>(list);
+            }
+        }
 
         /// <summary>
         /// The purpose of this method is to issue a compiler warning if someone calls this by mistake.
