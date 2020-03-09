@@ -95,11 +95,11 @@ namespace InCube.Core.Functional
 
         public void ForEach(Action<T> action) => AsAny.ForEach(x => action(x));
 
-        public async Task ForEachAsync(Func<T, Task> action) => await AsAny.ForEachAsync(x => action(x));
+        public Task ForEachAsync(Func<T, Task> action) => AsAny.ForEachAsync(x => action(x));
 
         public void ForEach(Action none, Action<T> some) => AsAny.ForEach(none, x => some(x));
 
-        public async Task ForEachAsync(Func<Task> none, Func<T, Task> some) => await AsAny.ForEachAsync(none, x => some(x));
+        public Task ForEachAsync(Func<Task> none, Func<T, Task> some) => AsAny.ForEachAsync(none, x => some(x));
 
         IOption<TOut> IOption<T>.Select<TOut>(Func<T, TOut> f) => 
             Select(f);

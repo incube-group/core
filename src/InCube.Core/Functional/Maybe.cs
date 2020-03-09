@@ -84,7 +84,7 @@ namespace InCube.Core.Functional
             this.value?.Apply(x => some(x).ToAny()) ?? none();
 
         public async Task<TOut> MatchAsync<TOut>(Func<Task<TOut>> none, Func<T, Task<TOut>> some) =>
-            this.value == null ? (await none()).ToAny() : (await this.value.ApplyAsync(some)).ToAny();
+            this.value == null ? (await none().ConfigureAwait(false)).ToAny() : (await this.value.ApplyAsync(some).ConfigureAwait(false)).ToAny();
 
         public T GetValueOrDefault() => 
             this.value;
@@ -106,10 +106,7 @@ namespace InCube.Core.Functional
             this.value?.Apply(action);
         }
 
-        public async Task ForEachAsync(Func<T, Task> action)
-        {
-            await this.value?.Apply(action);
-        }
+        public Task ForEachAsync(Func<T, Task> action) => this.value?.Apply(action);
 
         public void ForEach(Action none, Action<T> some)
         {
@@ -122,10 +119,10 @@ namespace InCube.Core.Functional
 
         public async Task ForEachAsync(Func<Task> none, Func<T, Task> some)
         {
-            await ForEachAsync(some);
+            await ForEachAsync(some).ConfigureAwait(false);
             if (!HasValue)
             {
-                await none();
+                await none().ConfigureAwait(false);
             }
         }
 
@@ -144,10 +141,10 @@ namespace InCube.Core.Functional
         public Maybe<TOut> SelectMany<TOut>(Func<T, Maybe<TOut>> f) where TOut : class =>
             this.value?.Apply(f) ?? default(Maybe<TOut>);
 
-        public async Task<Maybe<TOut>> SelectManyAsync<TOut>(Func<T, Task<Maybe<TOut>>> f) where TOut : class =>
+        public Task<Maybe<TOut>> SelectManyAsync<TOut>(Func<T, Task<Maybe<TOut>>> f) where TOut : class =>
             this.HasValue
-                ? await this.value.ApplyAsync(f)
-                : await Task.FromResult(default(Maybe<TOut>));
+                ? this.value.ApplyAsync(f)
+                : Task.FromResult(default(Maybe<TOut>));
 
         IOption<T> IOption<T>.Where(Func<T, bool> p) => Where(p);
 
@@ -162,7 +159,7 @@ namespace InCube.Core.Functional
             HasValue ? this : @default();
 
         public async Task<Maybe<T>> OrElseAsync(Func<Task<Maybe<T>>> @default) =>
-            HasValue ? this : await @default();
+            HasValue ? this : await @default().ConfigureAwait(false);
 
         public Maybe<T> OrElse(Maybe<T> @default) =>
             HasValue ? this : @default;

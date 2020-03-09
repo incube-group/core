@@ -59,15 +59,15 @@ namespace InCube.Core.Functional
         public T Match<T>(Func<TL, T> left, Func<TR, T> right) =>
             IsLeft ? left(Left) : right(Right);
 
-        public async Task<T> MatchAsync<T>(Func<TL, Task<T>> left, Func<TR, Task<T>> right) => IsLeft ? await left(Left) : await right(Right);
+        public async Task<T> MatchAsync<T>(Func<TL, Task<T>> left, Func<TR, Task<T>> right) => IsLeft ? await left(Left).ConfigureAwait(false) : await right(Right).ConfigureAwait(false);
 
         IEither<TL, TOut> IEither<TL, TR>.Select<TOut>(Func<TR, TOut> f) => Select(f);
 
         public Either<TL, TOut> Select<TOut>(Func<TR, TOut> f) =>
             Match<Either<TL, TOut>>(left => left, right => f(right));
 
-        public async Task<Either<TL, TOut>> SelectAsync<TOut>(Func<TR, Task<TOut>> f) =>
-            await Match<Task<Either<TL, TOut>>>(left => Task.FromResult(new Either<TL, TOut>(left)), async right => await f(right));
+        public Task<Either<TL, TOut>> SelectAsync<TOut>(Func<TR, Task<TOut>> f) =>
+            Match<Task<Either<TL, TOut>>>(left => Task.FromResult(new Either<TL, TOut>(left)), async right => await f(right));
 
         public Either<TL, TOut> SelectMany<TOut>(Func<TR, Either<TL, TOut>> f) => 
             Match(left => left, f);
@@ -92,17 +92,7 @@ namespace InCube.Core.Functional
             }
         }
 
-        public async Task ForEachAsync(Func<TL, Task> left, Func<TR, Task> right)
-        {
-            if (IsLeft)
-            {
-                await left(Left);
-            }
-            else
-            {
-                await right(Right);
-            }
-        }
+        public Task ForEachAsync(Func<TL, Task> left, Func<TR, Task> right) => this.IsLeft ? left(this.Left) : right(this.Right);
 
         public static implicit operator Either<TL, TR>(TL left) => new Either<TL, TR>(left);
 
