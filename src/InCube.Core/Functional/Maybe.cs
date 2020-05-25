@@ -106,7 +106,10 @@ namespace InCube.Core.Functional
             this.value?.Apply(action);
         }
 
-        public Task ForEachAsync(Func<T, Task> action) => this.value?.Apply(action);
+        public Task ForEachAsync(Func<T, Task> action)
+        {
+            return this.value?.Apply(action) ?? Task.CompletedTask;
+        }
 
         public void ForEach(Action none, Action<T> some)
         {
@@ -119,11 +122,11 @@ namespace InCube.Core.Functional
 
         public async Task ForEachAsync(Func<Task> none, Func<T, Task> some)
         {
-            await ForEachAsync(some).ConfigureAwait(false);
             if (!HasValue)
             {
                 await none().ConfigureAwait(false);
             }
+            await ForEachAsync(some).ConfigureAwait(false);
         }
 
         IOption<TOut> IOption<T>.Select<TOut>(Func<T, TOut> f) => 
@@ -183,7 +186,7 @@ namespace InCube.Core.Functional
 
         public static readonly Maybe<Nothing> None = Maybe<Nothing>.None;
 
-        public static Maybe<T> Some<T>([NotNull] T value) where T : class => 
+        public static Maybe<T> Some<T>([JetBrains.Annotations.NotNull] T value) where T : class => 
             CheckNotNull(value, nameof(value));
 
         #endregion
