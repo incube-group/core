@@ -186,7 +186,7 @@ namespace InCube.Core.Functional
 
         public static readonly Maybe<Nothing> None = Maybe<Nothing>.None;
 
-        public static Maybe<T> Some<T>([JetBrains.Annotations.NotNull] T value) where T : class => 
+        public static Maybe<T> Some<T>([NotNull] T value) where T : class => 
             CheckNotNull(value, nameof(value));
 
         #endregion
