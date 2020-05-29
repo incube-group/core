@@ -17,14 +17,11 @@ namespace InCube.Core.Collections
             this.wrapped = wrapped;
         }
 
-        public IEnumerator<T> GetEnumerator() => 
-            wrapped.GetEnumerator();
+        public IEnumerator<T> GetEnumerator() => this.wrapped.GetEnumerator();
 
-        IEnumerator IEnumerable.GetEnumerator() => 
-            wrapped.GetEnumerator();
+        IEnumerator IEnumerable.GetEnumerator() => this.wrapped.GetEnumerator();
 
-        public int Count => 
-            wrapped.Count;
+        public int Count => this.wrapped.Count;
 
         public bool Equals(ReadOnlyCollection<T> that) => 
             Equals(this.wrapped, that.wrapped);
@@ -32,8 +29,7 @@ namespace InCube.Core.Collections
         public override bool Equals(object obj) => 
             obj is ReadOnlyCollection<T> that && this.Equals(that);
 
-        public override int GetHashCode() => 
-            wrapped?.GetHashCode() ?? 0;
+        public override int GetHashCode() => this.wrapped?.GetHashCode() ?? 0;
 
         public static bool operator ==(ReadOnlyCollection<T> left, ReadOnlyCollection<T> right) => 
             left.Equals(right);

@@ -17,16 +17,16 @@ namespace InCube.Core.Format
 
         public GenericOptionJsonConverter(Type optionType)
         {
-            OptionType = optionType;
+            this.OptionType = optionType;
             if (optionType == typeof(Option<>))
             {
-                Empty = OptionEmpty;
-                Some = OptionSome;
+                this.Empty = OptionEmpty;
+                this.Some = OptionSome;
             } 
             else if (optionType == typeof(Maybe<>))
             {
-                Empty = MaybeEmpty;
-                Some = MaybeSome;
+                this.Empty = MaybeEmpty;
+                this.Some = MaybeSome;
             }
             else
             {
@@ -62,16 +62,16 @@ namespace InCube.Core.Format
             var typeArgs = objectType.GenericTypeArguments;
             if (reader.TokenType == JsonToken.Null)
             {
-                var concreteType = OptionType.MakeGenericType(typeArgs);
-                return concreteType.GetField(Empty).GetValue(null);
+                var concreteType = this.OptionType.MakeGenericType(typeArgs);
+                return concreteType.GetField(this.Empty).GetValue(null);
             }
 
             var paramType = typeArgs[0];
             var value = serializer.Deserialize(reader, paramType);
-            return Some.MakeGenericMethod(paramType).Invoke(null, new [] {value});
+            return this.Some.MakeGenericMethod(paramType).Invoke(null, new [] {value});
         }
 
         public sealed override bool CanConvert(Type objectType) => 
-            objectType.IsConstructedGenericType && OptionType == objectType.GetGenericTypeDefinition();
+            objectType.IsConstructedGenericType && this.OptionType == objectType.GetGenericTypeDefinition();
     }
 }

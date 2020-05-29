@@ -36,7 +36,7 @@ namespace InCube.Core.Functional
 
         public IEnumerator<T> GetEnumerator()
         {
-            if (HasValue)
+            if (this.HasValue)
             {
                 yield return this.value;
             }
@@ -44,7 +44,7 @@ namespace InCube.Core.Functional
 
         IEnumerator IEnumerable.GetEnumerator()
         {
-            return GetEnumerator();
+            return this.GetEnumerator();
         }
 
         public bool Equals(Maybe<T> that) =>
@@ -53,13 +53,13 @@ namespace InCube.Core.Functional
 
         public override bool Equals(object obj)
         {
-            if (ReferenceEquals(obj, null)) return !HasValue;
-            return obj is Maybe<T> option && Equals(option);
+            if (ReferenceEquals(obj, null)) return !this.HasValue;
+            return obj is Maybe<T> option && this.Equals(option);
         }
 
         public override int GetHashCode() => EqualityComparer<T>.Default.GetHashCode(this.value);
 
-        public override string ToString() => Match(some: x => x.ToString(), none: () => null);
+        public override string ToString() => this.Match(some: x => x.ToString(), none: () => null);
 
         public static bool operator ==(Maybe<T> c1, Maybe<T> c2) => c1.Equals(c2);
 
@@ -95,7 +95,7 @@ namespace InCube.Core.Functional
         public T GetValueOr(Func<T> @default) =>
             this.value ?? CheckNotNull(@default, nameof(@default)).Invoke();
 
-        public bool Any() => HasValue;
+        public bool Any() => this.HasValue;
 
         public bool Any(Func<T, bool> p) => this.value?.Apply(p) ?? false;
 
@@ -113,8 +113,8 @@ namespace InCube.Core.Functional
 
         public void ForEach(Action none, Action<T> some)
         {
-            ForEach(some);
-            if (!HasValue)
+            this.ForEach(some);
+            if (!this.HasValue)
             {
                 none();
             }
@@ -149,25 +149,21 @@ namespace InCube.Core.Functional
                 ? this.value.ApplyAsync(f)
                 : Task.FromResult(default(Maybe<TOut>));
 
-        IOption<T> IOption<T>.Where(Func<T, bool> p) => Where(p);
+        IOption<T> IOption<T>.Where(Func<T, bool> p) => this.Where(p);
 
-        public Maybe<T> Where(Func<T, bool> p) => !HasValue || p(this.value) ? this : default(Maybe<T>);
+        public Maybe<T> Where(Func<T, bool> p) => !this.HasValue || p(this.value) ? this : default(Maybe<T>);
 
-        public Maybe<TD> Cast<TD>() where TD : class, T =>
-            SelectMany(x => x is TD d ? new Maybe<TD>(d) : default(Maybe<TD>));
+        public Maybe<TD> Cast<TD>() where TD : class, T => this.SelectMany(x => x is TD d ? new Maybe<TD>(d) : default(Maybe<TD>));
 
-        public int Count => HasValue ? 1 : 0;
+        public int Count => this.HasValue ? 1 : 0;
 
-        public Maybe<T> OrElse(Func<Maybe<T>> @default) =>
-            HasValue ? this : @default();
+        public Maybe<T> OrElse(Func<Maybe<T>> @default) => this.HasValue ? this : @default();
 
-        public async Task<Maybe<T>> OrElseAsync(Func<Task<Maybe<T>>> @default) =>
-            HasValue ? this : await @default().ConfigureAwait(false);
+        public async Task<Maybe<T>> OrElseAsync(Func<Task<Maybe<T>>> @default) => this.HasValue ? this : await @default().ConfigureAwait(false);
 
-        public Maybe<T> OrElse(Maybe<T> @default) =>
-            HasValue ? this : @default;
+        public Maybe<T> OrElse(Maybe<T> @default) => this.HasValue ? this : @default;
 
-        public bool Contains(T elem) => Contains(elem, EqualityComparer<T>.Default);
+        public bool Contains(T elem) => this.Contains(elem, EqualityComparer<T>.Default);
 
         public bool Contains(T elem, IEqualityComparer<T> comparer) =>  
             this.Select(x => comparer.Equals(x, elem)) ?? false;
@@ -177,7 +173,7 @@ namespace InCube.Core.Functional
         /// <see cref="Nullable{T}.Value"/>
         /// <exception cref="InvalidOperationException">If this <see cref="Maybe"/> is undefined or the <paramref name="index"/> != 0.</exception>
         // ReSharper disable once PossibleInvalidOperationException
-        public T this[int index] => index == 0 ? Value : throw new InvalidOperationException();
+        public T this[int index] => index == 0 ? this.Value : throw new InvalidOperationException();
     }
 
     public static class Maybe

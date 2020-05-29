@@ -15,8 +15,7 @@ namespace InCube.Core.Collections
         /// <param name="enumerable">The source enumerable.</param>
         /// <param name="predicate">The predicate to evaluate.</param>
         /// <returns>True, if none of the elements fulfills the predicate, false otherwise.</returns>
-        public static bool None<T>(this IEnumerable<T> enumerable, Func<T, bool> predicate) => 
-            !enumerable.Any(predicate);
+        public static bool None<T>(this IEnumerable<T> enumerable, Func<T, bool> predicate) => !enumerable.Any(predicate);
 
         public static IEnumerable<T> ToEnumerable<T>(T t)
         {
@@ -32,6 +31,7 @@ namespace InCube.Core.Collections
                 next = f(next);
                 yield return next;
             }
+
             // ReSharper disable once IteratorNeverReturns
         }
 
@@ -41,22 +41,20 @@ namespace InCube.Core.Collections
             {
                 yield return generator();
             }
+
             // ReSharper disable once IteratorNeverReturns
         }
 
         public static T[] Enumerate<T>(params T[] elems) => elems;
 
-        public static IEnumerable<int> IntRange(int startInclusive, int stopExclusive) =>
-            Enumerable.Range(startInclusive, stopExclusive - startInclusive);
+        public static IEnumerable<int> IntRange(int startInclusive, int stopExclusive) => Enumerable.Range(startInclusive, stopExclusive - startInclusive);
 
-        public static IEnumerable<int> IntRange(int stopExclusive) =>
-            Enumerable.Range(0, stopExclusive);
+        public static IEnumerable<int> IntRange(int stopExclusive) => Enumerable.Range(0, stopExclusive);
 
         /// <summary>
         /// Joins the strings in the enumerable with the specified separator (default: ", ").
         /// </summary>
-        public static string MkString<T>(this IEnumerable<T> enumerable, string separator = ", ") =>
-            String.Join(separator, enumerable);
+        public static string MkString<T>(this IEnumerable<T> enumerable, string separator = ", ") => String.Join(separator, enumerable);
 
         /// <summary>
         /// Joins the strings in the enumerable with the specified separator (default: ", "), wrapped by with a string in the beginning and the end.
@@ -65,14 +63,14 @@ namespace InCube.Core.Collections
         /// <param name="start">The string to place in front of the joined output.</param>
         /// <param name="separator">The separator to be placed between elements.</param>
         /// <param name="end">The string to place at the end of the joined output.</param>
-        public static string MkString<T>(this IEnumerable<T> enumerable, string start, string separator, string end) =>
-            $"{start}{enumerable.MkString(separator)}{end}";
+        public static string MkString<T>(this IEnumerable<T> enumerable, string start, string separator, string end) => $"{start}{enumerable.MkString(separator)}{end}";
 
         public static TSource MaxBy<TSource, TKey>(this IEnumerable<TSource> source, Func<TSource, TKey> selector)
             where TKey : IComparable<TKey> =>
             source.MaxBy(selector, Comparer<TKey>.Default);
 
-        public static TSource MaxBy<TSource, TKey>(this IEnumerable<TSource> source,
+        public static TSource MaxBy<TSource, TKey>(
+            this IEnumerable<TSource> source,
             Func<TSource, TKey> selector,
             IComparer<TKey> comparer)
         {
@@ -104,34 +102,27 @@ namespace InCube.Core.Collections
             where TKey : IComparable<TKey> =>
             source.MinBy(selector, Comparer<TKey>.Default);
 
-        public static TSource MinBy<TSource, TKey>(this IEnumerable<TSource> source,
+        public static TSource MinBy<TSource, TKey>(
+            this IEnumerable<TSource> source,
             Func<TSource, TKey> selector,
             IComparer<TKey> comparer) =>
             source.MaxBy(selector, Comparer<TKey>.Create((x, y) => comparer.Compare(y, x)));
 
-        public static int ArgMax<T>(this IEnumerable<T> source, IComparer<T> comparer) =>
-            source.ZipWithIndex().MaxBy(x => x.value, comparer).index;
+        public static int ArgMax<T>(this IEnumerable<T> source, IComparer<T> comparer) => source.ZipWithIndex().MaxBy(x => x.value, comparer).index;
 
-        public static int ArgMax<T>(this IEnumerable<T> source) where T : IComparable<T> =>
-            source.ArgMax(Comparer<T>.Default);
+        public static int ArgMax<T>(this IEnumerable<T> source) where T : IComparable<T> => source.ArgMax(Comparer<T>.Default);
 
-        public static int ArgMin<T>(this IEnumerable<T> source, IComparer<T> comparer) =>
-            source.ZipWithIndex().MinBy(x => x.value, comparer).index;
+        public static int ArgMin<T>(this IEnumerable<T> source, IComparer<T> comparer) => source.ZipWithIndex().MinBy(x => x.value, comparer).index;
 
-        public static int ArgMin<T>(this IEnumerable<T> source) where T : IComparable<T> =>
-            source.ArgMax(Comparer<T>.Default);
+        public static int ArgMin<T>(this IEnumerable<T> source) where T : IComparable<T> => source.ArgMax(Comparer<T>.Default);
 
-        public static IEnumerable<T> Flatten<T>(this IEnumerable<IEnumerable<T>> enumerable) =>
-            enumerable.SelectMany(list => list);
+        public static IEnumerable<T> Flatten<T>(this IEnumerable<IEnumerable<T>> enumerable) => enumerable.SelectMany(list => list);
 
-        public static IEnumerable<T> Flatten<T>(this IEnumerable<Maybe<T>> enumerable) where T : class =>
-            enumerable.SelectMany(opt => opt);
+        public static IEnumerable<T> Flatten<T>(this IEnumerable<Maybe<T>> enumerable) where T : class => enumerable.SelectMany(opt => opt);
 
-        public static IEnumerable<T> Flatten<T>(this IEnumerable<Option<T>> enumerable) =>
-            enumerable.SelectMany(opt => opt);
+        public static IEnumerable<T> Flatten<T>(this IEnumerable<Option<T>> enumerable) => enumerable.SelectMany(opt => opt);
 
-        public static IEnumerable<T> Flatten<T>(this IEnumerable<T?> enumerable) where T : struct =>
-            enumerable.SelectMany(nullable => nullable.ToOption());
+        public static IEnumerable<T> Flatten<T>(this IEnumerable<T?> enumerable) where T : struct => enumerable.SelectMany(nullable => nullable.ToOption());
 
         public static bool IsEmpty<T>(this IEnumerable<T> col) => !col.Any();
 
@@ -219,29 +210,25 @@ namespace InCube.Core.Collections
             }
         }
 
-        public static T SingleOrDefault<T>(this IEnumerable<T> self, Func<T> provider) => 
-            self.SingleOption().GetValueOr(provider);
+        public static T SingleOrDefault<T>(this IEnumerable<T> self, Func<T> provider) => self.SingleOption().GetValueOr(provider);
 
-        public static Option<T> MaxOption<T>(this IEnumerable<T> self) =>
-            self.AggregateOption(Enumerable.Max);
+        public static Option<T> MaxOption<T>(this IEnumerable<T> self) => self.AggregateOption(Enumerable.Max);
 
-        public static Option<T> MinOption<T>(this IEnumerable<T> self) => 
-            self.AggregateOption(Enumerable.Min);
+        public static Option<T> MinOption<T>(this IEnumerable<T> self) => self.AggregateOption(Enumerable.Min);
 
         [SuppressMessage("ReSharper", "PossibleMultipleEnumeration", Justification = "prevent unnecessary exceptions")]
-        public static Option<(T Min, T Max)> MinMaxOption<T>(this IEnumerable<T> self) =>
-            self.MinOption().SelectMany(min => self.MaxOption().Select(max => (min, max)));
+        public static Option<(T Min, T Max)> MinMaxOption<T>(this IEnumerable<T> self) => self.MinOption().SelectMany(min => self.MaxOption().Select(max => (min, max)));
 
         [SuppressMessage("ReSharper", "PossibleMultipleEnumeration", Justification = "prevent unnecessary exceptions")]
-        public static Option<T> AggregateOption<T>(this IEnumerable<T> self, Func<IEnumerable<T>, T> aggregator) =>
-            self.IsEmpty() ? Option<T>.None : Try.Do(() => aggregator.Invoke(self)).AsOption;
+        public static Option<T> AggregateOption<T>(this IEnumerable<T> self, Func<IEnumerable<T>, T> aggregator) => self.IsEmpty() ? Option<T>.None : Try.Do(() => aggregator.Invoke(self)).AsOption;
 
-        public static (IEnumerable<T> Left, IEnumerable<T> Right) Split<T>(this IEnumerable<T> self,
+        public static (IEnumerable<T> Left, IEnumerable<T> Right) Split<T>(
+            this IEnumerable<T> self,
             Func<T, bool> isLeft)
         {
             var groups = self.GroupBy(isLeft).ToDictionary();
             return (groups.GetOption(true).GetValueOrDefault(Enumerable.Empty<T>()),
-                    groups.GetOption(false).GetValueOrDefault(Enumerable.Empty<T>()));
+                groups.GetOption(false).GetValueOrDefault(Enumerable.Empty<T>()));
         }
 
         public static bool IsSorted<T>(this IEnumerable<T> self, IComparer<T> comparer = null, bool strict = false)
@@ -249,7 +236,7 @@ namespace InCube.Core.Collections
             comparer = comparer ?? Comparer<T>.Default;
             var outOfOrder = strict
                 ? (Func<T, T, bool>)((x, y) => comparer.Compare(x, y) >= 0)
-                :                    (x, y) => comparer.Compare(x, y) > 0;
+                : (x, y) => comparer.Compare(x, y) > 0;
             using (var enumerator = self.GetEnumerator())
             {
                 if (!enumerator.MoveNext()) return true;
@@ -279,10 +266,8 @@ namespace InCube.Core.Collections
             return self.Concat(other).GroupBy(keySelector, x => x, (key, group) => @group.First());
         }
 
-        public static IEnumerable<bool> And(this IEnumerable<bool> xs, IEnumerable<bool> ys) =>
-            xs.Zip(ys, (x, y) => x && y);
+        public static IEnumerable<bool> And(this IEnumerable<bool> xs, IEnumerable<bool> ys) => xs.Zip(ys, (x, y) => x && y);
 
-        public static IEnumerable<bool> Or(this IEnumerable<bool> xs, IEnumerable<bool> ys) =>
-            xs.Zip(ys, (x, y) => x || y);
+        public static IEnumerable<bool> Or(this IEnumerable<bool> xs, IEnumerable<bool> ys) => xs.Zip(ys, (x, y) => x || y);
     }
 }

@@ -18,7 +18,7 @@ namespace InCube.Core.Functional
     {
         public Any(T value)
         {
-            Value = value;
+            this.Value = value;
         }
 
         public T Value { get; }
@@ -30,7 +30,7 @@ namespace InCube.Core.Functional
         public bool Equals(Any<T> other) => EqualityComparer<T>.Default.Equals(this.Value, other.Value);
 
         public override bool Equals(object obj) => 
-            obj is Any<T> other && Equals(other);
+            obj is Any<T> other && this.Equals(other);
 
         public override int GetHashCode() => EqualityComparer<T>.Default.GetHashCode(this.Value);
 

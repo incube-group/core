@@ -20,61 +20,59 @@ namespace InCube.Core.Functional
 
         internal Try(T value)
         {
-            AsOption = Option.Some(value);
+            this.AsOption = Option.Some(value);
             this.exception = Maybe.None;
         }
 
         internal Try(Exception exception)
         {
-            AsOption = Option.None;
+            this.AsOption = Option.None;
             this.exception = Maybe.Some(exception);
         }
 
         public Option<T> AsOption { get; }
 
-        IOption<T> ITry<T>.AsOption => AsOption;
+        IOption<T> ITry<T>.AsOption => this.AsOption;
 
         public static implicit operator Option<T>(Try<T> t) => t.AsOption;
 
         public Either<Exception, T> AsEither => this;
 
-        IEither<Exception, T> ITry<T>.AsEither => AsEither;
+        IEither<Exception, T> ITry<T>.AsEither => this.AsEither;
 
         public static implicit operator Either<Exception, T>(Try<T> t) =>
             t.Match(Either.OfLeft<Exception, T>, Either.OfRight<Exception, T>);
 
-        public bool HasValue => AsOption.HasValue;
+        public bool HasValue => this.AsOption.HasValue;
 
         public T Value
         {
             get
             {
                 var @this = this;
-                return AsOption.GetValueOr(() => throw new InvalidOperationException("Try failed", @this.Exception));
+                return this.AsOption.GetValueOr(() => throw new InvalidOperationException("Try failed", @this.Exception));
             }
         }
 
-        public Exception Exception =>
-            HasValue ? throw new InvalidOperationException("Try is success") : this.exception.Value;
+        public Exception Exception => this.HasValue ? throw new InvalidOperationException("Try is success") : this.exception.Value;
 
         public IEnumerator<T> GetEnumerator() => this.AsOption.GetEnumerator();
 
         IEnumerator IEnumerable.GetEnumerator() => this.GetEnumerator();
 
-        public bool Equals(Try<T> that) =>
-            AsOption.Equals(that.AsOption) && this.exception.Equals(that.exception);
+        public bool Equals(Try<T> that) => this.AsOption.Equals(that.AsOption) && this.exception.Equals(that.exception);
 
         public override bool Equals(object obj) => 
-            obj is Try<T> other && Equals(other);
+            obj is Try<T> other && this.Equals(other);
 
-        public override int GetHashCode() => 
-            AsOption.GetHashCode() + this.exception.GetHashCode();
+        public override int GetHashCode() => this.AsOption.GetHashCode() + this.exception.GetHashCode();
 
         public static bool operator ==(Try<T> left, Try<T> right) => left.Equals(right);
 
         public static bool operator !=(Try<T> left, Try<T> right) => !left.Equals(right);
 
-        public override string ToString() => Match(
+        public override string ToString() =>
+            this.Match(
             success: x => $"Success({x})",
             failure: ex => $"Failure({ex})");
 
@@ -84,111 +82,91 @@ namespace InCube.Core.Functional
             return Try.Do(() => self.Exception);
         }
 
-        public TOut Match<TOut>(Func<Exception, TOut> failure, Func<T, TOut> success) =>
-            HasValue ? success(AsOption.Value) : failure(Exception);
+        public TOut Match<TOut>(Func<Exception, TOut> failure, Func<T, TOut> success) => this.HasValue ? success(this.AsOption.Value) : failure(this.Exception);
 
-        public Task<TOut> Match<TOut>(Func<Exception, Task<TOut>> failure, Func<T, Task<TOut>> success) =>
-            HasValue ? success(AsOption.Value) : failure(Exception);
+        public Task<TOut> Match<TOut>(Func<Exception, Task<TOut>> failure, Func<T, Task<TOut>> success) => this.HasValue ? success(this.AsOption.Value) : failure(this.Exception);
 
-        TOut IOption<T>.Match<TOut>(Func<TOut> none, Func<T, TOut> some) =>
-            Match(_ => none(), some);
+        TOut IOption<T>.Match<TOut>(Func<TOut> none, Func<T, TOut> some) => this.Match(_ => none(), some);
 
-        public T GetValueOrDefault() => AsOption.GetValueOrDefault();
+        public T GetValueOrDefault() => this.AsOption.GetValueOrDefault();
 
-        public T GetValueOrDefault([NotNull] Func<Exception, T> @default) =>
-            HasValue ? Value : @default(Exception);
+        public T GetValueOrDefault([NotNull] Func<Exception, T> @default) => this.HasValue ? this.Value : @default(this.Exception);
 
-        public T GetValueOr(Func<T> @default) =>
-            AsOption.GetValueOr(@default);
+        public T GetValueOr(Func<T> @default) => this.AsOption.GetValueOr(@default);
 
-        public T GetValueOrDefault(T @default) =>
-            AsOption.GetValueOrDefault(@default);
+        public T GetValueOrDefault(T @default) => this.AsOption.GetValueOrDefault(@default);
 
-        IOption<TOut> IOption<T>.Select<TOut>(Func<T, TOut> f) =>
-            AsOption.Select(f);
+        IOption<TOut> IOption<T>.Select<TOut>(Func<T, TOut> f) => this.AsOption.Select(f);
 
-        IOption<TOut> IOption<T>.SelectMany<TOut>(Func<T, IOption<TOut>> f) =>
-            AsOption.SelectMany(x => f(x).ToOption());
+        IOption<TOut> IOption<T>.SelectMany<TOut>(Func<T, IOption<TOut>> f) => this.AsOption.SelectMany(x => f(x).ToOption());
 
-        ITry<TOut> ITry<T>.Select<TOut>(Func<T, TOut> f) =>
-            Select(f);
+        ITry<TOut> ITry<T>.Select<TOut>(Func<T, TOut> f) => this.Select(f);
 
-        ITry<TOut> ITry<T>.SelectMany<TOut>(Func<T, ITry<TOut>> f) =>
-            SelectMany(x => f(x).ToTry());
+        ITry<TOut> ITry<T>.SelectMany<TOut>(Func<T, ITry<TOut>> f) => this.SelectMany(x => f(x).ToTry());
 
-        ITry<TOut> ITry<T>.SelectMany<TOut>(Func<Exception, ITry<TOut>> failure, Func<T, ITry<TOut>> success) =>
-            SelectMany(x => failure(x).ToTry(), x => success(x).ToTry());
+        ITry<TOut> ITry<T>.SelectMany<TOut>(Func<Exception, ITry<TOut>> failure, Func<T, ITry<TOut>> success) => this.SelectMany(x => failure(x).ToTry(), x => success(x).ToTry());
 
-        public Try<TOut> Select<TOut>(Func<T, TOut> f) =>
-            Match(Try.Failure<TOut>, value => Try.Do(() => f(value)));
+        public Try<TOut> Select<TOut>(Func<T, TOut> f) => this.Match(Try.Failure<TOut>, value => Try.Do(() => f(value)));
 
-        public Task<Try<TOut>> Select<TOut>(Func<T, Task<TOut>> f) =>
-            Match(Try.FailureAsync<TOut>, value => Try.DoAsync(() => f(value)));
+        public Task<Try<TOut>> Select<TOut>(Func<T, Task<TOut>> f) => this.Match(Try.FailureAsync<TOut>, value => Try.DoAsync(() => f(value)));
 
-        public Try<TOut> SelectMany<TOut>(Func<T, Try<TOut>> f) =>
-            Match(Try.Failure<TOut>, f);
+        public Try<TOut> SelectMany<TOut>(Func<T, Try<TOut>> f) => this.Match(Try.Failure<TOut>, f);
 
-        public Task<Try<TOut>> SelectMany<TOut>(Func<T, Task<Try<TOut>>> f) =>
-            Match(failure: Try.FailureAsync<TOut>, success: f);
+        public Task<Try<TOut>> SelectMany<TOut>(Func<T, Task<Try<TOut>>> f) => this.Match(failure: Try.FailureAsync<TOut>, success: f);
 
-        public Try<TOut> SelectMany<TOut>(Func<Exception, Try<TOut>> failure, Func<T, Try<TOut>> success) =>
-            Match(failure, success);
+        public Try<TOut> SelectMany<TOut>(Func<Exception, Try<TOut>> failure, Func<T, Try<TOut>> success) => this.Match(failure, success);
 
-        public Task ForEachAsync(Func<Task> none, Func<T, Task> some) => AsOption.ForEachAsync(none, some);
+        public Task ForEachAsync(Func<Task> none, Func<T, Task> some) => this.AsOption.ForEachAsync(none, some);
 
         public Try<T> Where(Func<T, bool> p) =>
-            !this.HasValue || p(AsOption.Value)
+            !this.HasValue || p(this.AsOption.Value)
                 ? this
-                : Try.Failure<T>(new ArgumentException("Predicate does not hold for value " + AsOption.Value));
+                : Try.Failure<T>(new ArgumentException("Predicate does not hold for value " + this.AsOption.Value));
 
         ITry<T> ITry<T>.Where(Func<T, bool> p) => this.Where(p);
 
         IOption<T> IOption<T>.Where(Func<T, bool> p) => this.Where(p);
 
-        public bool Any() => AsOption.Any();
+        public bool Any() => this.AsOption.Any();
 
-        public bool Any(Func<T, bool> p) => AsOption.Any(p);
+        public bool Any(Func<T, bool> p) => this.AsOption.Any(p);
 
-        public bool All(Func<T, bool> p) => AsOption.All(p);
+        public bool All(Func<T, bool> p) => this.AsOption.All(p);
 
-        public void ForEach(Action<T> action) => AsOption.ForEach(action);
+        public void ForEach(Action<T> action) => this.AsOption.ForEach(action);
 
-        public Task ForEachAsync(Func<T, Task> action) => AsOption.ForEachAsync(action);
+        public Task ForEachAsync(Func<T, Task> action) => this.AsOption.ForEachAsync(action);
 
-        public void ForEach(Action failure, Action<T> success) => AsOption.ForEach(failure, success);
+        public void ForEach(Action failure, Action<T> success) => this.AsOption.ForEach(failure, success);
 
         public void ForEach(Action<Exception> failure, Action<T> success)
         {
-            if (HasValue)
+            if (this.HasValue)
             {
-                success(AsOption.Value);
+                success(this.AsOption.Value);
             }
             else
             {
-                failure(Exception);
+                failure(this.Exception);
             }
         }
 
-        public int Count => AsOption.Count;
+        public int Count => this.AsOption.Count;
 
-        public Try<T> OrElse([NotNull] Func<Exception, Try<T>> @default) =>
-            HasValue ? this : @default(Exception);
+        public Try<T> OrElse([NotNull] Func<Exception, Try<T>> @default) => this.HasValue ? this : @default(this.Exception);
 
-        public Try<T> OrElse(Func<Try<T>> @default) =>
-            HasValue ? this : @default();
+        public Try<T> OrElse(Func<Try<T>> @default) => this.HasValue ? this : @default();
 
-        public Try<T> OrElse(Try<T> @default) =>
-            HasValue ? this : @default;
+        public Try<T> OrElse(Try<T> @default) => this.HasValue ? this : @default;
 
-        public bool Contains(T elem) => Contains(elem, EqualityComparer<T>.Default);
+        public bool Contains(T elem) => this.Contains(elem, EqualityComparer<T>.Default);
 
-        public bool Contains(T elem, IEqualityComparer<T> comparer) =>
-            AsOption.Contains(elem, comparer);
+        public bool Contains(T elem, IEqualityComparer<T> comparer) => this.AsOption.Contains(elem, comparer);
 
         /// <see cref="Nullable{T}.Value"/>
         /// <exception cref="InvalidOperationException">If this <see cref="Try"/> has an exception or the <paramref name="index"/> != 0.</exception>
         // ReSharper disable once PossibleInvalidOperationException
-        public T this[int index] => index == 0 ? Value : throw new InvalidOperationException();
+        public T this[int index] => index == 0 ? this.Value : throw new InvalidOperationException();
     }
 
     public static class Try

@@ -23,45 +23,45 @@ namespace InCube.Core.Functional
     {
         internal Option(T value)
         {
-            AsAny = value;
+            this.AsAny = value;
         }
 
         internal Option(in Any<T>? any)
         {
-            AsAny = any;
+            this.AsAny = any;
         }
 
         internal Any<T>? AsAny { get; }
 
         /// <see cref="Nullable{T}.HasValue"/>
-        public bool HasValue => AsAny.HasValue;
+        public bool HasValue => this.AsAny.HasValue;
 
         /// <see cref="Nullable{T}.Value"/>
         /// <exception cref="InvalidOperationException">If this option is undefined.</exception>
         // ReSharper disable once PossibleInvalidOperationException
-        public T Value => AsAny.Value;
+        public T Value => this.AsAny.Value;
 
         public IEnumerator<T> GetEnumerator()
         {
-            if (AsAny.HasValue)
+            if (this.AsAny.HasValue)
             {
-                yield return AsAny.Value;
+                yield return this.AsAny.Value;
             }
         }
 
-        IEnumerator IEnumerable.GetEnumerator() => GetEnumerator();
+        IEnumerator IEnumerable.GetEnumerator() => this.GetEnumerator();
 
         public bool Equals(Option<T> that) => Nullable.Equals(this.AsAny, that.AsAny);
         
         public override bool Equals(object obj)
         {
-            if (ReferenceEquals(obj, null)) return !HasValue;
-            return obj is Option<T> option && Equals(option);
+            if (ReferenceEquals(obj, null)) return !this.HasValue;
+            return obj is Option<T> option && this.Equals(option);
         }
 
-        public override int GetHashCode() => AsAny.GetHashCode();
+        public override int GetHashCode() => this.AsAny.GetHashCode();
 
-        public override string ToString() => Match(some: x => x.ToString(), none: () => null);
+        public override string ToString() => this.Match(some: x => x.ToString(), none: () => null);
 
         public static bool operator ==(Option<T> c1, Option<T> c2) => c1.Equals(c2);
 
@@ -77,67 +77,58 @@ namespace InCube.Core.Functional
             Justification = "Need parameter for complying with implicit conversion operator.")]
         public static implicit operator Option<T>(Option<Nothing> x) => default(Option<T>);
 
-        public TOut Match<TOut>(Func<TOut> none, Func<T, TOut> some) =>
-            AsAny.Select(x => some(x).ToAny()) ?? none();
+        public TOut Match<TOut>(Func<TOut> none, Func<T, TOut> some) => this.AsAny.Select(x => some(x).ToAny()) ?? none();
 
-        public T GetValueOrDefault() => AsAny.GetValueOrDefault();
+        public T GetValueOrDefault() => this.AsAny.GetValueOrDefault();
 
-        public T GetValueOrDefault(T @default) => AsAny ?? @default;
+        public T GetValueOrDefault(T @default) => this.AsAny ?? @default;
 
-        public T GetValueOr(Func<T> @default) => 
-            AsAny ?? CheckNotNull(@default, nameof(@default)).Invoke();
+        public T GetValueOr(Func<T> @default) => this.AsAny ?? CheckNotNull(@default, nameof(@default)).Invoke();
 
-        public bool Any() => HasValue;
+        public bool Any() => this.HasValue;
 
-        public bool Any(Func<T, bool> p) => AsAny.Any(x => p(x));
+        public bool Any(Func<T, bool> p) => this.AsAny.Any(x => p(x));
 
-        public bool All(Func<T, bool> p) => AsAny.All(x => p(x));
+        public bool All(Func<T, bool> p) => this.AsAny.All(x => p(x));
 
-        public void ForEach(Action<T> action) => AsAny.ForEach(x => action(x));
+        public void ForEach(Action<T> action) => this.AsAny.ForEach(x => action(x));
 
-        public Task ForEachAsync(Func<T, Task> action) => AsAny.ForEachAsync(x => action(x));
+        public Task ForEachAsync(Func<T, Task> action) => this.AsAny.ForEachAsync(x => action(x));
 
-        public void ForEach(Action none, Action<T> some) => AsAny.ForEach(none, x => some(x));
+        public void ForEach(Action none, Action<T> some) => this.AsAny.ForEach(none, x => some(x));
 
-        public Task ForEachAsync(Func<Task> none, Func<T, Task> some) => AsAny.ForEachAsync(none, x => some(x));
+        public Task ForEachAsync(Func<Task> none, Func<T, Task> some) => this.AsAny.ForEachAsync(none, x => some(x));
 
-        IOption<TOut> IOption<T>.Select<TOut>(Func<T, TOut> f) => 
-            Select(f);
+        IOption<TOut> IOption<T>.Select<TOut>(Func<T, TOut> f) => this.Select(f);
 
-        IOption<TOut> IOption<T>.SelectMany<TOut>(Func<T, IOption<TOut>> f) => 
-            SelectMany(x => f(x).ToOption());
+        IOption<TOut> IOption<T>.SelectMany<TOut>(Func<T, IOption<TOut>> f) => this.SelectMany(x => f(x).ToOption());
 
         public Option<TOut> Select<TOut>(Func<T, TOut> f) =>
-            new Option<TOut>(AsAny.Select(x => f(x).ToAny()));
+            new Option<TOut>(this.AsAny.Select(x => f(x).ToAny()));
 
         public Option<TOut> SelectMany<TOut>(Func<T, Option<TOut>> f) =>
-            new Option<TOut>(AsAny.SelectMany(x => f(x).AsAny));
+            new Option<TOut>(this.AsAny.SelectMany(x => f(x).AsAny));
 
-        IOption<T> IOption<T>.Where(Func<T, bool> p) => Where(p);
+        IOption<T> IOption<T>.Where(Func<T, bool> p) => this.Where(p);
         
-        public Option<T> Where(Func<T, bool> p) => Any(p) ? this : default(Option<T>);
+        public Option<T> Where(Func<T, bool> p) => this.Any(p) ? this : default(Option<T>);
 
-        public Option<TD> Cast<TD>() where TD : T => 
-            SelectMany(x => x is TD d ? Option.Some(d) : default(Option<TD>));
+        public Option<TD> Cast<TD>() where TD : T => this.SelectMany(x => x is TD d ? Option.Some(d) : default(Option<TD>));
 
-        public int Count => HasValue ? 1 : 0;
+        public int Count => this.HasValue ? 1 : 0;
 
-        public Option<T> OrElse(Func<Option<T>> @default) =>
-            HasValue ? this : @default();
+        public Option<T> OrElse(Func<Option<T>> @default) => this.HasValue ? this : @default();
 
-        public Option<T> OrElse(Option<T> @default) =>
-            HasValue ? this : @default;
+        public Option<T> OrElse(Option<T> @default) => this.HasValue ? this : @default;
 
-        public bool Contains(T elem) => 
-            Contains(elem, EqualityComparer<T>.Default);
+        public bool Contains(T elem) => this.Contains(elem, EqualityComparer<T>.Default);
 
-        public bool Contains(T elem, IEqualityComparer<T> comparer) =>
-            AsAny.Select(x => comparer.Equals(x.Value, elem)) ?? false;
+        public bool Contains(T elem, IEqualityComparer<T> comparer) => this.AsAny.Select(x => comparer.Equals(x.Value, elem)) ?? false;
 
         /// <see cref="Nullable{T}.Value"/>
         /// <exception cref="InvalidOperationException">If this <see cref="Option"/> is undefined or the <paramref name="index"/> != 0.</exception>
         // ReSharper disable once PossibleInvalidOperationException
-        public T this[int index] => index == 0 ? Value : throw new InvalidOperationException();
+        public T this[int index] => index == 0 ? this.Value : throw new InvalidOperationException();
         
         public static readonly Option<T> None = default(Option<T>);
     }

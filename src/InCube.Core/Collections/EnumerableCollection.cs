@@ -17,14 +17,13 @@ namespace InCube.Core.Collections
         public EnumerableCollection(IEnumerable<T> enumerable, int count)
         {
             this.enumerable = enumerable;
-            Count = count;
+            this.Count = count;
         }
 
         public IEnumerator<T> GetEnumerator() => 
             this.enumerable.GetEnumerator();
 
-        IEnumerator IEnumerable.GetEnumerator() => 
-            GetEnumerator();
+        IEnumerator IEnumerable.GetEnumerator() => this.GetEnumerator();
 
         public void Add(T item)
         {
@@ -41,13 +40,13 @@ namespace InCube.Core.Collections
 
         public void CopyTo(T[] array, int arrayIndex)
         {
-            CheckArgument(Count <= array.Length - arrayIndex,
+            CheckArgument(this.Count <= array.Length - arrayIndex,
                 "insufficient space for {0} elements in array of length {1} at index {2}",
-                Count,
+                this.Count,
                 array.Length,
                 arrayIndex);
             var i = -1;
-            foreach (var item in enumerable)
+            foreach (var item in this.enumerable)
             {
                 array[++i] = item;
             }

@@ -14,42 +14,31 @@ namespace InCube.Core.Collections
     /// </summary>
     public static class Dictionaries
     {
-        public static TV GetOrDefault<TK, TV>(this IReadOnlyDictionary<TK, TV> dict, TK key, TV @default) =>
-            dict.TryGetValue(key, out var value) ? value : @default;
+        public static TV GetOrDefault<TK, TV>(this IReadOnlyDictionary<TK, TV> dict, TK key, TV @default) => dict.TryGetValue(key, out var value) ? value : @default;
 
-        public static TV GetOrDefault<TK, TV>(this IReadOnlyDictionary<TK, TV> dict, TK key, Func<TV> supplier) =>
-            dict.TryGetValue(key, out var value) ? value : supplier();
+        public static TV GetOrDefault<TK, TV>(this IReadOnlyDictionary<TK, TV> dict, TK key, Func<TV> supplier) => dict.TryGetValue(key, out var value) ? value : supplier();
 
-        public static Option<TV> GetOption<TK, TV>(this IReadOnlyDictionary<TK, TV> dict, TK key) =>
-            dict.TryGetValue(key, out var value) ? Option.Some(value) : Option.None;
+        public static Option<TV> GetOption<TK, TV>(this IReadOnlyDictionary<TK, TV> dict, TK key) => dict.TryGetValue(key, out var value) ? Option.Some(value) : Option.None;
 
-        public static Maybe<TV> GetMaybe<TK, TV>(this IReadOnlyDictionary<TK, TV> dict, TK key) where TV : class =>
-            dict.TryGetValue(key, out var value) ? Maybe.Some(value) : Maybe.None;
+        public static Maybe<TV> GetMaybe<TK, TV>(this IReadOnlyDictionary<TK, TV> dict, TK key) where TV : class => dict.TryGetValue(key, out var value) ? Maybe.Some(value) : Maybe.None;
 
-        public static TV? GetNullable<TK, TV>(this IReadOnlyDictionary<TK, TV> dict, TK key) where TV : struct =>
-            dict.TryGetValue(key, out var value) ? value : default(TV?);
+        public static TV? GetNullable<TK, TV>(this IReadOnlyDictionary<TK, TV> dict, TK key) where TV : struct => dict.TryGetValue(key, out var value) ? value : default(TV?);
 
-        public static bool IsEmpty<TK, TV>(this IReadOnlyDictionary<TK, TV> dict) =>
-            dict.Count == 0;
+        public static bool IsEmpty<TK, TV>(this IReadOnlyDictionary<TK, TV> dict) => dict.Count == 0;
 
         [StringFormatMethod("format")]
-        public static TV GetOrThrow<TK, TV>(this IReadOnlyDictionary<TK, TV> dict, string format, TK key) =>
-            dict.GetOrDefault(key, () => throw new KeyNotFoundException(string.Format(format, key)));
+        public static TV GetOrThrow<TK, TV>(this IReadOnlyDictionary<TK, TV> dict, string format, TK key) => dict.GetOrDefault(key, () => throw new KeyNotFoundException(string.Format(format, key)));
 
-        public static TV GetOrThrow<TK, TV>(this IReadOnlyDictionary<TK, TV> dict, TK key) =>
-            dict.GetOrThrow("missing key: {0}", key);
+        public static TV GetOrThrow<TK, TV>(this IReadOnlyDictionary<TK, TV> dict, TK key) => dict.GetOrThrow("missing key: {0}", key);
 
         public static Dictionary<TK, TV> ToDictionary<TK, TV>(this IEnumerable<KeyValuePair<TK, TV>> enumerable)
         {
             return enumerable.ToDictionary(kv => kv.Key, kv => kv.Value);
         }
 
-        public static Dictionary<TK, TV> ToDictionary<TK, TV>(this IEnumerable<(TK key, TV value)> enumerable) => 
-            enumerable.ToDictionary(kv => kv.key, kv => kv.value);
+        public static Dictionary<TK, TV> ToDictionary<TK, TV>(this IEnumerable<(TK key, TV value)> enumerable) => enumerable.ToDictionary(kv => kv.key, kv => kv.value);
 
-        public static Dictionary<TK, IEnumerable<TV>> ToDictionary<TK, TV>(
-            this IEnumerable<IGrouping<TK, TV>> enumerable) =>
-            enumerable.ToDictionary(kv => kv.Key, kv => kv as IEnumerable<TV>);
+        public static Dictionary<TK, IEnumerable<TV>> ToDictionary<TK, TV>(this IEnumerable<IGrouping<TK, TV>> enumerable) => enumerable.ToDictionary(kv => kv.Key, kv => kv as IEnumerable<TV>);
 
         public static IReadOnlyDictionary<TK, TV> AsReadOnlyDictionary<TK, TV>(this IDictionary<TK, TV> dict)
         {
@@ -85,8 +74,7 @@ namespace InCube.Core.Collections
         public static SortedDictionary<TK, TV> AsSorted<TK, TV>(this IDictionary<TK, TV> dict, IComparer<TK> comparer = null)
         {
             comparer = comparer ?? Comparer<TK>.Default;
-            return dict is SortedDictionary<TK, TV> sorted && sorted.Comparer == comparer ? sorted :
-                new SortedDictionary<TK, TV>(dict.ToDictionary(), default);
+            return dict is SortedDictionary<TK, TV> sorted && sorted.Comparer == comparer ? sorted : new SortedDictionary<TK, TV>(dict.ToDictionary(), default);
         }
 
         public static IReadOnlyDictionary<TKey, TValue> Empty<TKey, TValue>() => Dictionaries<TKey, TValue>.Empty;
@@ -98,11 +86,9 @@ namespace InCube.Core.Collections
     {
         private class EmptyDictionary : IReadOnlyDictionary<TKey, TValue>
         {
-            public IEnumerator<KeyValuePair<TKey, TValue>> GetEnumerator() => 
-                Enumerable.Empty<KeyValuePair<TKey, TValue>>().GetEnumerator();
+            public IEnumerator<KeyValuePair<TKey, TValue>> GetEnumerator() => Enumerable.Empty<KeyValuePair<TKey, TValue>>().GetEnumerator();
 
-            IEnumerator IEnumerable.GetEnumerator() => 
-                GetEnumerator();
+            IEnumerator IEnumerable.GetEnumerator() => this.GetEnumerator();
 
             public int Count => 0;
 

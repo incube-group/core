@@ -16,29 +16,31 @@ namespace InCube.Core.Functional
         private Either(object value, bool left, bool right)
         {
             this.value = value;
-            IsLeft = left;
-            IsRight = right;
+            this.IsLeft = left;
+            this.IsRight = right;
         }
 
         public bool IsLeft { get; }
 
         public bool IsRight { get; }
 
-        public TL Left => IsLeft ? (TL)this.value : 
+        public TL Left =>
+            this.IsLeft ? (TL)this.value : 
             throw new NotSupportedException($"Either is not Left<{typeof(TL)}>, but Right<{typeof(TR)}>");
 
-        public TR Right => IsRight ? (TR)this.value : 
+        public TR Right =>
+            this.IsRight ? (TR)this.value : 
             throw new NotSupportedException($"Either is not Right<{typeof(TR)}>, but Left<{typeof(TL)}>");
 
-        public Option<TL> LeftOption => IsLeft ? Option.Some((TL)this.value) : Option.None;
+        public Option<TL> LeftOption => this.IsLeft ? Option.Some((TL)this.value) : Option.None;
 
-        public Option<TR> RightOption => IsRight ? Option.Some((TR)this.value) : Option.None;
+        public Option<TR> RightOption => this.IsRight ? Option.Some((TR)this.value) : Option.None;
 
-        public Type Type => IsLeft ? typeof(TL) : typeof(TR);
+        public Type Type => this.IsLeft ? typeof(TL) : typeof(TR);
 
-        IOption<TL> IEither<TL, TR>.LeftOption => LeftOption;
+        IOption<TL> IEither<TL, TR>.LeftOption => this.LeftOption;
 
-        IOption<TR> IEither<TL, TR>.RightOption => RightOption;
+        IOption<TR> IEither<TL, TR>.RightOption => this.RightOption;
 
         /// <summary>
         /// Construct an Either for a <see cref="Left"/> value.
@@ -56,39 +58,35 @@ namespace InCube.Core.Functional
         public Either(TR value) : this(value, left: false, right: true)
         {}
 
-        public T Match<T>(Func<TL, T> left, Func<TR, T> right) =>
-            IsLeft ? left(Left) : right(Right);
+        public T Match<T>(Func<TL, T> left, Func<TR, T> right) => this.IsLeft ? left(this.Left) : right(this.Right);
 
-        public async Task<T> MatchAsync<T>(Func<TL, Task<T>> left, Func<TR, Task<T>> right) => IsLeft ? await left(Left).ConfigureAwait(false) : await right(Right).ConfigureAwait(false);
+        public async Task<T> MatchAsync<T>(Func<TL, Task<T>> left, Func<TR, Task<T>> right) => this.IsLeft ? await left(this.Left).ConfigureAwait(false) : await right(this.Right).ConfigureAwait(false);
 
-        IEither<TL, TOut> IEither<TL, TR>.Select<TOut>(Func<TR, TOut> f) => Select(f);
+        IEither<TL, TOut> IEither<TL, TR>.Select<TOut>(Func<TR, TOut> f) => this.Select(f);
 
-        public Either<TL, TOut> Select<TOut>(Func<TR, TOut> f) =>
-            Match<Either<TL, TOut>>(left => left, right => f(right));
+        public Either<TL, TOut> Select<TOut>(Func<TR, TOut> f) => this.Match<Either<TL, TOut>>(left => left, right => f(right));
 
-        public Task<Either<TL, TOut>> SelectAsync<TOut>(Func<TR, Task<TOut>> f) =>
-            Match<Task<Either<TL, TOut>>>(left => Task.FromResult(new Either<TL, TOut>(left)), async right => await f(right));
+        public Task<Either<TL, TOut>> SelectAsync<TOut>(Func<TR, Task<TOut>> f) => this.Match<Task<Either<TL, TOut>>>(left => Task.FromResult(new Either<TL, TOut>(left)), async right => await f(right));
 
-        public Either<TL, TOut> SelectMany<TOut>(Func<TR, Either<TL, TOut>> f) => 
-            Match(left => left, f);
+        public Either<TL, TOut> SelectMany<TOut>(Func<TR, Either<TL, TOut>> f) => this.Match(left => left, f);
 
         public void ForEach(Action<TR> right)
         {
-            if (IsRight)
+            if (this.IsRight)
             {
-                right(Right);
+                right(this.Right);
             }
         }
 
         public void ForEach(Action<TL> left, Action<TR> right)
         {
-            if (IsLeft)
+            if (this.IsLeft)
             {
-                left(Left);
+                left(this.Left);
             }
             else
             {
-                right(Right);
+                right(this.Right);
             }
         }
 
@@ -98,9 +96,9 @@ namespace InCube.Core.Functional
 
         public static implicit operator Either<TL, TR>(TR right) => new Either<TL, TR>(right);
 
-        public IEnumerator<TR> GetEnumerator() => RightOption.GetEnumerator();
+        public IEnumerator<TR> GetEnumerator() => this.RightOption.GetEnumerator();
 
-        IEnumerator IEnumerable.GetEnumerator() => GetEnumerator();
+        IEnumerator IEnumerable.GetEnumerator() => this.GetEnumerator();
 
         public bool Equals(Either<TL, TR> that)
         {
@@ -108,13 +106,11 @@ namespace InCube.Core.Functional
         }
 
         public override bool Equals(object obj) => 
-            obj is Either<TL, TR> other && Equals(other);
+            obj is Either<TL, TR> other && this.Equals(other);
 
-        public override int GetHashCode() => 
-            LeftOption.GetHashCode() + RightOption.GetHashCode();
+        public override int GetHashCode() => this.LeftOption.GetHashCode() + this.RightOption.GetHashCode();
 
-        public override string ToString() => 
-            Match(left: x => $"Left<{typeof(TL).Name}>({x})", right: x => $"Right<{typeof(TR).Name}>({x})");
+        public override string ToString() => this.Match(left: x => $"Left<{typeof(TL).Name}>({x})", right: x => $"Right<{typeof(TR).Name}>({x})");
 
         public static bool operator ==(Either<TL, TR> left, Either<TL, TR> right) => left.Equals(right);
 

@@ -15,18 +15,18 @@ namespace InCube.Core.Numerics
         public Range(T min, T max)
         {
             Preconditions.CheckArgument(min.CompareTo(max) <= 0, "min {0} > max {1}", min, max);
-            Min = min;
-            Max = max;
+            this.Min = min;
+            this.Max = max;
         }
 
         public Range<T> With(Option<T> min = default, Option<T> max = default) =>
-            new Range<T>(min.GetValueOrDefault(Min), max.GetValueOrDefault(Max));
+            new Range<T>(min.GetValueOrDefault(this.Min), max.GetValueOrDefault(this.Max));
 
         public T Min { get; }
 
         public T Max { get; }
 
-        public bool Contains(T x) => Min.CompareTo(x) <= 0 && x.CompareTo(Max) <= 0;
+        public bool Contains(T x) => this.Min.CompareTo(x) <= 0 && x.CompareTo(this.Max) <= 0;
 
         public bool Contains(Range<T> that) => 
             this.Min.CompareTo(that.Min) <= 0 && that.Max.CompareTo(this.Max) <= 0;
@@ -44,8 +44,8 @@ namespace InCube.Core.Numerics
 
         public void Deconstruct(out T min, out T max)
         {
-            min = Min;
-            max = Max;
+            min = this.Min;
+            max = this.Max;
         }
 
         public bool Equals(Range<T> that) => 
@@ -65,7 +65,7 @@ namespace InCube.Core.Numerics
         {
             unchecked
             {
-                return (EqualityComparer<T>.Default.GetHashCode(Min) * 397) ^ EqualityComparer<T>.Default.GetHashCode(Max);
+                return (EqualityComparer<T>.Default.GetHashCode(this.Min) * 397) ^ EqualityComparer<T>.Default.GetHashCode(this.Max);
             }
         }
 
@@ -73,7 +73,7 @@ namespace InCube.Core.Numerics
 
         public static bool operator !=(Range<T> left, Range<T> right) => !(left == right);
 
-        public override string ToString() => $"[{Min}, {Max}]";
+        public override string ToString() => $"[{this.Min}, {this.Max}]";
     }
 
     public static class Range

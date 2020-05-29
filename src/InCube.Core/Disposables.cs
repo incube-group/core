@@ -32,7 +32,7 @@ namespace InCube.Core
 
         public T Create<T>(Func<T> creator) where T : IDisposable
         {
-            return Add(creator());
+            return this.Add(creator());
         }
 
         [CanBeNull]
@@ -62,7 +62,7 @@ namespace InCube.Core
         {
             if (this.disposed) return;
 
-            var exceptions = ReleaseUnmanagedResources();
+            var exceptions = this.ReleaseUnmanagedResources();
             if (disposing)
             {
                 while (this.managed.Count > 0)
@@ -98,13 +98,13 @@ namespace InCube.Core
 
         public void Dispose()
         {
-            Dispose(true);
+            this.Dispose(true);
             GC.SuppressFinalize(this);
         }
 
         ~Disposables()
         {
-            Dispose(false);
+            this.Dispose(false);
         }
     }
 }

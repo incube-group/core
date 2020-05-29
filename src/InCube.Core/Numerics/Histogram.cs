@@ -33,12 +33,12 @@ namespace InCube.Core.Numerics
                 "number of discarded elements {0} must be at most the total number of elements {1}",
                 discardedCount,
                 binIndices.Count);
-            BinLowerEdges = binLowerEdges;
-            BinCounts = binCounts;
-            BinIndices = binIndices;
-            DiscardedCount = discardedCount;
-            LowerEdgeEquals = lowerEdgeEquals;
-            BinSelector = binSelector;
+            this.BinLowerEdges = binLowerEdges;
+            this.BinCounts = binCounts;
+            this.BinIndices = binIndices;
+            this.DiscardedCount = discardedCount;
+            this.LowerEdgeEquals = lowerEdgeEquals;
+            this.BinSelector = binSelector;
         }
 
         public IReadOnlyList<T> BinLowerEdges { get; }
@@ -49,13 +49,13 @@ namespace InCube.Core.Numerics
         
         public int DiscardedCount { get; }
         
-        public int TotalCount => BinIndices.Count;
+        public int TotalCount => this.BinIndices.Count;
         
         public bool LowerEdgeEquals { get; }
 
         private Func<T, int> BinSelector { get; }
 
-        public int FindBin(T value) => BinSelector(value);
+        public int FindBin(T value) => this.BinSelector(value);
     }
 
     public static class Histogram

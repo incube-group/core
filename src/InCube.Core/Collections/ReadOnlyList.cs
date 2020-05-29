@@ -17,31 +17,22 @@ namespace InCube.Core.Collections
             this.wrapped = wrapped;
         }
 
-        public IEnumerator<T> GetEnumerator() => 
-            wrapped.GetEnumerator();
+        public IEnumerator<T> GetEnumerator() => this.wrapped.GetEnumerator();
 
-        IEnumerator IEnumerable.GetEnumerator() => 
-            wrapped.GetEnumerator();
+        IEnumerator IEnumerable.GetEnumerator() => this.wrapped.GetEnumerator();
 
-        public int Count => 
-            wrapped.Count;
+        public int Count => this.wrapped.Count;
 
-        public T this[int index] => 
-            wrapped[index];
+        public T this[int index] => this.wrapped[index];
 
-        public bool Equals(ReadOnlyList<T> that) => 
-            Equals(this.wrapped, that.wrapped);
+        public bool Equals(ReadOnlyList<T> that) => Equals(this.wrapped, that.wrapped);
 
-        public override bool Equals(object obj) => 
-            obj is ReadOnlyList<T> that && this.Equals(that);
+        public override bool Equals(object obj) => obj is ReadOnlyList<T> that && this.Equals(that);
 
-        public override int GetHashCode() => 
-            wrapped?.GetHashCode() ?? 0;
+        public override int GetHashCode() => this.wrapped?.GetHashCode() ?? 0;
 
-        public static bool operator ==(ReadOnlyList<T> left, ReadOnlyList<T> right) => 
-            left.Equals(right);
+        public static bool operator ==(ReadOnlyList<T> left, ReadOnlyList<T> right) => left.Equals(right);
 
-        public static bool operator !=(ReadOnlyList<T> left, ReadOnlyList<T> right) => 
-            !left.Equals(right);
+        public static bool operator !=(ReadOnlyList<T> left, ReadOnlyList<T> right) => !left.Equals(right);
     }
 }

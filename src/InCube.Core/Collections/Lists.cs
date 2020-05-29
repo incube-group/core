@@ -17,8 +17,7 @@ namespace InCube.Core.Collections
         /// <returns>the last element of a list</returns>
         public static T Last<T>(this IReadOnlyList<T> list) => list[list.Count - 1];
 
-        public static Option<T> LastOption<T>(this IReadOnlyList<T> list) => 
-            list.Any() ? list[list.Count - 1] : default;
+        public static Option<T> LastOption<T>(this IReadOnlyList<T> list) => list.Any() ? list[list.Count - 1] : default;
 
         /// <summary>
         /// Sorts an item into a list of buckets. The method calls <see cref="List{T}.BinarySearch(T)"/> and makes
@@ -32,8 +31,7 @@ namespace InCube.Core.Collections
         /// <seealso cref="List{T}.BinarySearch(T)"/>
         /// <seealso cref="UpperBound{T}(T[],T)"/>
         /// <returns>the last bucket of the element</returns>
-        public static int UpperBound<T>(this List<T> input, T item) where T : IComparable<T> =>
-            input.UpperBound(item, Comparer<T>.Default);
+        public static int UpperBound<T>(this List<T> input, T item) where T : IComparable<T> => input.UpperBound(item, Comparer<T>.Default);
 
         /// <seealso cref="UpperBound{T}(List{T},T)"/>
         public static int UpperBound<T>(this List<T> input, T item, IComparer<T> comparer)
@@ -54,8 +52,7 @@ namespace InCube.Core.Collections
         /// <seealso cref="Array.BinarySearch(System.Array,int,int,object)"/>
         /// <seealso cref="UpperBound{T}(List{T},T)"/>
         /// <returns>the last bucket of the element</returns>
-        public static int UpperBound<T>(this T[] input, T item) where T : IComparable<T> =>
-            input.UpperBound(item, Comparer<T>.Default);
+        public static int UpperBound<T>(this T[] input, T item) where T : IComparable<T> => input.UpperBound(item, Comparer<T>.Default);
 
         /// <seealso cref="UpperBound{T}(T[],T)"/>
         public static int UpperBound<T>(this T[] input, T item, IComparer<T> comparer)
@@ -72,7 +69,7 @@ namespace InCube.Core.Collections
                 do
                 {
                     ++idx;
-                } 
+                }
                 while (idx < count && comparer.Compare(input[idx], item) == 0);
             }
             else
@@ -98,8 +95,7 @@ namespace InCube.Core.Collections
         /// <seealso cref="List{T}.BinarySearch(T)"/>
         /// <seealso cref="LowerBound{T}(T[],T)"/>
         /// <returns>the last bucket of the element</returns>
-        public static int LowerBound<T>(this List<T> input, T item) where T : IComparable<T> =>
-            input.LowerBound(item, Comparer<T>.Default);
+        public static int LowerBound<T>(this List<T> input, T item) where T : IComparable<T> => input.LowerBound(item, Comparer<T>.Default);
 
         /// <see cref="LowerBound{T}(List{T},T)"/>
         public static int LowerBound<T>(this List<T> input, T item, IComparer<T> comparer)
@@ -120,8 +116,7 @@ namespace InCube.Core.Collections
         /// <seealso cref="Array.BinarySearch(System.Array,int,int,object)"/>
         /// <seealso cref="LowerBound{T}(System.Collections.Generic.List{T},T)"/>
         /// <returns>the last bucket of the element</returns>
-        public static int LowerBound<T>(this T[] input, T item) where T : IComparable<T> =>
-            input.LowerBound(item, Comparer<T>.Default);
+        public static int LowerBound<T>(this T[] input, T item) where T : IComparable<T> => input.LowerBound(item, Comparer<T>.Default);
 
         /// <see cref="LowerBound{T}(T[],T)"/>
         public static int LowerBound<T>(this T[] input, T item, IComparer<T> comparer)
@@ -158,7 +153,7 @@ namespace InCube.Core.Collections
         public static IReadOnlyCollection<T> AsReadOnlyCollection<T>(this IReadOnlyCollection<T> col) => col;
 
         public static IReadOnlyCollection<T> AsReadOnlyCollection<T>(this List<T> col) => col;
-        
+
         public static IReadOnlyCollection<T> AsReadOnlyCollection<T>(this T[] col) => col;
 
         public static IReadOnlyList<T> AsReadOnlyList<T>(this IList<T> list)
@@ -197,10 +192,10 @@ namespace InCube.Core.Collections
             }
         }
 
-        public static TU[] ParSelect<T, TU>(this IReadOnlyList<T> list, Func<T, TU> map, TU[] result = null) =>
-            list.ParSelect(map, 0, list.Count, result);
+        public static TU[] ParSelect<T, TU>(this IReadOnlyList<T> list, Func<T, TU> map, TU[] result = null) => list.ParSelect(map, 0, list.Count, result);
 
-        public static TU[] ParSelect<T, TU>(this IReadOnlyList<T> list,
+        public static TU[] ParSelect<T, TU>(
+            this IReadOnlyList<T> list,
             Func<T, TU> map,
             int fromInclusive,
             int toExclusive,
@@ -211,10 +206,10 @@ namespace InCube.Core.Collections
             return result;
         }
 
-        public static TU[] ParSelect<T, TU>(this IReadOnlyList<T> list, Func<T, int, TU> map, TU[] result = null) =>
-            list.ParSelect(map, 0, list.Count, result);
+        public static TU[] ParSelect<T, TU>(this IReadOnlyList<T> list, Func<T, int, TU> map, TU[] result = null) => list.ParSelect(map, 0, list.Count, result);
 
-        public static TU[] ParSelect<T, TU>(this IReadOnlyList<T> list,
+        public static TU[] ParSelect<T, TU>(
+            this IReadOnlyList<T> list,
             Func<T, int, TU> map,
             int fromInclusive,
             int toExclusive,
@@ -232,11 +227,9 @@ namespace InCube.Core.Collections
             return result;
         }
 
-        public static IEnumerable<T> Items<T>(this IReadOnlyList<T> list, IEnumerable<int> indices) =>
-            indices.Select(i => list[i]);
+        public static IEnumerable<T> Items<T>(this IReadOnlyList<T> list, IEnumerable<int> indices) => indices.Select(i => list[i]);
 
-        public static IEnumerable<IEnumerable<T>> Cols<T>(this IEnumerable<IReadOnlyList<T>> enumerable, IEnumerable<int> indices) =>
-            enumerable.Select(list => list.Items(indices));
+        public static IEnumerable<IEnumerable<T>> Cols<T>(this IEnumerable<IReadOnlyList<T>> enumerable, IEnumerable<int> indices) => enumerable.Select(list => list.Items(indices));
 
         public static IEnumerable<T> Slice<T>(
             this IEnumerable<T> elems,
@@ -320,11 +313,9 @@ namespace InCube.Core.Collections
             return result;
         }
 
-        public static bool CollectionEqual<T>(this IReadOnlyCollection<T> x, IReadOnlyCollection<T> y, IEqualityComparer<T> comparer) =>
-            x.Count == y.Count && x.SequenceEqual(y, comparer);
+        public static bool CollectionEqual<T>(this IReadOnlyCollection<T> x, IReadOnlyCollection<T> y, IEqualityComparer<T> comparer) => x.Count == y.Count && x.SequenceEqual(y, comparer);
 
-        public static bool CollectionEqual<T>(this IReadOnlyCollection<T> x, IReadOnlyCollection<T> y) =>
-            x.Count == y.Count && x.SequenceEqual(y);
+        public static bool CollectionEqual<T>(this IReadOnlyCollection<T> x, IReadOnlyCollection<T> y) => x.Count == y.Count && x.SequenceEqual(y);
 
         /// <summary>
         /// An adaptation of <see cref="List{T}.RemoveAll"/> by shifting all elements matching the 
@@ -342,7 +333,7 @@ namespace InCube.Core.Collections
 
             CheckNotNull(match, nameof(match));
 
-            var freeIndex = startIdx;   // the first free slot in items array
+            var freeIndex = startIdx; // the first free slot in items array
 
             // Find the first item which needs to be removed.
             while (freeIndex < stopIdx && !match(elems[freeIndex])) freeIndex++;
@@ -381,11 +372,13 @@ namespace InCube.Core.Collections
 
             var partitioner = Partitioner.Create(startIdx, stopIdx);
             var sections = new ConcurrentDictionary<int, int>();
-            Parallel.ForEach(partitioner, range =>
-            {
-                var (start, stop) = range;
-                sections[start] = elems.SeqRemoveAll(match, start, stop);
-            });
+            Parallel.ForEach(
+                partitioner,
+                range =>
+                {
+                    var (start, stop) = range;
+                    sections[start] = elems.SeqRemoveAll(match, start, stop);
+                });
 
             var freeIndex = 0;
             foreach (var knv in sections.OrderBy(pair => pair.Key))
