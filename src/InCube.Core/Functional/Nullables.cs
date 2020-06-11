@@ -71,6 +71,14 @@ namespace InCube.Core.Functional
             where TIn : struct where TOut : struct =>
             self?.Apply(f);
 
+        public static Task<TOut?> SelectManyAsync<TIn, TOut>(this in TIn? self, Func<TIn, Task<TOut?>> f) 
+            where TIn : struct where TOut : struct =>
+            self?.Apply(f);
+
+        public static Task<Maybe<TOut>> SelectManyAsync<TIn, TOut>(this in TIn? self, Func<TIn, Task<Maybe<TOut>>> f) 
+            where TIn : struct where TOut : class =>
+            self?.Apply(f);
+
         #endregion
     }
 }
