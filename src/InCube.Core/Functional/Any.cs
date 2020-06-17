@@ -45,7 +45,7 @@ namespace InCube.Core.Functional
 
         internal static TOut Apply<T, TOut>(this T self, Func<T, TOut> f) => f(self);
 
-        internal static async Task<TOut> ApplyAsync<T, TOut>(this T self, Func<T, Task<TOut>> f) => await f(self).ConfigureAwait(false);
+        internal static Task<TOut> ApplyAsync<T, TOut>(this T self, Func<T, Task<TOut>> f) => f(self);
 
         internal static void Apply<T>(this T self, Action<T> f) => f(self);
     }

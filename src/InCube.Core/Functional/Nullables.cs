@@ -77,7 +77,7 @@ namespace InCube.Core.Functional
 
         public static Task<Maybe<TOut>> SelectManyAsync<TIn, TOut>(this in TIn? self, Func<TIn, Task<Maybe<TOut>>> f) 
             where TIn : struct where TOut : class =>
-            self?.Apply(f);
+            self is null ? Task.FromResult(Maybe<TOut>.None) : self?.Apply(f);
 
         #endregion
     }

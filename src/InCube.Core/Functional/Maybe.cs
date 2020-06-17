@@ -217,6 +217,16 @@ namespace InCube.Core.Functional
             where TIn : struct where TOut : class =>
             self?.Apply(f); // implicit conversion
 
+        public static async Task<Maybe<TOut>> SelectAsync<TIn, TOut>(this TIn? self, Func<TIn, Task<TOut>> f)
+            where TIn : struct where TOut : class
+        {
+            if (self.HasValue)
+            {
+                return await f(self.Value).ConfigureAwait(false);
+            }
+            return Maybe<TOut>.None;
+        }
+
         public static Maybe<TOut> SelectMany<TIn, TOut>(this in TIn? self, Func<TIn, Maybe<TOut>> f)
             where TIn : struct where TOut : class =>
             self?.Apply(f) ?? default(Maybe<TOut>);
