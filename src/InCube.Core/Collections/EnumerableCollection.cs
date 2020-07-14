@@ -10,9 +10,7 @@ namespace InCube.Core.Collections
     /// Wraps an <see cref="IEnumerable{T}"/> into a read only <see cref="ICollection{T}"/> by adding a count argument.
     /// </summary>
     /// <typeparam name="T">The type of the collection</typeparam>
-#pragma warning disable SA1402 // File may only contain a single type
     public class EnumerableCollection<T> : ICollection<T>, IReadOnlyCollection<T>
-#pragma warning restore SA1402 // File may only contain a single type
     {
         public EnumerableCollection(IEnumerable<T> enumerable, int count)
         {
@@ -20,7 +18,7 @@ namespace InCube.Core.Collections
             this.Count = count;
         }
 
-        public IEnumerator<T> GetEnumerator() => 
+        public IEnumerator<T> GetEnumerator() =>
             this.enumerable.GetEnumerator();
 
         IEnumerator IEnumerable.GetEnumerator() => this.GetEnumerator();
@@ -35,12 +33,13 @@ namespace InCube.Core.Collections
             throw new NotSupportedException();
         }
 
-        public bool Contains(T item) => 
+        public bool Contains(T item) =>
             this.enumerable.Contains(item);
 
         public void CopyTo(T[] array, int arrayIndex)
         {
-            CheckArgument(this.Count <= array.Length - arrayIndex,
+            CheckArgument(
+                this.Count <= array.Length - arrayIndex,
                 "insufficient space for {0} elements in array of length {1} at index {2}",
                 this.Count,
                 array.Length,
@@ -52,12 +51,12 @@ namespace InCube.Core.Collections
             }
         }
 
-        public bool Remove(T item) => 
+        public bool Remove(T item) =>
             throw new NotSupportedException();
 
         public int Count { get; }
 
-        public bool IsReadOnly => 
+        public bool IsReadOnly =>
             true;
 
         private readonly IEnumerable<T> enumerable;

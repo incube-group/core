@@ -150,7 +150,7 @@ namespace InCube.Core.Functional
 
         #region Conversion
 
-        public static Option<T> ToOption<T>(this T value) where T : class =>
+        public static Option<T> ToOption<T>(this T? value) where T : class =>
             value?.Apply(Some) ?? default(Option<T>);
 
         public static Option<T> ToOption<T>(this in T? value) where T : struct =>
