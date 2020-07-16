@@ -295,6 +295,12 @@ namespace InCube.Core.Collections
         /// <returns>A filtered enumerable</returns>
         public static IEnumerable<T> GenFilter<T, TU>(this IEnumerable<T> enumerable, Func<TU, bool> predicate) where T : TU => enumerable.Where(l => predicate(l));
 
+        /// <summary>
+        /// Convenience method for a foreach
+        /// </summary>
+        /// <typeparam name="T">The type of the enumerable</typeparam>
+        /// <param name="list">The enumerable to run through the foreach</param>
+        /// <param name="action">The action to perform with each element</param>
         public static void ForEach<T>(this IEnumerable<T> list, Action<T> action)
         {
             foreach (var l in list)
@@ -303,6 +309,12 @@ namespace InCube.Core.Collections
             }
         }
 
+        /// <summary>
+        /// Convenience method for a foreach
+        /// </summary>
+        /// <typeparam name="T">The type of the enumerable</typeparam>
+        /// <param name="list">The enumerable to run through the loop</param>
+        /// <param name="action">The action to perform with each element</param>
         public static void ForEach<T>(this IEnumerable<T> list, Action<T, int> action)
         {
             int index = 0;
@@ -313,6 +325,16 @@ namespace InCube.Core.Collections
             }
         }
 
+        /// <summary>
+        /// Aggregates over the enumerable, while keeping track of the whole series.
+        /// Note that resulting enumerable will have n+1 elements if the input has n elements
+        /// </summary>
+        /// <typeparam name="T">Input type of the enumerable</typeparam>
+        /// <typeparam name="TU">Output type</typeparam>
+        /// <param name="input">Enumerable to scan over</param>
+        /// <param name="state">Initial state / first element of the sequence</param>
+        /// <param name="next">Generator function for the next element</param>
+        /// <returns>An enumerable of the output type</returns>
         public static IEnumerable<TU> Scan<T, TU>(this IEnumerable<T> input, TU state, Func<TU, T, TU> next)
         {
             yield return state;
@@ -323,6 +345,16 @@ namespace InCube.Core.Collections
             }
         }
 
+        /// <summary>
+        /// Aggregates over the enumerable, while keeping track of the whole series
+        /// </summary>
+        /// <typeparam name="T">The type of the input enumerable</typeparam>
+        /// <typeparam name="TState">The type of the state</typeparam>
+        /// <typeparam name="TOut">Type of the output enumerable</typeparam>
+        /// <param name="input">Enumerable to scan over</param>
+        /// <param name="state">Initial state</param>
+        /// <param name="next">Generator function for the next output and state</param>
+        /// <returns>An enumerable of the output type</returns>
         public static IEnumerable<TOut> Scan<T, TState, TOut>(this IEnumerable<T> input, TState state, Func<TState, T, (TState, TOut)> next)
         {
             foreach (var item in input)
@@ -333,53 +365,133 @@ namespace InCube.Core.Collections
             }
         }
 
+        /// <summary>
+        /// Aggregates over the enumerable, while keeping track of the whole series
+        /// </summary>
+        /// <typeparam name="T">The Type of the input, state and output</typeparam>
+        /// <param name="input">The input enumerable</param>
+        /// <param name="next">Generator function for the next output</param>
+        /// <returns>An enumerable of the output type</returns>
         public static IEnumerable<T> Scan<T>(this IEnumerable<T> input, Func<T, T, T> next)
         {
-            using (var it = input.GetEnumerator())
+            using var it = input.GetEnumerator();
+            if (it.MoveNext())
             {
-                if (it.MoveNext())
+                var state = it.Current;
+                yield return state;
+                while (it.MoveNext())
                 {
-                    var state = it.Current;
+                    state = next(state, it.Current);
                     yield return state;
-                    while (it.MoveNext())
-                    {
-                        state = next(state, it.Current);
-                        yield return state;
-                    }
                 }
             }
         }
 
+        /// <summary>
+        /// Gets the first element of an enumerable, none if enumerable is empty
+        /// </summary>
+        /// <typeparam name="T">Type of the enumerable</typeparam>
+        /// <param name="self">Enumerable to source element from</param>
+        /// <returns>An option of the type of the input enumerable</returns>
         public static Option<T> FirstOption<T>(this IEnumerable<T> self)
         {
-            using (var enumerator = self.GetEnumerator())
-            {
-                // ReSharper disable once AssignNullToNotNullAttribute
-                return enumerator.MoveNext() ? Option.Some(enumerator.Current) : Option.None;
-            }
+            using var enumerator = self.GetEnumerator();
+            return enumerator.MoveNext() ? Option.Some(enumerator.Current) : Option.None;
         }
 
+        /// <summary>
+        /// Gets the first element of an enumerable satisfying the given predicate, none if no element does
+        /// </summary>
+        /// <typeparam name="T">Type of the enumerable</typeparam>
+        /// <param name="self">Enumerable to source element from</param>
+        /// <param name="predicate">Predicate to use on the elements</param>
+        /// <returns>An option of the type of the input enumerable</returns>
+        public static Option<T> FirstOption<T>(this IEnumerable<T> self, Func<T, bool> predicate)
+        {
+            using var enumerator = self.GetEnumerator();
+            while (enumerator.MoveNext())
+            {
+                if (predicate(enumerator.Current))
+                    return Option.Some(enumerator.Current);
+            }
+            return Option.None;
+        }
+
+        /// <summary>
+        /// Gets the single element of an enumerable, none if enumerable has no element.
+        /// Throws if enumerable has more than one element.
+        /// </summary>
+        /// <typeparam name="T">The type of the enumerable</typeparam>
+        /// <param name="self">The enumerable to 'go over'</param>
+        /// <returns>An option of the type of the input enumerable</returns>
+        /// <exception cref="InvalidOperationException">The input sequence contains more than one element.</exception>
         public static Option<T> SingleOption<T>(this IEnumerable<T> self)
         {
-            using (var enumerator = self.GetEnumerator())
-            {
-                return enumerator.MoveNext()
-                    // ReSharper disable once AccessToDisposedClosure
-                    // ReSharper disable once AssignNullToNotNullAttribute
-                    ? Option.Some(enumerator.Current).Where(_ => !enumerator.MoveNext())
-                    : Option.None;
-            }
+            using IEnumerator<T> enumerator = self.GetEnumerator();
+            if (!enumerator.MoveNext())
+                return Option<T>.None;
+
+            var current = enumerator.Current;
+            if (!enumerator.MoveNext())
+                return current;
+
+            throw new InvalidOperationException("Input sequence contains more than one element");
         }
 
-        public static T SingleOrDefault<T>(this IEnumerable<T> self, Func<T> provider) => self.SingleOption().GetValueOr(provider);
+        /// <summary>
+        /// Gets the single element of an enumerable, default if enumerable has no element.
+        /// Throws if enumerable has more than one element.
+        /// </summary>
+        /// <typeparam name="T">The type of the enumerable</typeparam>
+        /// <param name="self">The enumerable to 'go over'</param>
+        /// <param name="provider"></param>
+        /// <returns>The single element of the enumerable, or the value generated by the provider</returns>
+        /// <exception cref="InvalidOperationException">The input sequence contains more than one element.</exception>
+        public static T SingleOrDefault<T>(this IEnumerable<T> self, Func<T> provider)
+        {
+            using IEnumerator<T> enumerator = self.GetEnumerator();
+            if (!enumerator.MoveNext())
+                return provider();
 
+            var current = enumerator.Current;
+            if (!enumerator.MoveNext())
+                return current;
+
+            throw new InvalidOperationException("Input sequence contains more than one element");
+        }
+
+        /// <summary>
+        /// Tries to get the max of an enumerable
+        /// </summary>
+        /// <typeparam name="T">The type of the input enumerable and of the output max value</typeparam>
+        /// <param name="self">The enumerable to look through</param>
+        /// <returns>The max if it was found, None otherwise</returns>
         public static Option<T> MaxOption<T>(this IEnumerable<T> self) => self.AggregateOption(Enumerable.Max);
 
+        /// <summary>
+        /// Tries to get the min of an enumerable
+        /// </summary>
+        /// <typeparam name="T">The type of the input enumerable and of the output min value</typeparam>
+        /// <param name="self">The enumerable to look through</param>
+        /// <returns>The min if it was found, None if it failed</returns>
         public static Option<T> MinOption<T>(this IEnumerable<T> self) => self.AggregateOption(Enumerable.Min);
 
+        /// <summary>
+        /// Tries to get the min and the max of an enumerable
+        /// </summary>
+        /// <typeparam name="T">The type of the input enumerable, and of the output min and max</typeparam>
+        /// <param name="self">The enumerable to look through</param>
+        /// <returns>A tuple of the min and max respectively, None if it failed</returns>
         [SuppressMessage("ReSharper", "PossibleMultipleEnumeration", Justification = "prevent unnecessary exceptions")]
         public static Option<(T Min, T Max)> MinMaxOption<T>(this IEnumerable<T> self) => self.MinOption().SelectMany(min => self.MaxOption().Select(max => (min, max)));
 
+        /// <summary>
+        /// Tries to run an aggregation over an enumerable, catches the exceptions and returns none if it fails
+        /// </summary>
+        /// <typeparam name="T">The type of the input enumerable</typeparam>
+        /// <param name="self">The enumerable to aggregate over</param>
+        /// <param name="aggregator">The aggregating function to use</param>
+        /// <returns>An option of the aggregated value</returns>
         [SuppressMessage("ReSharper", "PossibleMultipleEnumeration", Justification = "prevent unnecessary exceptions")]
         public static Option<T> AggregateOption<T>(this IEnumerable<T> self, Func<IEnumerable<T>, T> aggregator) => self.IsEmpty() ? Option<T>.None : Try.Do(() => aggregator.Invoke(self)).AsOption;
 
@@ -392,25 +504,31 @@ namespace InCube.Core.Collections
                 groups.GetOption(false).GetValueOrDefault(Enumerable.Empty<T>()));
         }
 
+        /// <summary>
+        /// Checks whether an enumerable is sorted w.r.t. the given comparer
+        /// </summary>
+        /// <typeparam name="T">The type of the enumerable to check</typeparam>
+        /// <param name="self">The enumerable to check</param>
+        /// <param name="comparer">The comparer to use</param>
+        /// <param name="strict">Whether comparison should be strict</param>
+        /// <returns>True if the enumerable is sorted, false otherwise</returns>
         public static bool IsSorted<T>(this IEnumerable<T> self, IComparer<T> comparer = null, bool strict = false)
         {
-            comparer = comparer ?? Comparer<T>.Default;
+            comparer ??= Comparer<T>.Default;
             var outOfOrder = strict
                 ? (Func<T, T, bool>)((x, y) => comparer.Compare(x, y) >= 0)
                 : (x, y) => comparer.Compare(x, y) > 0;
-            using (var enumerator = self.GetEnumerator())
+            using var enumerator = self.GetEnumerator();
+            if (!enumerator.MoveNext()) return true;
+            var current = enumerator.Current;
+            while (enumerator.MoveNext())
             {
-                if (!enumerator.MoveNext()) return true;
-                var current = enumerator.Current;
-                while (enumerator.MoveNext())
-                {
-                    var next = enumerator.Current;
-                    if (outOfOrder(current, next)) return false;
-                    current = next;
-                }
-
-                return true;
+                var next = enumerator.Current;
+                if (outOfOrder(current, next)) return false;
+                current = next;
             }
+
+            return true;
         }
 
         /// <summary>
@@ -427,8 +545,20 @@ namespace InCube.Core.Collections
             return self.Concat(other).GroupBy(keySelector, x => x, (key, group) => @group.First());
         }
 
+        /// <summary>
+        /// Zips two enumerable's of booleans and returns the logical AND of each resulting pair
+        /// </summary>
+        /// <param name="xs">The first enumerable</param>
+        /// <param name="ys">The second enumerable</param>
+        /// <returns>An enumerable of booleans</returns>
         public static IEnumerable<bool> And(this IEnumerable<bool> xs, IEnumerable<bool> ys) => xs.Zip(ys, (x, y) => x && y);
 
+        /// <summary>
+        /// Zips two enumerable's of booleans and returns the logical OR of each resulting pair
+        /// </summary>
+        /// <param name="xs">First enumerable</param>
+        /// <param name="ys">Second enumerable</param>
+        /// <returns>An enumerable of booleans</returns>
         public static IEnumerable<bool> Or(this IEnumerable<bool> xs, IEnumerable<bool> ys) => xs.Zip(ys, (x, y) => x || y);
     }
 }
