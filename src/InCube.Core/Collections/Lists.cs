@@ -5,24 +5,36 @@ using System.Diagnostics;
 using System.Linq;
 using System.Threading.Tasks;
 using InCube.Core.Functional;
+using JetBrains.Annotations;
 using static InCube.Core.Preconditions;
 
 namespace InCube.Core.Collections
 {
     /// <summary>
-    /// A variety of useful extension methods for collections.
+    /// A variety of useful extension methods for lists
     /// </summary>
+    [PublicAPI]
     public static class Lists
     {
-        /// <returns>the last element of a list</returns>
+        /// <summary>
+        /// Returns the last element of a list
+        /// </summary>
+        /// <typeparam name="T">The type of the input list</typeparam>
+        /// <param name="list">The input list</param>
+        /// <returns>An object of the type of the input list</returns>
         public static T Last<T>(this IReadOnlyList<T> list) => list[list.Count - 1];
 
-        public static Option<T> LastOption<T>(this IReadOnlyList<T> list) => list.Any() ? list[list.Count - 1] : default;
+        /// <summary>
+        /// Returns the last element of a list, if it exists, None otherwise
+        /// </summary>
+        /// <typeparam name="T">The type of the input list</typeparam>
+        /// <param name="list">The input list</param>
+        /// <returns>An object of the type of the input list</returns>
+        public static Option<T> LastOption<T>(this IReadOnlyList<T> list) => list.Any() ? Option.Some(list[list.Count - 1]) : Option.None;
 
         /// <summary>
         /// Sorts an item into a list of buckets. The method calls <see cref="List{T}.BinarySearch(T)"/> and makes
         /// sure to return the greatest boundary in case of ties.
-        ///
         /// Corresponds to the <code>upper_bound</code> function of the STL.
         /// </summary>
         /// <typeparam name="T"></typeparam>
