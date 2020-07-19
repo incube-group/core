@@ -6,12 +6,8 @@ namespace InCube.Core.Format
 {
     public class OptionJsonConverter<T> : JsonConverter<Option<T>>
     {
-        public override void WriteJson(JsonWriter writer, Option<T> value, JsonSerializer serializer)
-        {
-            value.ForEach(
-                none: writer.WriteNull,
-                some: v => serializer.Serialize(writer, v));
-        }
+        public override void WriteJson(JsonWriter writer, Option<T> value, JsonSerializer serializer) =>
+            (value as IOption<T>).ForEach(none: writer.WriteNull, some: v => serializer.Serialize(writer, v));
 
         public override Option<T> ReadJson(JsonReader reader,
             Type objectType,

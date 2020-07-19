@@ -2,13 +2,12 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
-using System.Threading.Tasks;
+using JetBrains.Annotations;
 
 namespace InCube.Core.Functional
 {
-    [SuppressMessage("Managed Binary Analysis",
-        "CA2225: Operator overloads have named alternates",
-        Justification = "Methods are in static companion class.")]
+    [SuppressMessage("Managed Binary Analysis", "CA2225: Operator overloads have named alternates", Justification = "Methods are in static companion class.")]
+    [PublicAPI]
     public readonly struct Either<TL, TR> : IEither<TL, TR>, IEquatable<Either<TL, TR>>
     {
         private readonly object value;
@@ -60,37 +59,22 @@ namespace InCube.Core.Functional
 
         public T Match<T>(Func<TL, T> left, Func<TR, T> right) => this.IsLeft ? left(this.Left) : right(this.Right);
 
-        public async Task<T> MatchAsync<T>(Func<TL, Task<T>> left, Func<TR, Task<T>> right) => this.IsLeft ? await left(this.Left).ConfigureAwait(false) : await right(this.Right).ConfigureAwait(false);
-
         IEither<TL, TOut> IEither<TL, TR>.Select<TOut>(Func<TR, TOut> f) => this.Select(f);
 
         public Either<TL, TOut> Select<TOut>(Func<TR, TOut> f) => this.Match<Either<TL, TOut>>(left => left, right => f(right));
-
-        public Task<Either<TL, TOut>> SelectAsync<TOut>(Func<TR, Task<TOut>> f) => this.Match<Task<Either<TL, TOut>>>(left => Task.FromResult(new Either<TL, TOut>(left)), async right => await f(right));
 
         public Either<TL, TOut> SelectMany<TOut>(Func<TR, Either<TL, TOut>> f) => this.Match(left => left, f);
 
         public void ForEach(Action<TR> right)
         {
-            if (this.IsRight)
-            {
-                right(this.Right);
-            }
+            if (this.IsRight) right(this.Right);
         }
 
         public void ForEach(Action<TL> left, Action<TR> right)
         {
-            if (this.IsLeft)
-            {
-                left(this.Left);
-            }
-            else
-            {
-                right(this.Right);
-            }
+            if (this.IsLeft) left(this.Left);
+            else right(this.Right);
         }
-
-        public Task ForEachAsync(Func<TL, Task> left, Func<TR, Task> right) => this.IsLeft ? left(this.Left) : right(this.Right);
 
         public static implicit operator Either<TL, TR>(TL left) => new Either<TL, TR>(left);
 
@@ -117,17 +101,14 @@ namespace InCube.Core.Functional
         public static bool operator !=(Either<TL, TR> left, Either<TL, TR> right) => !left.Equals(right);
     }
 
+    [PublicAPI]
     public static class Either
     {
         public static Either<TL, TR> OfLeft<TL, TR>(TL left) => left;
 
         public static Either<TL, TR> OfRight<TL, TR>(TR right) => right;
 
-        public static IEither<TL, TOut> SelectMany<TL, TR, TOut>(
-            this IEither<TL, TR> @this,
-            Func<TR, IEither<TL, TOut>> f) =>
-            
-            // ReSharper disable once ConvertClosureToMethodGroup
-            @this.Match(l => OfLeft<TL, TOut>(l), f);
+        // ReSharper disable once ConvertClosureToMethodGroup
+        public static IEither<TL, TOut> SelectMany<TL, TR, TOut>(this IEither<TL, TR> @this, Func<TR, IEither<TL, TOut>> f) => @this.Match(l => OfLeft<TL, TOut>(l), f);
     }
 }

@@ -1,7 +1,13 @@
 ﻿using System;
+using JetBrains.Annotations;
 
 namespace InCube.Core.Functional
 {
+    /// <summary>
+    /// Wrapper around a result that can be either some type of an exception
+    /// </summary>
+    /// <typeparam name="T"></typeparam>
+    [PublicAPI]
     public interface ITry<out T> : IOption<T>
     {
         Exception Exception { get; }

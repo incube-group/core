@@ -11,9 +11,8 @@ namespace InCube.Core.Functional
     /// Functional representation of a try/catch block. Holds either the result of the computation or an exception.
     /// </summary>
     /// <typeparam name="T"></typeparam>
-    [SuppressMessage("Managed Binary Analysis",
-        "CA2225: Operator overloads have named alternates",
-        Justification = "Methods are in static companion class.")]
+    [SuppressMessage("Managed Binary Analysis", "CA2225: Operator overloads have named alternates", Justification = "Methods are in static companion class.")]
+    [PublicAPI]
     public readonly struct Try<T> : ITry<T>, IInvariantOption<T, Try<T>>
     {
         private readonly Maybe<Exception> exception;
@@ -90,7 +89,7 @@ namespace InCube.Core.Functional
 
         public T GetValueOrDefault() => this.AsOption.GetValueOrDefault();
 
-        public T GetValueOrDefault([NotNull] Func<Exception, T> @default) => this.HasValue ? this.Value : @default(this.Exception);
+        public T GetValueOrDefault(Func<Exception, T> @default) => this.HasValue ? this.Value : @default(this.Exception);
 
         public T GetValueOr(Func<T> @default) => this.AsOption.GetValueOr(@default);
 
@@ -153,7 +152,7 @@ namespace InCube.Core.Functional
 
         public int Count => this.AsOption.Count;
 
-        public Try<T> OrElse([NotNull] Func<Exception, Try<T>> @default) => this.HasValue ? this : @default(this.Exception);
+        public Try<T> OrElse(Func<Exception, Try<T>> @default) => this.HasValue ? this : @default(this.Exception);
 
         public Try<T> OrElse(Func<Try<T>> @default) => this.HasValue ? this : @default();
 

@@ -7,6 +7,7 @@ namespace InCube.Core
     /// <summary>
     /// Helper class for dealing with many <see cref="IDisposable"/>s.
     /// </summary>
+    [PublicAPI]
     public class Disposables : IDisposable
     {
         public delegate void Disposer();

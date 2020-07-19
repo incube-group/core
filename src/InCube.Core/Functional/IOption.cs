@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Threading.Tasks;
 using JetBrains.Annotations;
 using static InCube.Core.Preconditions;
 
@@ -10,6 +9,7 @@ namespace InCube.Core.Functional
     /// A covariant version of <see cref="Option{T}"/>, <see cref="Maybe"/> and <see cref="Nullable{T}"/>.
     /// </summary>
     /// <typeparam name="T"></typeparam>
+    [PublicAPI]
     public interface IOption<out T> : IReadOnlyList<T>
     {
         bool HasValue { get; }
@@ -33,11 +33,7 @@ namespace InCube.Core.Functional
 
         void ForEach(Action<T> action);
 
-        Task ForEachAsync(Func<T, Task> action);
-
         void ForEach(Action none, Action<T> some);
-
-        Task ForEachAsync(Func<Task> none, Func<T, Task> some);
 
         IOption<T> Where(Func<T, bool> p);
     }

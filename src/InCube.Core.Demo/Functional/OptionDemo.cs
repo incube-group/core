@@ -238,7 +238,7 @@ namespace InCube.Core.Demo.Functional
         {
             void FuncWithOpt(Option<string> opt = default)
             {
-                opt.ForEach(
+                (opt as IOption<string>).ForEach(
                     none: () => Print("executing without option"),
                     some: x  => Print($"executing with option {x}"));
             }

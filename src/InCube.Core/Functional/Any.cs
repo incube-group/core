@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
-using System.Threading.Tasks;
 
 namespace InCube.Core.Functional
 {
@@ -10,9 +9,7 @@ namespace InCube.Core.Functional
     /// </summary>
     /// <seealso cref="Option{T}"/>
     /// <typeparam name="T"></typeparam>
-    [SuppressMessage("Managed Binary Analysis",
-        "CA2225: Operator overloads have named alternates",
-        Justification = "Methods are in static companion class.")]
+    [SuppressMessage("Managed Binary Analysis", "CA2225: Operator overloads have named alternates", Justification = "Methods are in static companion class.")]
     [Serializable]
     internal readonly struct Any<T> : IEquatable<Any<T>>
     {
@@ -44,8 +41,6 @@ namespace InCube.Core.Functional
         internal static Any<T> ToAny<T>(this T t) => t;
 
         internal static TOut Apply<T, TOut>(this T self, Func<T, TOut> f) => f(self);
-
-        internal static Task<TOut> ApplyAsync<T, TOut>(this T self, Func<T, Task<TOut>> f) => f(self);
 
         internal static void Apply<T>(this T self, Action<T> f) => f(self);
     }
