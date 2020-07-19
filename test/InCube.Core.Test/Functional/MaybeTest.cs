@@ -184,5 +184,30 @@ namespace InCube.Core.Test.Functional
             AssertSameSize<Nothing>();
             AssertSameSize<object>();
         }
+
+        [Test]
+        public void Test_SelectMany_SomeMapsToSome()
+        {
+            var result = Some(new object()).SelectMany(MaybeIdentity);
+            Assert.IsTrue(result.HasValue);
+        }
+
+        [Test]
+        public void Test_SelectMany_NoneMapsToNone() => Assert.IsFalse(None.SelectMany(MaybeIdentity).HasValue);
+
+        [Test]
+        public void Test_SelectMany_TrivialMappingGoesToNone() => Assert.IsFalse(Some(new object()).SelectMany(MapToNone).HasValue);
+
+        [Test]
+        public void Test_SelectMany_NoneMappedToNoneStillNone() => Assert.IsFalse(None.SelectMany(MapToNone).HasValue);
+
+        [Test]
+        public void Test_Select_SomeMappedToSome() => Assert.IsTrue(Some(new object()).Select(Identity).HasValue);
+
+        private static T Identity<T>(T obj) => obj;
+
+        private static Maybe<T> MaybeIdentity<T>(T obj) where T : class => Some(obj);
+
+        private static Maybe<T> MapToNone<T>(T obj) where T : class => None;
     }
 }
