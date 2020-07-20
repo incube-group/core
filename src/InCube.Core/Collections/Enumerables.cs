@@ -266,7 +266,7 @@ namespace InCube.Core.Collections
         /// <typeparam name="T">The type of the nullable's</typeparam>
         /// <param name="enumerable">The enumerable of nullable's</param>
         /// <returns>A collection of (non-nullable) elements</returns>
-        public static IEnumerable<T> Flatten<T>(this IEnumerable<T?> enumerable) where T : class
+        public static IEnumerable<T> WhereNotNull<T>(this IEnumerable<T?> enumerable) where T : class
         {
             using var enumerator = enumerable.GetEnumerator();
             while (enumerator.MoveNext())
