@@ -163,6 +163,36 @@ namespace InCube.Core.Functional
         public static TOut? SelectMany<TIn, TOut>(this in TIn? self, Func<TIn, TOut?> f) 
             where TIn : struct where TOut : struct =>
             self?.Apply(f);
+        
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="input"></param>
+        /// <param name="map"></param>
+        /// <typeparam name="TIn"></typeparam>
+        /// <typeparam name="TOut"></typeparam>
+        /// <returns></returns>
+        public static TOut? ApplyNullable<TIn, TOut>(this TIn? input, Func<TIn, TOut?> map) where TIn : struct where TOut : class =>
+            input is null ? null : map(input.Value);
+
+        /// <summary>
+        /// Gets first element of sequence that satisfies given predicate, or null if no such element exists
+        /// </summary>
+        /// <param name="inputs">Input enumerable to look through</param>
+        /// <param name="predicate">Predicate to check elements against</param>
+        /// <typeparam name="TIn">Type of input enumerable</typeparam>
+        /// <returns>A nullable value type object</returns>
+        public static TIn? FirstNullable<TIn>(this IEnumerable<TIn> inputs, Func<TIn, bool> predicate) where TIn : struct
+        {
+            using var enumerator = inputs.GetEnumerator();
+            while (enumerator.MoveNext())
+            {
+                if (predicate(enumerator.Current))
+                    return enumerator.Current;
+            }
+
+            return null;
+        }
 
         #endregion
 
