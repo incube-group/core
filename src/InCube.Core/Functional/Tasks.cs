@@ -154,7 +154,7 @@ namespace InCube.Core.Functional
         public static Task ForEachAsync<T>(this in Maybe<T> self, Func<T, Task> action) where T : class => self.Value?.Apply(action) ?? Task.CompletedTask;
 
         public static async Task<TOut> MatchAsync<TIn, TOut>(this Maybe<TIn> self, Func<Task<TOut>> none, Func<TIn, Task<TOut>> some) where TIn : class =>
-            self.Value == null ? (await none().ConfigureAwait(false)).ToAny() : (await self.Value.ApplyAsync(some).ConfigureAwait(false)).ToAny();
+            !self.HasValue ? (await none().ConfigureAwait(false)).ToAny() : (await self.Value.ApplyAsync(some).ConfigureAwait(false)).ToAny();
         
         public static Task<TOut?> ApplyNullableAsync<TIn, TOut>(this TIn? input, Func<TIn, Task<TOut?>> map) where TIn : struct where TOut : class =>
             input is null ? Task.FromResult(default(TOut?)) : map(input.Value);
