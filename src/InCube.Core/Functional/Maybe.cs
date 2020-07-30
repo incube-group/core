@@ -81,7 +81,7 @@ namespace InCube.Core.Functional
         /// <inheritdoc cref="IEquatable{T}"/>
         public bool Equals(Maybe<T> that) =>
             !this.HasValue && !that.HasValue ||
-            this.HasValue && that.HasValue && EqualityComparer<T>.Default.Equals(this.value, that.value);
+            this.HasValue && that.HasValue && EqualityComparer<T>.Default.Equals(this.value!, that.value!);
 
         /// <inheritdoc cref="ValueType"/>
         public override bool Equals(object obj)

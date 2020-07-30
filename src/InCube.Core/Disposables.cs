@@ -14,7 +14,7 @@ namespace InCube.Core
 
         private readonly Stack<Disposer> unmanaged = new Stack<Disposer>();
         private readonly Stack<IDisposable> managed = new Stack<IDisposable>();
-        private bool disposed = false;
+        private bool disposed;
 
         public void Add(Disposer disposer)
         {
@@ -36,10 +36,9 @@ namespace InCube.Core
             return this.Add(creator());
         }
 
-        [CanBeNull]
-        private List<Exception> ReleaseUnmanagedResources()
+        private List<Exception>? ReleaseUnmanagedResources()
         {
-            List<Exception> exceptions = null;
+            List<Exception>? exceptions = null;
             while (this.unmanaged.Count > 0)
             {
                 var disposer = this.unmanaged.Pop();

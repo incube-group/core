@@ -124,7 +124,7 @@ namespace InCube.Core.Collections
         /// <typeparam name="TV">Type of the value of the dictionary</typeparam>
         /// <param name="enumerable">The enumerable to source the pairs from</param>
         /// <returns>A dictionary</returns>
-        public static Dictionary<TK, TV> ToDictionary<TK, TV>(this IEnumerable<(TK key, TV value)> enumerable) => enumerable.ToDictionary(kv => kv.key, kv => kv.value);
+        public static Dictionary<TK, TV> ToDictionary<TK, TV>(this IEnumerable<(TK Key, TV Value)> enumerable) => enumerable.ToDictionary(kv => kv.Key, kv => kv.Value);
 
         /// <summary>
         /// Convenience method to create a dictionary from a grouping (result of Enumerable.GroupBy())
@@ -202,7 +202,7 @@ namespace InCube.Core.Collections
         /// <param name="dict">The dictionary to sort</param>
         /// <param name="comparer">The comparer to use to sort</param>
         /// <returns>A sorted dictionary</returns>
-        public static SortedDictionary<TK, TV> AsSorted<TK, TV>(this IDictionary<TK, TV> dict, IComparer<TK> comparer = null)
+        public static SortedDictionary<TK, TV> AsSorted<TK, TV>(this IDictionary<TK, TV> dict, IComparer<TK>? comparer = null)
         {
             comparer ??= Comparer<TK>.Default;
             return dict is SortedDictionary<TK, TV> sorted && sorted.Comparer == comparer ? sorted : new SortedDictionary<TK, TV>(dict.ToDictionary(), default);

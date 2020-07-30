@@ -192,7 +192,7 @@ namespace InCube.Core.Collections
         /// <param name="source">The source enumerable to get the maximum out of</param>
         /// <param name="comparer">The comparer to use to compare the elements</param>
         /// <returns>The index of the maximum element</returns>
-        public static int ArgMax<T>(this IEnumerable<T> source, IComparer<T> comparer) => source.ZipWithIndex().MaxBy(x => x.value, comparer).index;
+        public static int ArgMax<T>(this IEnumerable<T> source, IComparer<T> comparer) => source.ZipWithIndex().MaxBy(x => x.Value, comparer).Index;
 
         /// <summary>
         /// Gets the index of the maximum element of an enumerable of comparable elements
@@ -209,7 +209,7 @@ namespace InCube.Core.Collections
         /// <param name="source">The source enumerable to get the minimum out of</param>
         /// <param name="comparer">The comparer to use to compare the elements</param>
         /// <returns>The index of the minimum element</returns>
-        public static int ArgMin<T>(this IEnumerable<T> source, IComparer<T> comparer) => source.ZipWithIndex().MinBy(x => x.value, comparer).index;
+        public static int ArgMin<T>(this IEnumerable<T> source, IComparer<T> comparer) => source.ZipWithIndex().MinBy(x => x.Value, comparer).Index;
 
         /// <summary>
         /// Gets the index of the minimum element of an enumerable of comparable elements
@@ -355,7 +355,7 @@ namespace InCube.Core.Collections
         /// <param name="state">Initial state</param>
         /// <param name="next">Generator function for the next output and state</param>
         /// <returns>An enumerable of the output type</returns>
-        public static IEnumerable<TOut> Scan<T, TState, TOut>(this IEnumerable<T> input, TState state, Func<TState, T, (TState, TOut)> next)
+        public static IEnumerable<TOut> Scan<T, TState, TOut>(this IEnumerable<T> input, TState state, Func<TState, T, (TState State, TOut Output)> next)
         {
             foreach (var item in input)
             {
@@ -512,7 +512,7 @@ namespace InCube.Core.Collections
         /// <param name="comparer">The comparer to use</param>
         /// <param name="strict">Whether comparison should be strict</param>
         /// <returns>True if the enumerable is sorted, false otherwise</returns>
-        public static bool IsSorted<T>(this IEnumerable<T> self, IComparer<T> comparer = null, bool strict = false)
+        public static bool IsSorted<T>(this IEnumerable<T> self, IComparer<T>? comparer = null, bool strict = false)
         {
             comparer ??= Comparer<T>.Default;
             var outOfOrder = strict

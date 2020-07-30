@@ -11,33 +11,29 @@ namespace InCube.Core.Collections
     public static class Tuples
     {
         [PublicAPI]
-        public static (T2, T2) Select<T1, T2>(this (T1, T1) self, Func<T1, T2> functor) =>
-            (functor(self.Item1), functor(self.Item2));
+        public static (T2 OutputItem1, T2 OutputItem2) Select<T1, T2>(this (T1 InputItem1, T1 InputItem2) self, Func<T1, T2> functor) => (functor(self.Item1), functor(self.Item2));
 
         [PublicAPI]
-        public static (T2, T2, T2) Select<T1, T2>(this (T1, T1, T1) self, Func<T1, T2> functor) =>
-            (functor(self.Item1), functor(self.Item2), functor(self.Item3));
+        public static (T2 OutputItem1, T2 OutputItem2, T2 OutputItem3) Select<T1, T2>(this (T1 InputItem1, T1 InputItem2, T1 InputItem3) self, Func<T1, T2> functor) => (functor(self.Item1), functor(self.Item2), functor(self.Item3));
 
         [PublicAPI]
-        public static KeyValuePair<TK, TV> MakePair<TK, TV>(TK key, TV value) =>
-            new KeyValuePair<TK, TV>(key, value);
+        public static KeyValuePair<TK, TV> MakePair<TK, TV>(TK key, TV value) => new KeyValuePair<TK, TV>(key, value);
 
         [PublicAPI]
-        public static Tuple<T1, T2> MakeTuple<T1, T2>(T1 item1, T2 item2)
-            => new Tuple<T1, T2>(item1, item2);
+        public static Tuple<T1, T2> MakeTuple<T1, T2>(T1 item1, T2 item2) => new Tuple<T1, T2>(item1, item2);
 
         [PublicAPI]
-        public static (T1, T2) MakeValueTuple<T1, T2>(T1 item1, T2 item2)
-            => (item1, item2);
+        public static (T1 OutputItem1, T2 OutputItem2) MakeValueTuple<T1, T2>(T1 item1, T2 item2) => (item1, item2);
 
         [PublicAPI]
-        public static IEnumerable<(T1, T2)> ZipAsTuple<T1, T2>(this IEnumerable<T1> left, IEnumerable<T2> right)
+        public static IEnumerable<(T1 OutputItem1, T2 OutputItem2)> ZipAsTuple<T1, T2>(this IEnumerable<T1> left, IEnumerable<T2> right)
         {
             return left.Zip(right, MakeValueTuple);
         }
 
         [PublicAPI]
-        public static IEnumerable<(T1, T2, T3)> ZipAsTuple<T1, T2, T3>(this IEnumerable<T1> e1,
+        public static IEnumerable<(T1 OutputItem1, T2 OutputItem2, T3 OutputItem3)> ZipAsTuple<T1, T2, T3>(
+            this IEnumerable<T1> e1,
             IEnumerable<T2> e2,
             IEnumerable<T3> e3)
         {
@@ -45,7 +41,8 @@ namespace InCube.Core.Collections
         }
 
         [PublicAPI]
-        public static IEnumerable<(T1, T2, T3, T4)> ZipAsTuple<T1, T2, T3, T4>(this IEnumerable<T1> e1,
+        public static IEnumerable<(T1 OutputItem1, T2 OutputItem2, T3 OutputItem3, T4 OutputItem4)> ZipAsTuple<T1, T2, T3, T4>(
+            this IEnumerable<T1> e1,
             IEnumerable<T2> e2,
             IEnumerable<T3> e3,
             IEnumerable<T4> e4)
@@ -54,7 +51,8 @@ namespace InCube.Core.Collections
         }
 
         [PublicAPI]
-        public static IEnumerable<(T1, T2, T3, T4, T5)> ZipAsTuple<T1, T2, T3, T4, T5>(this IEnumerable<T1> e1,
+        public static IEnumerable<(T1 OutputItem1, T2 OutputItem2, T3 OutputItem3, T4 OutputItem4, T5 OutputItem5)> ZipAsTuple<T1, T2, T3, T4, T5>(
+            this IEnumerable<T1> e1,
             IEnumerable<T2> e2,
             IEnumerable<T3> e3,
             IEnumerable<T4> e4,
@@ -64,16 +62,17 @@ namespace InCube.Core.Collections
         }
 
         [PublicAPI]
-        public static IEnumerable<(T value, int index)> ZipWithIndex<T>(this IEnumerable<T> enumerable) =>
-            enumerable.Select(MakeValueTuple);
+        public static IEnumerable<(T Value, int Index)> ZipWithIndex<T>(this IEnumerable<T> enumerable) => enumerable.Select(MakeValueTuple);
 
         [PublicAPI]
-        public static IEnumerable<TU> TupleSelect<TK, TV, TU>(this IEnumerable<(TK Key, TV Value)> enumerable,
+        public static IEnumerable<TU> TupleSelect<TK, TV, TU>(
+            this IEnumerable<(TK Key, TV Value)> enumerable,
             Func<TK, TV, TU> mapper) =>
             enumerable.Select(kv => mapper(kv.Key, kv.Value));
 
         [PublicAPI]
-        public static IEnumerable<TU> TupleSelect<TK, TV, TU>(this IEnumerable<KeyValuePair<TK, TV>> enumerable,
+        public static IEnumerable<TU> TupleSelect<TK, TV, TU>(
+            this IEnumerable<KeyValuePair<TK, TV>> enumerable,
             Func<TK, TV, TU> mapper) =>
             enumerable.Select(kv => mapper(kv.Key, kv.Value));
 
@@ -113,14 +112,17 @@ namespace InCube.Core.Collections
         /// <returns>A tuple containing the two enumerables extracted.</returns>
         /// 
         /// <remarks>This method is very expensive since all elements need to be cached in temporary lists.</remarks>
-        public static (IEnumerable<T1>, IEnumerable<T2>) Unzip<T, T1, T2>(this IEnumerable<T> zipped,
+        public static (IEnumerable<T1> EnumerableItem1, IEnumerable<T2> EnumerableItem2) Unzip<T, T1, T2>(
+            this IEnumerable<T> zipped,
             Func<T, T1> selector1,
             Func<T, T2> selector2) =>
             zipped is IReadOnlyCollection<T> col ? col.Unzip(selector1, selector2) : zipped.ToList().Unzip(selector1, selector2);
 
-        public static (IEnumerable<T1>, IEnumerable<T2>) Unzip<T, T1, T2>(this IReadOnlyCollection<T> zipped,
+        public static (IEnumerable<T1> EnumerableItem1, IEnumerable<T2> EnumerableItem2) Unzip<T, T1, T2>(
+            this IReadOnlyCollection<T> zipped,
             Func<T, T1> selector1,
-            Func<T, T2> selector2) => (zipped.Select(selector1), zipped.Select(selector2));
+            Func<T, T2> selector2) =>
+            (zipped.Select(selector1), zipped.Select(selector2));
 
         /// <summary>
         /// Selects three enumerables while iterating over <paramref name="zipped" /> only once.
@@ -136,7 +138,7 @@ namespace InCube.Core.Collections
         /// <returns> A tuple containing the three enumerables extracted. </returns>
         /// 
         /// <remarks>This method is very expensive since all elements need to be cached in temporary lists.</remarks>
-        public static (IEnumerable<T1>, IEnumerable<T2>, IEnumerable<T3>) Unzip<T, T1, T2, T3>(
+        public static (IEnumerable<T1> EnumerableItem1, IEnumerable<T2> EnumerableItem2, IEnumerable<T3> EnumerableItem3) Unzip<T, T1, T2, T3>(
             this IEnumerable<T> zipped,
             Func<T, T1> selector1,
             Func<T, T2> selector2,
@@ -145,80 +147,62 @@ namespace InCube.Core.Collections
                 ? col.Unzip(selector1, selector2, selector3)
                 : zipped.ToList().Unzip(selector1, selector2, selector3);
 
-        public static (IEnumerable<T1>, IEnumerable<T2>, IEnumerable<T3>) Unzip<T, T1, T2, T3>(
+        public static (IEnumerable<T1> EnumerableItem1, IEnumerable<T2> EnumerableItem2, IEnumerable<T3> EnumerableItem3) Unzip<T, T1, T2, T3>(
             this IReadOnlyCollection<T> zipped,
             Func<T, T1> selector1,
             Func<T, T2> selector2,
             Func<T, T3> selector3) =>
             (zipped.Select(selector1), zipped.Select(selector2), zipped.Select(selector3));
 
-        public static (IEnumerable<T1>, IEnumerable<T2>) Unzip<T1, T2>(this IEnumerable<(T1, T2)> zipped) =>
-            zipped.Unzip(t => t.Item1, t => t.Item2);
+        public static (IEnumerable<T1> EnumerableItem1, IEnumerable<T2> EnumerableItem2) Unzip<T1, T2>(this IEnumerable<(T1 InputItem1, T2 InputItem2)> zipped) => zipped.Unzip(t => t.InputItem1, t => t.InputItem2);
 
-        public static (IEnumerable<T1>, IEnumerable<T2>) Unzip<T1, T2>(this IReadOnlyCollection<(T1, T2)> zipped) =>
-            zipped.Unzip(t => t.Item1, t => t.Item2);
+        public static (IEnumerable<T1> EnumerableItem1, IEnumerable<T2> EnumerableItem2) Unzip<T1, T2>(this IReadOnlyCollection<(T1 InputItem1, T2 InputItem2)> zipped) => zipped.Unzip(t => t.InputItem1, t => t.InputItem2);
 
-        public static (IEnumerable<T1>, IEnumerable<T2>, IEnumerable<T3>) Unzip<T1, T2, T3>(this IEnumerable<(T1, T2, T3)> zipped) =>
-            zipped.Unzip(t => t.Item1, t => t.Item2, t => t.Item3);
+        public static (IEnumerable<T1> EnumerableItem1, IEnumerable<T2> EnumerableItem2, IEnumerable<T3> EnumerableItem3) Unzip<T1, T2, T3>(this IEnumerable<(T1 InputItem1, T2 InputItem2, T3 InputItem3)> zipped) =>
+            zipped.Unzip(t => t.InputItem1, t => t.InputItem2, t => t.InputItem3);
 
-        public static (IEnumerable<T1>, IEnumerable<T2>, IEnumerable<T3>) Unzip<T1, T2, T3>(this IReadOnlyCollection<(T1, T2, T3)> zipped) =>
-            zipped.Unzip(t => t.Item1, t => t.Item2, t => t.Item3);
+        public static (IEnumerable<T1> EnumerableItem1, IEnumerable<T2> EnumerableItem2, IEnumerable<T3> EnumerableItem3) Unzip<T1, T2, T3>(this IReadOnlyCollection<(T1 InputItem1, T2 InputItem2, T3 InputItem3)> zipped) =>
+            zipped.Unzip(t => t.InputItem1, t => t.InputItem2, t => t.InputItem3);
 
         [PublicAPI]
-        public static IEnumerable<KeyValuePair<T, TV>> MapValues<T, TU, TV>(
-            this IEnumerable<KeyValuePair<T, TU>> enumerable, Func<TU, TV> mapper) =>
-            enumerable.Select(keyValue => MakePair(keyValue.Key, mapper(keyValue.Value)));
+        public static IEnumerable<KeyValuePair<T, TV>> MapValues<T, TU, TV>(this IEnumerable<KeyValuePair<T, TU>> enumerable, Func<TU, TV> mapper) => enumerable.Select(keyValue => MakePair(keyValue.Key, mapper(keyValue.Value)));
 
         [PublicAPI]
-        public static IEnumerable<KeyValuePair<T, TV>> MapValues<T, TU, TV>(
-            this IEnumerable<KeyValuePair<T, TU>> enumerable, Func<T, TU, TV> mapper) =>
-            enumerable.Select(keyValue => MakePair(keyValue.Key, mapper(keyValue.Key, keyValue.Value)));
+        public static IEnumerable<KeyValuePair<T, TV>> MapValues<T, TU, TV>(this IEnumerable<KeyValuePair<T, TU>> enumerable, Func<T, TU, TV> mapper) => enumerable.Select(keyValue => MakePair(keyValue.Key, mapper(keyValue.Key, keyValue.Value)));
 
         [PublicAPI]
-        public static IEnumerable<(T Key, TV Value)> MapValues<T, TU, TV>(this IEnumerable<(T Key, TU Value)> enumerable,
+        public static IEnumerable<(T Key, TV Value)> MapValues<T, TU, TV>(
+            this IEnumerable<(T Key, TU Value)> enumerable,
             Func<TU, TV> mapper) =>
             enumerable.Select(kv => (kv.Key, mapper(kv.Value)));
 
         [PublicAPI]
-        public static IEnumerable<(T Key, TV Value)> MapValues<T, TU, TV>(this IEnumerable<(T Key, TU Value)> enumerable,
+        public static IEnumerable<(T Key, TV Value)> MapValues<T, TU, TV>(
+            this IEnumerable<(T Key, TU Value)> enumerable,
             Func<T, TU, TV> mapper) =>
             enumerable.Select(kv => (kv.Key, mapper(kv.Key, kv.Value)));
 
         [PublicAPI]
-        public static IEnumerable<(T Key, TV Value)> MapValues<T, TU, TV>(
-            this IEnumerable<IGrouping<T, TU>> enumerable, Func<IEnumerable<TU>, TV> mapper) =>
-            enumerable.Select(keyValue => (keyValue.Key, mapper(keyValue)));
+        public static IEnumerable<(T Key, TV Value)> MapValues<T, TU, TV>(this IEnumerable<IGrouping<T, TU>> enumerable, Func<IEnumerable<TU>, TV> mapper) => enumerable.Select(keyValue => (keyValue.Key, mapper(keyValue)));
 
         [PublicAPI]
-        public static IEnumerable<TV> Values<T, TV>(
-            this IEnumerable<(T Key, TV Value)> enumerable) =>
-            enumerable.TupleSelect((_, value) => value);
+        public static IEnumerable<TV> Values<T, TV>(this IEnumerable<(T Key, TV Value)> enumerable) => enumerable.TupleSelect((_, value) => value);
 
         [PublicAPI]
-        public static IEnumerable<TV> Values<T, TV>(
-            this IEnumerable<KeyValuePair<T, TV>> enumerable) =>
-            enumerable.TupleSelect((_, value) => value);
+        public static IEnumerable<TV> Values<T, TV>(this IEnumerable<KeyValuePair<T, TV>> enumerable) => enumerable.TupleSelect((_, value) => value);
 
         [PublicAPI]
-        public static IEnumerable<T> Keys<T, TV>(
-            this IEnumerable<KeyValuePair<T, TV>> enumerable) =>
-            enumerable.TupleSelect((key, _) => key);
+        public static IEnumerable<T> Keys<T, TV>(this IEnumerable<KeyValuePair<T, TV>> enumerable) => enumerable.TupleSelect((key, _) => key);
 
         [PublicAPI]
-        public static IEnumerable<T> Keys<T, TV>(
-            this IEnumerable<(T Key, TV Value)> enumerable) =>
-            enumerable.TupleSelect((key, _) => key);
+        public static IEnumerable<T> Keys<T, TV>(this IEnumerable<(T Key, TV Value)> enumerable) => enumerable.TupleSelect((key, _) => key);
 
         [PublicAPI]
-        public static IEnumerable<(T, TV)> AsTuple<T, TV>(this IEnumerable<KeyValuePair<T, TV>> enumerable)
-        {
-            return enumerable.TupleSelect((key, value) => (key, value));
-        }
+        public static IEnumerable<(T KeyItem, TV ValueItem)> AsTuple<T, TV>(this IEnumerable<KeyValuePair<T, TV>> enumerable) =>
+            enumerable.TupleSelect((key, value) => (key, value));
 
         [PublicAPI]
-        public static IEnumerable<KeyValuePair<T, TV>> AsKeyValuePair<T, TV>(this IEnumerable<(T Key, TV Value)> enumerable)
-        {
-            return enumerable.TupleSelect(MakePair);
-        }
+        public static IEnumerable<KeyValuePair<T, TV>> AsKeyValuePair<T, TV>(this IEnumerable<(T Key, TV Value)> enumerable) =>
+            enumerable.TupleSelect(MakePair);
     }
 }

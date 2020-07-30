@@ -204,30 +204,30 @@ namespace InCube.Core.Collections
             }
         }
 
-        public static TU[] ParSelect<T, TU>(this IReadOnlyList<T> list, Func<T, TU> map, TU[] result = null) => list.ParSelect(map, 0, list.Count, result);
+        public static TU[] ParSelect<T, TU>(this IReadOnlyList<T> list, Func<T, TU> map, TU[]? result = null) => list.ParSelect(map, 0, list.Count, result);
 
         public static TU[] ParSelect<T, TU>(
             this IReadOnlyList<T> list,
             Func<T, TU> map,
             int fromInclusive,
             int toExclusive,
-            TU[] result = null)
+            TU[]? result = null)
         {
-            result = result ?? new TU[toExclusive - fromInclusive];
+            result ??= new TU[toExclusive - fromInclusive];
             Parallel.For(fromInclusive, toExclusive, i => result[i - fromInclusive] = map(list[i]));
             return result;
         }
 
-        public static TU[] ParSelect<T, TU>(this IReadOnlyList<T> list, Func<T, int, TU> map, TU[] result = null) => list.ParSelect(map, 0, list.Count, result);
+        public static TU[] ParSelect<T, TU>(this IReadOnlyList<T> list, Func<T, int, TU> map, TU[]? result = null) => list.ParSelect(map, 0, list.Count, result);
 
         public static TU[] ParSelect<T, TU>(
             this IReadOnlyList<T> list,
             Func<T, int, TU> map,
             int fromInclusive,
             int toExclusive,
-            TU[] result = null)
+            TU[]? result = null)
         {
-            result = result ?? new TU[toExclusive - fromInclusive];
+            result ??= new TU[toExclusive - fromInclusive];
             Parallel.For(fromInclusive, toExclusive, i => result[i - fromInclusive] = map(list[i], i));
             return result;
         }
@@ -283,7 +283,7 @@ namespace InCube.Core.Collections
             int? rowStopExclusive = default,
             int colStartInclusive = default,
             int? colStopExclusive = default,
-            T[,] result = null) where T : unmanaged
+            T[,]? result = null) where T : unmanaged
         {
             var srcRowCount = elems.GetLength(0);
             var rowStop = rowStopExclusive ?? srcRowCount;
@@ -299,7 +299,7 @@ namespace InCube.Core.Collections
             CheckArgument(0 <= colCount && colCount <= srcRowCount, "invalid col count {0}", colCount);
 #pragma warning restore SA1131 // Use readable conditions
 
-            result = result ?? new T[rowCount, colCount];
+            result ??= new T[rowCount, colCount];
             if (rowCount == 0 || colCount == 0) return result;
 
             var dstRowCount = result.GetLength(0);
