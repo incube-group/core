@@ -117,7 +117,7 @@ namespace InCube.Core.Functional
         public TOut Match<TOut>(Func<TOut> none, Func<T, TOut> some) => this.value?.Apply(x => some(x).ToAny()) ?? none();
 
         /// <inheritdoc cref="IOption{T}"/>
-        public T Value => this.HasValue ? this.Value : throw new InvalidOperationException("Trying to access value of None.");
+        public T Value => this.HasValue ? this.value! : throw new InvalidOperationException("Trying to access value of None.");
 
         /// <inheritdoc cref="IOption{T}"/>
         public bool HasValue => this.value != null;
