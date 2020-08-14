@@ -255,7 +255,7 @@ namespace InCube.Core.Collections
             while (enumerator.MoveNext())
             {
                 if (enumerator.Current is null)
-                    yield break;
+                    continue;
                 yield return enumerator.Current.Value;
             }
         }
@@ -272,7 +272,7 @@ namespace InCube.Core.Collections
             while (enumerator.MoveNext())
             {
                 if (enumerator.Current is null)
-                    yield break;
+                    continue;
                 yield return enumerator.Current!;
             }
         }

@@ -86,7 +86,7 @@ namespace InCube.Core.Functional
         /// <inheritdoc cref="ValueType"/>
         public override bool Equals(object obj)
         {
-            if (obj != null) return !this.HasValue;
+            if (obj == null) return !this.HasValue;
             return obj is Maybe<T> option && this.Equals(option);
         }
 

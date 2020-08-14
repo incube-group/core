@@ -17,14 +17,14 @@ namespace InCube.Core.Test.Collections
         [Test]
         public void TestMaxBy()
         {
-            var maxIdx = ShuffledList.ZipWithIndex().MaxBy(x => x.value).index;
+            var maxIdx = ShuffledList.ZipWithIndex().MaxBy(x => x.Value).Index;
             Assert.AreEqual(ElementCount - 1, ShuffledList[maxIdx]);
         }
 
         [Test]
         public void TestMinBy()
         {
-            var minId = ShuffledList.ZipWithIndex().MinBy(x => x.value).index;
+            var minId = ShuffledList.ZipWithIndex().MinBy(x => x.Value).Index;
             Assert.AreEqual(0, ShuffledList[minId]);
         }
 
