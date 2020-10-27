@@ -418,6 +418,24 @@ namespace InCube.Core.Collections
         }
 
         /// <summary>
+        /// Gets the first element of an enumerable satisfying the given predicate, none if no element does
+        /// </summary>
+        /// <typeparam name="T">Type of the enumerable</typeparam>
+        /// <param name="self">Enumerable to source element from</param>
+        /// <param name="predicate">Predicate to use on the elements</param>
+        /// <returns>A <see cref="Maybe"/> of the type of the input enumerable</returns>
+        public static Maybe<T> FirstMaybe<T>(this IEnumerable<T> self, Func<T, bool> predicate) where T : class
+        {
+            using var enumerator = self.GetEnumerator();
+            while (enumerator.MoveNext())
+            {
+                if (predicate(enumerator.Current))
+                    return Maybe.Some(enumerator.Current);
+            }
+            return Maybe.None;
+        }
+
+        /// <summary>
         /// Gets the single element of an enumerable, none if enumerable has no element.
         /// Throws if enumerable has more than one element.
         /// </summary>
@@ -482,7 +500,6 @@ namespace InCube.Core.Collections
         /// <typeparam name="T">The type of the input enumerable, and of the output min and max</typeparam>
         /// <param name="self">The enumerable to look through</param>
         /// <returns>A tuple of the min and max respectively, None if it failed</returns>
-        [SuppressMessage("ReSharper", "PossibleMultipleEnumeration", Justification = "prevent unnecessary exceptions")]
         public static Option<(T Min, T Max)> MinMaxOption<T>(this IEnumerable<T> self) => self.MinOption().SelectMany(min => self.MaxOption().Select(max => (min, max)));
 
         /// <summary>
@@ -492,7 +509,6 @@ namespace InCube.Core.Collections
         /// <param name="self">The enumerable to aggregate over</param>
         /// <param name="aggregator">The aggregating function to use</param>
         /// <returns>An option of the aggregated value</returns>
-        [SuppressMessage("ReSharper", "PossibleMultipleEnumeration", Justification = "prevent unnecessary exceptions")]
         public static Option<T> AggregateOption<T>(this IEnumerable<T> self, Func<IEnumerable<T>, T> aggregator) => self.IsEmpty() ? Option<T>.None : Try.Do(() => aggregator.Invoke(self)).AsOption;
 
         public static (IEnumerable<T> Left, IEnumerable<T> Right) Split<T>(
