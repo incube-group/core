@@ -457,6 +457,27 @@ namespace InCube.Core.Collections
         }
 
         /// <summary>
+        /// Gets the single element of an enumerable, none if enumerable has no element.
+        /// Throws if enumerable has more than one element.
+        /// </summary>
+        /// <typeparam name="T">The type of the enumerable</typeparam>
+        /// <param name="self">The enumerable to 'go over'</param>
+        /// <returns>A maybe of the type of the input enumerable</returns>
+        /// <exception cref="InvalidOperationException">The input sequence contains more than one element.</exception>
+        public static Maybe<T> SingleMaybe<T>(this IEnumerable<T> self) where T : class
+        {
+            using IEnumerator<T> enumerator = self.GetEnumerator();
+            if (!enumerator.MoveNext())
+                return Maybe<T>.None;
+
+            var current = enumerator.Current;
+            if (!enumerator.MoveNext())
+                return current;
+
+            throw new InvalidOperationException("Input sequence contains more than one element");
+        }
+
+        /// <summary>
         /// Gets the single element of an enumerable, default if enumerable has no element.
         /// Throws if enumerable has more than one element.
         /// </summary>
