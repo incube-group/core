@@ -244,25 +244,19 @@ namespace InCube.Core.Collections
         public static IEnumerable<IEnumerable<T>> Cols<T>(this IEnumerable<IReadOnlyList<T>> enumerable, IEnumerable<int> indices) => enumerable.Select(list => list.Items(indices));
 
         public static IEnumerable<T> Slice<T>(
-            this IEnumerable<T> elems,
-            int? startInclusive = default,
-            int? stopExclusive = default)
-        {
-            switch (elems)
-            {
-                case IReadOnlyList<T> list:
-                    return list.Slice(startInclusive, stopExclusive);
-                default:
-                    var skip = startInclusive ?? 0;
-                    return elems.Skip(skip).ApplyOpt(e => stopExclusive.Select(stop => e.Take(stop - skip)));
-            }
-        }
-
-        public static IEnumerable<T> Slice<T>(
             this IReadOnlyList<T> list,
             int startInclusive = default,
             int? stopExclusive = default) =>
             Enumerables.IntRange(startInclusive, stopExclusive ?? list.Count).Select(i => list[i]);
+        
+        public static IEnumerable<T> Slice<T>(
+            this IEnumerable<T> elems,
+            int? startInclusive = default,
+            int? stopExclusive = default)
+        {
+            var skip = startInclusive ?? 0;
+            return elems.Skip(skip).ApplyOpt(e => stopExclusive.Select(stop => e.Take(stop - skip)));
+        }
 
         public static ArraySegment<T> Slice<T>(
             this T[] elems,
