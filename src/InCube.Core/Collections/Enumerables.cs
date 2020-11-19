@@ -217,7 +217,7 @@ namespace InCube.Core.Collections
         /// <typeparam name="T">The type of the enumerable</typeparam>
         /// <param name="source">The source enumerable to get the maximum out of</param>
         /// <returns>The index of the minimum element</returns>
-        public static int ArgMin<T>(this IEnumerable<T> source) where T : IComparable<T> => source.ArgMax(Comparer<T>.Default);
+        public static int ArgMin<T>(this IEnumerable<T> source) where T : IComparable<T> => source.ArgMin(Comparer<T>.Default);
 
         /// <summary>
         /// Flattens a collection of enumerables into a single enumerable
