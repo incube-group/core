@@ -12,10 +12,24 @@ namespace InCube.Core.Collections
     {
         private readonly IList<T> wrapped;
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="ReadOnlyList{T}"/> struct.
+        /// </summary>
+        /// <param name="wrapped">The <see cref="IList{T}"/> to wrap.</param>
         public ReadOnlyList(IList<T> wrapped)
         {
             this.wrapped = wrapped;
         }
+
+        /// <inheritdoc/>
+        public int Count => this.wrapped.Count;
+
+        /// <inheritdoc/>
+        public T this[int index] => this.wrapped[index];
+
+        public static bool operator ==(ReadOnlyList<T> left, ReadOnlyList<T> right) => left.Equals(right);
+
+        public static bool operator !=(ReadOnlyList<T> left, ReadOnlyList<T> right) => !left.Equals(right);
 
         /// <inheritdoc/>
         public IEnumerator<T> GetEnumerator() => this.wrapped.GetEnumerator();
@@ -24,22 +38,12 @@ namespace InCube.Core.Collections
         IEnumerator IEnumerable.GetEnumerator() => this.wrapped.GetEnumerator();
 
         /// <inheritdoc/>
-        public int Count => this.wrapped.Count;
-
-        /// <inheritdoc/>
-        public T this[int index] => this.wrapped[index];
-
-        /// <inheritdoc/>
         public bool Equals(ReadOnlyList<T> that) => Equals(this.wrapped, that.wrapped);
 
         /// <inheritdoc/>
-        public override bool Equals(object obj) => obj is ReadOnlyList<T> that && this.Equals(that);
+        public override bool Equals(object? obj) => obj is ReadOnlyList<T> that && this.Equals(that);
 
         /// <inheritdoc/>
-        public override int GetHashCode() => this.wrapped?.GetHashCode() ?? 0;
-
-        public static bool operator ==(ReadOnlyList<T> left, ReadOnlyList<T> right) => left.Equals(right);
-
-        public static bool operator !=(ReadOnlyList<T> left, ReadOnlyList<T> right) => !left.Equals(right);
+        public override int GetHashCode() => this.wrapped.GetHashCode();
     }
 }

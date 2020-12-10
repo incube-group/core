@@ -7,7 +7,7 @@ using static InCube.Core.Demo.Functional.OptionDemo;
 
 namespace InCube.Core.Demo.Functional
 {
-    static class MaybeDemo
+    internal static class MaybeDemo
     {
         internal static void Run()
         {
@@ -16,35 +16,7 @@ namespace InCube.Core.Demo.Functional
             Print();
         }
 
-        private readonly struct Maybe<T> where T : class
-        {
-            private readonly T value;
-
-            private Maybe(T value)
-            {
-                this.value = value;
-            }
-
-            public static readonly Maybe<T> None = default(Maybe<T>);
-
-            public static implicit operator Maybe<T>(T value) => new Maybe<T>(value);
-
-            public static explicit operator T(Maybe<T> maybe) => maybe.Value;
-
-            public bool HasValue => !ReferenceEquals(this.value, null);
-
-            public T Value => this.value ?? throw new InvalidOperationException("Nullable object must have a value");
-
-            public T GetValueOrDefault() => this.value;
-
-            public T GetValueOrDefault(T @default) => this.value ?? @default;
-
-            public T GetValueOr(Func<T> @default) => this.value ?? @default.Invoke();
-
-            // ...
-        }
-
-        static int SizeOf<T>()
+        private static int SizeOf<T>()
         {
             var dm = new DynamicMethod("SizeOfType", typeof(int), Array.Empty<Type>());
             var il = dm.GetILGenerator();
@@ -53,7 +25,7 @@ namespace InCube.Core.Demo.Functional
             return (int)dm.Invoke(null, null);
         }
 
-        static void MemoryOptimizationForReferenceTypes()
+        private static void MemoryOptimizationForReferenceTypes()
         {
             Print(SizeOf<int>());
             Print(SizeOf<int?>());
@@ -73,8 +45,34 @@ namespace InCube.Core.Demo.Functional
             16
             8
             16
-            8             
+            8
              */
+        }
+
+        private readonly struct Maybe<T>
+            where T : class
+        {
+            private readonly T value;
+
+            private Maybe(T value) => this.value = value;
+
+            public static readonly Maybe<T> None = default;
+
+            public static implicit operator Maybe<T>(T value) => new(value);
+
+            public static explicit operator T(Maybe<T> maybe) => maybe.Value;
+
+            public bool HasValue => !ReferenceEquals(this.value, null);
+
+            public T Value => this.value ?? throw new InvalidOperationException("Nullable object must have a value");
+
+            public T GetValueOrDefault() => this.value;
+
+            public T GetValueOrDefault(T @default) => this.value ?? @default;
+
+            public T GetValueOr(Func<T> @default) => this.value ?? @default.Invoke();
+
+            // ...
         }
     }
 }

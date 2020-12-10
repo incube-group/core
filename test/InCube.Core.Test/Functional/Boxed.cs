@@ -54,7 +54,7 @@ namespace InCube.Core.Test.Functional
                 return false;
             }
 
-            return Equals((Boxed<T>)obj);
+            return this.Equals((Boxed<T>)obj);
         }
 
         public override int GetHashCode() => this.Value.GetHashCode();

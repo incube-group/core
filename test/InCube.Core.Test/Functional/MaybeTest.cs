@@ -2,7 +2,7 @@
 using System.Linq;
 using NUnit.Framework;
 using InCube.Core.Functional;
-using static InCube.Core.Functional.Maybe;
+using static InCube.Core.Functional.Maybes;
 
 #pragma warning disable SA1131 // Use readable conditions
 #pragma warning disable SA1312 // Variable names should begin with lower-case letter
@@ -170,7 +170,7 @@ namespace InCube.Core.Test.Functional
             Assert.False(some.Select(x => x.Value).GetValueOrDefault(true));
             var none = Maybe<Boxed<bool>>.None;
             Assert.True(none.Select(x => x.Value).GetValueOrDefault(true));
-            Assert.True(some.Select(x => default(Boxed<bool>)).GetValueOrDefault(Boxed.Of(true)));
+            Assert.True(some.Select(_ => default(Boxed<bool>)).GetValueOrDefault(Boxed.Of(true)));
         }
 
         [Test]

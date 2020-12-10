@@ -6,15 +6,23 @@ using Newtonsoft.Json;
 
 namespace InCube.Core.Format
 {
+    /// <summary>
+    /// JSON converter for the option types.
+    /// </summary>
     public class GenericOptionJsonConverter : JsonConverter
     {
         private const string OptionEmpty = "None";
-        private static readonly MethodInfo OptionSome = typeof(Option).
-            GetMethods().Single(m => m.Name == "Some" && !m.ReturnType.GetGenericArguments()[0].IsGenericType);
 
         private const string MaybeEmpty = "None";
-        private static readonly MethodInfo MaybeSome = typeof(Maybe).GetMethod("Some");
 
+        private static readonly MethodInfo OptionSome = typeof(Option).GetMethods().Single(m => m.Name == "Some" && !m.ReturnType.GetGenericArguments()[0].IsGenericType);
+
+        private static readonly MethodInfo MaybeSome = typeof(Maybes).GetMethod("Some");
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="GenericOptionJsonConverter"/> class.
+        /// </summary>
+        /// <param name="optionType">The type of option to convert.</param>
         public GenericOptionJsonConverter(Type optionType)
         {
             this.OptionType = optionType;
@@ -22,7 +30,7 @@ namespace InCube.Core.Format
             {
                 this.Empty = OptionEmpty;
                 this.Some = OptionSome;
-            } 
+            }
             else if (optionType == typeof(Maybe<>))
             {
                 this.Empty = MaybeEmpty;
@@ -37,12 +45,13 @@ namespace InCube.Core.Format
         private Type OptionType { get; }
 
         private MethodInfo Some { get; }
-        
+
         private string Empty { get; }
 
-        public override void WriteJson(JsonWriter writer, object value, JsonSerializer serializer)
+        /// <inheritdoc/>
+        public override void WriteJson(JsonWriter writer, object? value, JsonSerializer serializer)
         {
-            var optionType = value.GetType();
+            var optionType = value?.GetType();
             if ((bool)optionType.GetProperty("HasValue").GetMethod.Invoke(value, null))
             {
                 var inner = optionType.GetProperty("Value").GetMethod.Invoke(value, null);
@@ -54,10 +63,8 @@ namespace InCube.Core.Format
             }
         }
 
-        public override object ReadJson(JsonReader reader,
-            Type objectType,
-            object existingValue,
-            JsonSerializer serializer)
+        /// <inheritdoc/>
+        public override object? ReadJson(JsonReader reader, Type objectType, object? existingValue, JsonSerializer serializer)
         {
             var typeArgs = objectType.GenericTypeArguments;
             if (reader.TokenType == JsonToken.Null)
@@ -68,10 +75,10 @@ namespace InCube.Core.Format
 
             var paramType = typeArgs[0];
             var value = serializer.Deserialize(reader, paramType);
-            return this.Some.MakeGenericMethod(paramType).Invoke(null, new [] {value});
+            return this.Some.MakeGenericMethod(paramType).Invoke(null, new[] { value });
         }
 
-        public sealed override bool CanConvert(Type objectType) => 
-            objectType.IsConstructedGenericType && this.OptionType == objectType.GetGenericTypeDefinition();
+        /// <inheritdoc/>
+        public sealed override bool CanConvert(Type objectType) => objectType.IsConstructedGenericType && this.OptionType == objectType.GetGenericTypeDefinition();
     }
 }

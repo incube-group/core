@@ -9,6 +9,13 @@ namespace InCube.Core.Numerics
     /// </summary>
     public static class Randomize
     {
+        /// <summary>
+        /// Shuffles a <see cref="IList{T}"/> in place.
+        /// </summary>
+        /// <param name="list">The <see cref="IList{T}"/> to shuffle.</param>
+        /// <param name="rngOpt">The random source.</param>
+        /// <typeparam name="T">The type of the <see cref="IList{T}"/>.</typeparam>
+        /// <returns>The shuffled list.</returns>
         public static IList<T> Shuffle<T>(this IList<T> list, Option<Random> rngOpt = default)
         {
             var rng = rngOpt.GetValueOr(() => new Random());
