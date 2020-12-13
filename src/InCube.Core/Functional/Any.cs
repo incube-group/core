@@ -38,8 +38,7 @@ namespace InCube.Core.Functional
     /// </summary>
     public static class Any
     {
-        internal static Any<T> ToAny<T>(this T t)
-            where T : notnull => t;
+        internal static Any<T> ToAny<T>(this T t) => t;
 
         internal static TOut Apply<T, TOut>(this T self, Func<T, TOut> f) => f(self);
 

@@ -158,28 +158,23 @@ namespace InCube.Core.Functional
         ITry<TOut> ITry<T>.SelectMany<TOut>(Func<Exception, ITry<TOut>> failure, Func<T, ITry<TOut>> success) => this.SelectMany(x => failure(x).ToTry(), x => success(x).ToTry());
 
         /// <inheritdoc cref="ITry{T}.Select{TOut}" />
-        public Try<TOut> Select<TOut>(Func<T, TOut> f)
-            where TOut : notnull =>
+        public Try<TOut> Select<TOut>(Func<T, TOut> f) =>
             this.Match(Try.Failure<TOut>, value => Try.Do(() => f(value)));
 
         /// <inheritdoc cref="ITry{T}.Select{TOut}" />
-        public Task<Try<TOut>> Select<TOut>(Func<T, Task<TOut>> f)
-            where TOut : notnull =>
+        public Task<Try<TOut>> Select<TOut>(Func<T, Task<TOut>> f) =>
             this.MatchAsync(ex => Task.FromResult(Try.Failure<TOut>(ex)), value => Try.DoAsync(() => f(value)));
 
         /// <inheritdoc cref="ITry{T}.SelectMany{TOut}(System.Func{T,InCube.Core.Functional.ITry{TOut}})" />
-        public Try<TOut> SelectMany<TOut>(Func<T, Try<TOut>> f)
-            where TOut : notnull =>
+        public Try<TOut> SelectMany<TOut>(Func<T, Try<TOut>> f) =>
             this.Match(Try.Failure<TOut>, f);
 
         /// <inheritdoc cref="ITry{T}.SelectMany{TOut}(System.Func{T,InCube.Core.Functional.ITry{TOut}})" />
-        public Task<Try<TOut>> SelectMany<TOut>(Func<T, Task<Try<TOut>>> f)
-            where TOut : notnull =>
+        public Task<Try<TOut>> SelectMany<TOut>(Func<T, Task<Try<TOut>>> f) =>
             this.MatchAsync(ex => Task.FromResult(Try.Failure<TOut>(ex)), f);
 
         /// <inheritdoc cref="ITry{T}.SelectMany{TOut}(System.Func{T,InCube.Core.Functional.ITry{TOut}})" />
-        public Try<TOut> SelectMany<TOut>(Func<Exception, Try<TOut>> failure, Func<T, Try<TOut>> success)
-            where TOut : notnull =>
+        public Try<TOut> SelectMany<TOut>(Func<Exception, Try<TOut>> failure, Func<T, Try<TOut>> success) =>
             this.Match(failure, success);
 
         /// <summary>
@@ -258,8 +253,7 @@ namespace InCube.Core.Functional
         /// <param name="value">The <see cref="ITry{T}" /> to cast.</param>
         /// <typeparam name="T">Type of the <paramref name="value" />.</typeparam>
         /// <returns>A <see cref="Try{T}" />.</returns>
-        public static Try<T> ToTry<T>(this ITry<T> value)
-            where T : notnull =>
+        public static Try<T> ToTry<T>(this ITry<T> value) =>
             value is Try<T> @try ? @try : value.HasValue ? Success(value.Value) : Failure<T>(value.Exception);
 
         /// <summary>
@@ -293,7 +287,6 @@ namespace InCube.Core.Functional
         /// <typeparam name="T">Return type of <paramref name="f"/>.</typeparam>
         /// <returns>A <see cref="Try{T}"/>.</returns>
         public static Try<T> Do<T>(Func<T> f)
-            where T : notnull
         {
             try
             {
@@ -312,7 +305,6 @@ namespace InCube.Core.Functional
         /// <typeparam name="T">Return type of <paramref name="f"/>.</typeparam>
         /// <returns>A <see cref="Try{T}"/>.</returns>
         public static async Task<Try<T>> DoAsync<T>(Func<Task<T>> f)
-            where T : notnull
         {
             try
             {

@@ -43,8 +43,7 @@ namespace InCube.Core.Functional
         /// <param name="selector">The function to apply.</param>
         /// <typeparam name="TOut">The output type of the function.</typeparam>
         /// <returns>An <see cref="IOption{T}"/> of <typeparamref name="TOut"/>.</returns>
-        IOption<TOut> Select<TOut>(Func<T, TOut> selector)
-            where TOut : notnull;
+        IOption<TOut> Select<TOut>(Func<T, TOut> selector);
 
         /// <summary>
         /// Applies the <paramref name="selector"/> and flattens.
@@ -52,8 +51,7 @@ namespace InCube.Core.Functional
         /// <param name="selector">The selector to apply.</param>
         /// <typeparam name="TOut">The output of the <paramref name="selector"/>.</typeparam>
         /// <returns>An <see cref="IOption{T}"/> of <typeparamref name="TOut"/>.</returns>
-        IOption<TOut> SelectMany<TOut>(Func<T, IOption<TOut>> selector)
-            where TOut : notnull;
+        IOption<TOut> SelectMany<TOut>(Func<T, IOption<TOut>> selector);
 
         /// <summary>
         /// Returns a value indicating whether or not the option has a value or not.

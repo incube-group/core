@@ -94,8 +94,7 @@ namespace InCube.Core.Functional
         IEither<TL, TOut> IEither<TL, TR>.Select<TOut>(Func<TR, TOut> f) => this.Select(f);
 
         /// <inheritdoc cref="IEither{TL, TR}.Select{TOut}" />
-        public Either<TL, TOut> Select<TOut>(Func<TR, TOut> f)
-            where TOut : notnull => this.Match<Either<TL, TOut>>(left => left, right => f(right));
+        public Either<TL, TOut> Select<TOut>(Func<TR, TOut> f) => this.Match<Either<TL, TOut>>(left => left, right => f(right));
 
         /// <summary>
         /// Applies the <paramref name="selector"/> to this and flattens.
@@ -103,8 +102,7 @@ namespace InCube.Core.Functional
         /// <param name="selector">The function to apply to the right side of the <see cref="Either{TL,TR}"/>.</param>
         /// <typeparam name="TOut">The output type of the <paramref name="selector"/>.</typeparam>
         /// <returns>An <see cref="Either{TL,TR}"/>.</returns>
-        public Either<TL, TOut> SelectMany<TOut>(Func<TR, Either<TL, TOut>> selector)
-            where TOut : notnull => this.Match(left => left, selector);
+        public Either<TL, TOut> SelectMany<TOut>(Func<TR, Either<TL, TOut>> selector) => this.Match(left => left, selector);
 
         /// <inheritdoc/>
         public void ForEach(Action<TR> right)
@@ -155,8 +153,6 @@ namespace InCube.Core.Functional
         /// <typeparam name="TR">The right type of the <see cref="Either{TL,TR}"/>.</typeparam>
         /// <returns>An <see cref="Either{TL,TR}"/>.</returns>
         public static Either<TL, TR> OfLeft<TL, TR>(TL left)
-            where TL : notnull
-            where TR : notnull
             => left;
 
         /// <summary>
@@ -167,8 +163,6 @@ namespace InCube.Core.Functional
         /// <typeparam name="TR">The right type of the <see cref="Either{TL,TR}"/>.</typeparam>
         /// <returns>An <see cref="Either{TL,TR}"/>.</returns>
         public static Either<TL, TR> OfRight<TL, TR>(TR right)
-            where TL : notnull
-            where TR : notnull
             => right;
 
         /// <summary>
@@ -181,9 +175,6 @@ namespace InCube.Core.Functional
         /// <typeparam name="TOut">The output type of the <paramref name="selector"/>.</typeparam>
         /// <returns>An <see cref="IEither{TL,TR}"/>.</returns>
         public static IEither<TL, TOut> SelectMany<TL, TR, TOut>(this IEither<TL, TR> @this, Func<TR, IEither<TL, TOut>> selector)
-            where TL : notnull
-            where TR : notnull
-            where TOut : notnull
             => @this.Match(x => OfLeft<TL, TOut>(x), selector);
     }
 }

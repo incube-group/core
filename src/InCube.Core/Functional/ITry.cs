@@ -47,8 +47,7 @@ namespace InCube.Core.Functional
         /// <param name="selector">The function to apply.</param>
         /// <typeparam name="TOut">The output type of the function to apply.</typeparam>
         /// <returns>A <typeparamref name="TOut" /> instance.</returns>
-        new ITry<TOut> Select<TOut>(Func<T, TOut> selector)
-            where TOut : notnull;
+        new ITry<TOut> Select<TOut>(Func<T, TOut> selector);
 
         /// <summary>
         /// Applies the <paramref name="selector" /> to the <see cref="ITry{T}" /> if it is a success to return another
@@ -57,8 +56,7 @@ namespace InCube.Core.Functional
         /// <param name="selector">The selector, which can fail again.</param>
         /// <typeparam name="TOut">The output type of the selector.</typeparam>
         /// <returns>A <see cref="ITry{T}" /> of <typeparamref name="TOut" />.</returns>
-        ITry<TOut> SelectMany<TOut>(Func<T, ITry<TOut>> selector)
-            where TOut : notnull;
+        ITry<TOut> SelectMany<TOut>(Func<T, ITry<TOut>> selector);
 
         /// <summary>
         /// Applies one of the two selectors <paramref name="failure" /> or <paramref name="success" /> depending on whether or not
@@ -69,8 +67,7 @@ namespace InCube.Core.Functional
         /// <param name="success">The selector in case of success.</param>
         /// <typeparam name="TOut">The output type of both selectors.</typeparam>
         /// <returns>A <see cref="ITry{T}" /> of <typeparamref name="TOut" />.</returns>
-        ITry<TOut> SelectMany<TOut>(Func<Exception, ITry<TOut>> failure, Func<T, ITry<TOut>> success)
-            where TOut : notnull;
+        ITry<TOut> SelectMany<TOut>(Func<Exception, ITry<TOut>> failure, Func<T, ITry<TOut>> success);
 
         /// <summary>
         /// Fails if <paramref name="predicate" /> is false or if this was already a failure..

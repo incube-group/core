@@ -64,8 +64,7 @@ namespace InCube.Core.Functional
         /// <typeparam name="TOut">Output type.</typeparam>
         /// <param name="f">Mapping from right type to output type.</param>
         /// <returns>An <see cref="Either{TL,TR}" /> of left and output types.</returns>
-        IEither<TL, TOut> Select<TOut>(Func<TR, TOut> f)
-            where TOut : notnull;
+        IEither<TL, TOut> Select<TOut>(Func<TR, TOut> f);
 
         /// <summary>
         /// Performs an action on right.
