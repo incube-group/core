@@ -33,5 +33,23 @@ namespace InCube.Core.Test.Functional
             });
             Assert.AreEqual(typeof(double), dblEither.Type);
         }
+
+        [Test]
+        public void TestSwitch()
+        {
+            var either = new Either<int, double>(0.5);
+            switch (either)
+            {
+                case {IsLeft: true} :
+                    Assert.Fail();
+                    break;
+                case {IsRight: true} :
+                    Assert.Pass();
+                    break;
+                default:
+                    Assert.Fail();
+                    break;
+            }
+        }
     }
 }

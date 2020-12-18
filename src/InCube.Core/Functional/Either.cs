@@ -1,11 +1,11 @@
-﻿using System;
-using System.Collections;
-using System.Collections.Generic;
-using System.Diagnostics.CodeAnalysis;
-using JetBrains.Annotations;
-
-namespace InCube.Core.Functional
+﻿namespace InCube.Core.Functional
 {
+    using System;
+    using System.Collections;
+    using System.Collections.Generic;
+    using System.Diagnostics.CodeAnalysis;
+    using JetBrains.Annotations;
+
     /// <inheritdoc cref="IEither{TL,TR}" />
     [SuppressMessage("Managed Binary Analysis", "CA2225: Operator overloads have named alternates", Justification = "Methods are in static companion class.")]
     [PublicAPI]
@@ -39,12 +39,12 @@ namespace InCube.Core.Functional
         }
 
         /// <summary>
-        /// Gets a value indicating whether or not the <see cref="Either" /> is of kind <see cref="Left" />.
+        /// Gets a value indicating whether or not the <see cref="Eithers" /> is of kind <see cref="Left" />.
         /// </summary>
         public bool IsLeft { get; }
 
         /// <summary>
-        /// Gets a value indicating whether or not the <see cref="Either" /> is of kind <see cref="Right" />.
+        /// Gets a value indicating whether or not the <see cref="Eithers" /> is of kind <see cref="Right" />.
         /// </summary>
         public bool IsRight { get; }
 
@@ -137,44 +137,5 @@ namespace InCube.Core.Functional
 
         /// <inheritdoc/>
         public override string ToString() => this.Match(x => $"Left<{typeof(TL).Name}>({x})", x => $"Right<{typeof(TR).Name}>({x})");
-    }
-
-    /// <summary>
-    /// Companion class of <see cref="Either{TL,TR}"/>.
-    /// </summary>
-    [PublicAPI]
-    public static class Either
-    {
-        /// <summary>
-        /// Explicit conversion of a <typeparamref name="TL"/> type object to an either.
-        /// </summary>
-        /// <param name="left">The value to wrap in an <see cref="Either{TL,TR}"/>.</param>
-        /// <typeparam name="TL">The left type of the <see cref="Either{TL,TR}"/>.</typeparam>
-        /// <typeparam name="TR">The right type of the <see cref="Either{TL,TR}"/>.</typeparam>
-        /// <returns>An <see cref="Either{TL,TR}"/>.</returns>
-        public static Either<TL, TR> OfLeft<TL, TR>(TL left)
-            => left;
-
-        /// <summary>
-        /// Explicit conversion of a <typeparamref name="TR"/> type object to an either.
-        /// </summary>
-        /// <param name="right">The value to wrap in an <see cref="Either{TL,TR}"/>.</param>
-        /// <typeparam name="TL">The left type of the <see cref="Either{TL,TR}"/>.</typeparam>
-        /// <typeparam name="TR">The right type of the <see cref="Either{TL,TR}"/>.</typeparam>
-        /// <returns>An <see cref="Either{TL,TR}"/>.</returns>
-        public static Either<TL, TR> OfRight<TL, TR>(TR right)
-            => right;
-
-        /// <summary>
-        /// Applies the <paramref name="selector"/> to the right side and flattens.
-        /// </summary>
-        /// <param name="this">The <see cref="IEither{TL,TR}"/> to select on.</param>
-        /// <param name="selector">The function to apply to the right side of the <see cref="IEither{TL,TR}"/>.</param>
-        /// <typeparam name="TL">The left type of the <see cref="Either{TL,TR}"/>.</typeparam>
-        /// <typeparam name="TR">The right type of the <see cref="Either{TL,TR}"/>.</typeparam>
-        /// <typeparam name="TOut">The output type of the <paramref name="selector"/>.</typeparam>
-        /// <returns>An <see cref="IEither{TL,TR}"/>.</returns>
-        public static IEither<TL, TOut> SelectMany<TL, TR, TOut>(this IEither<TL, TR> @this, Func<TR, IEither<TL, TOut>> selector)
-            => @this.Match(x => OfLeft<TL, TOut>(x), selector);
     }
 }

@@ -80,7 +80,7 @@ namespace InCube.Core.Functional
 
         public static implicit operator Option<T>(Try<T> t) => t.AsOption;
 
-        public static implicit operator Either<Exception, T>(Try<T> t) => t.Match(Either.OfLeft<Exception, T>, Either.OfRight<Exception, T>);
+        public static implicit operator Either<Exception, T>(Try<T> t) => t.Match(Eithers.OfLeft<Exception, T>, Eithers.OfRight<Exception, T>);
 
         public static bool operator ==(Try<T> left, Try<T> right) => left.Equals(right);
 
