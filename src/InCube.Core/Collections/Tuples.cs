@@ -425,5 +425,23 @@ namespace InCube.Core.Collections
         /// <typeparam name="T2">The type of the second element of the <see cref="ValueTuple"/>s.</typeparam>
         /// <returns>An <see cref="IEnumerable{T}"/> of <see cref="KeyValuePair{TKey,TValue}"/>s.</returns>
         public static IEnumerable<KeyValuePair<T1, T2>> AsKeyValuePair<T1, T2>(this IEnumerable<(T1 Key, T2 Value)> enumerable) => enumerable.TupleSelect(MakePair);
+
+        /// <summary>
+        /// Convenience method to filter some <paramref name="pairs"/> on the nullability of the first element.
+        /// </summary>
+        /// <param name="pairs">The pairs to filter.</param>
+        /// <typeparam name="T1">Type of the first element.</typeparam>
+        /// <typeparam name="T2">Type of the second element.</typeparam>
+        /// <returns>An <see cref="IEnumerable{T}"/> of pairs.</returns>
+        public static IEnumerable<(T1 First, T2 Second)> WhereFirstNotNull<T1, T2>(this IEnumerable<(T1? First, T2 Second)> pairs) => pairs.Where(pair => pair.First != null)!;
+
+        /// <summary>
+        /// Convenience method to filter some <paramref name="pairs"/> on the nullability of the second element.
+        /// </summary>
+        /// <param name="pairs">The pairs to filter.</param>
+        /// <typeparam name="T1">Type of the first element.</typeparam>
+        /// <typeparam name="T2">Type of the second element.</typeparam>
+        /// <returns>An <see cref="IEnumerable{T}"/> of pairs.</returns>
+        public static IEnumerable<(T1 First, T2 Second)> WhereSecondNotNull<T1, T2>(this IEnumerable<(T1 First, T2? Second)> pairs) => pairs.Where(pair => pair.Second != null)!;
     }
 }
