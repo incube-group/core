@@ -24,6 +24,20 @@ namespace InCube.Core.Collections
         }
 
         /// <summary>
+        /// Creates a constant array.
+        /// </summary>
+        /// <param name="length">The legnth of the outpout array.</param>
+        /// <param name="value">The value to set at every index.</param>
+        /// <typeparam name="T">The type of the output array.</typeparam>
+        /// <returns>An array filled with a single object.</returns>
+        public static T?[] ConstantNullable<T>(this int length, T? value)
+        {
+            var result = new T[length];
+            result.Set(value);
+            return result;
+        }
+
+        /// <summary>
         /// Sets all the elements of the <paramref name="array"/> to the <see cref="value"/>.
         /// </summary>
         /// <param name="array">The array to modify.</param>
