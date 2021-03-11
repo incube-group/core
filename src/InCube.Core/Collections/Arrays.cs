@@ -11,7 +11,7 @@ namespace InCube.Core.Collections
         /// <summary>
         /// Creates a constant array.
         /// </summary>
-        /// <param name="length">The legnth of the outpout array.</param>
+        /// <param name="length">The length of the output array.</param>
         /// <param name="value">The value to set at every index.</param>
         /// <typeparam name="T">The type of the output array.</typeparam>
         /// <returns>An array filled with a single object.</returns>
@@ -26,7 +26,7 @@ namespace InCube.Core.Collections
         /// <summary>
         /// Creates a constant array.
         /// </summary>
-        /// <param name="length">The legnth of the outpout array.</param>
+        /// <param name="length">The length of the output array.</param>
         /// <param name="value">The value to set at every index.</param>
         /// <typeparam name="T">The type of the output array.</typeparam>
         /// <returns>An array filled with a single object.</returns>
