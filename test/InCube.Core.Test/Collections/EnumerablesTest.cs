@@ -87,5 +87,35 @@ namespace InCube.Core.Test.Collections
             Assert.Throws<ArgumentException>(() => a.Slice(rowStartInclusive: -1));
             Assert.Throws<ArgumentException>(() => a.Slice(colStartInclusive: -1));
         }
+
+        [Test]
+        public void Test_ChunkEmptyInput_EmptyResult()
+        {
+            var result = ArraySegment<object>.Empty.Chunk(10);
+            Assert.IsEmpty(result);
+        }
+
+        [Test]
+        public void Test_Chunk_SingleInput_SingleResultWithSingleObject()
+        {
+            var result = new object().ToEnumerable().Chunk(10);
+            Assert.AreEqual(1, result.Count());
+            Assert.AreEqual(1, result.First().Count);
+        }
+
+        [Test]
+        public void Test_Chunk_Reference()
+        {
+            var object1 = new object();
+            var object2 = new object();
+            var object3 = new object();
+            var object4 = new object();
+            var object5 = new object();
+            var input = new[] { object1, object2, object3, object4, object5 };
+            var result = input.Chunk(3);
+            Assert.AreEqual(2, result.Count());
+            Assert.AreEqual(3, result.First().Count());
+            Assert.AreEqual(2, result.Skip(1).First().Count());
+        }
     }
 }

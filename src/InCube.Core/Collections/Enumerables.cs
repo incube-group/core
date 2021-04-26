@@ -82,7 +82,8 @@ namespace InCube.Core.Collections
         /// <param name="startInclusive">First integer of the range, included.</param>
         /// <param name="stopExclusive">Last integer of the range, excluded.</param>
         /// <returns>An enumerable of integers.</returns>
-        public static IEnumerable<int> IntRange(int startInclusive, int stopExclusive) => Enumerable.Range(startInclusive, stopExclusive - startInclusive);
+        public static IEnumerable<int> IntRange(int startInclusive, int stopExclusive) =>
+            Enumerable.Range(startInclusive, stopExclusive - startInclusive);
 
         /// <summary>
         /// Convenience method to create a range of integers starting with 0.
@@ -109,7 +110,8 @@ namespace InCube.Core.Collections
         /// <param name="separator">The separator to be placed between elements.</param>
         /// <param name="end">The string to place at the end of the joined output.</param>
         /// <returns>A string.</returns>
-        public static string MkString<T>(this IEnumerable<T> enumerable, string start, string separator, string end) => $"{start}{enumerable.MkString(separator)}{end}";
+        public static string MkString<T>(this IEnumerable<T> enumerable, string start, string separator, string end) =>
+            $"{start}{enumerable.MkString(separator)}{end}";
 
         /// <summary>
         /// Gets the maximum element of an enumerable by comparing elements based on a selector's comparable results.
@@ -202,7 +204,8 @@ namespace InCube.Core.Collections
         /// <param name="source">The source enumerable to get the maximum out of.</param>
         /// <returns>The index of the maximum element..</returns>
         public static int ArgMax<T>(this IEnumerable<T> source)
-            where T : IComparable<T> => source.ArgMax(Comparer<T>.Default);
+            where T : IComparable<T> =>
+            source.ArgMax(Comparer<T>.Default);
 
         /// <summary>
         /// Gets the index of the minimum element of an enumerable using the provided <see cref="IComparer{T}"/>.
@@ -220,7 +223,8 @@ namespace InCube.Core.Collections
         /// <param name="source">The source enumerable to get the maximum out of.</param>
         /// <returns>The index of the minimum element.</returns>
         public static int ArgMin<T>(this IEnumerable<T> source)
-            where T : IComparable<T> => source.ArgMin(Comparer<T>.Default);
+            where T : IComparable<T> =>
+            source.ArgMin(Comparer<T>.Default);
 
         /// <summary>
         /// Flattens a collection of enumerables into a single enumerable.
@@ -237,7 +241,8 @@ namespace InCube.Core.Collections
         /// <param name="enumerable">The collection of <see cref="Maybes"/>'s.</param>
         /// <returns>An enumerable.</returns>
         public static IEnumerable<T> Flatten<T>(this IEnumerable<Maybe<T>> enumerable)
-            where T : class => enumerable.SelectMany(opt => opt);
+            where T : class =>
+            enumerable.SelectMany(opt => opt);
 
         /// <summary>
         /// Flattens a collection of <see cref="Option"/>'s into an enumerable, effectively removing the None's.
@@ -300,7 +305,8 @@ namespace InCube.Core.Collections
         /// <param name="predicate">The predicate to use as a filter.</param>
         /// <returns>A filtered enumerable.</returns>
         public static IEnumerable<T> GenFilter<T, TU>(this IEnumerable<T> enumerable, Func<TU, bool> predicate)
-            where T : TU => enumerable.Where(l => predicate(l));
+            where T : TU =>
+            enumerable.Where(l => predicate(l));
 
         /// <summary>
         /// Convenience method for a foreach.
@@ -362,7 +368,10 @@ namespace InCube.Core.Collections
         /// <param name="state">Initial state.</param>
         /// <param name="next">Generator function for the next output and state.</param>
         /// <returns>An enumerable of the output type.</returns>
-        public static IEnumerable<TOut> Scan<T, TState, TOut>(this IEnumerable<T> input, TState state, Func<TState, T, (TState State, TOut Output)> next)
+        public static IEnumerable<TOut> Scan<T, TState, TOut>(
+            this IEnumerable<T> input,
+            TState state,
+            Func<TState, T, (TState State, TOut Output)> next)
         {
             foreach (var item in input)
             {
@@ -544,7 +553,8 @@ namespace InCube.Core.Collections
         /// <typeparam name="T">The type of the input enumerable, and of the output min and max.</typeparam>
         /// <param name="self">The enumerable to look through.</param>
         /// <returns>A tuple of the min and max respectively, None if it failed.</returns>
-        public static Option<(T Min, T Max)> MinMaxOption<T>(this IEnumerable<T> self) => self.MinOption().SelectMany(min => self.MaxOption().Select(max => (min, max)));
+        public static Option<(T Min, T Max)> MinMaxOption<T>(this IEnumerable<T> self) =>
+            self.MinOption().SelectMany(min => self.MaxOption().Select(max => (min, max)));
 
         /// <summary>
         /// Tries to run an aggregation over an enumerable, catches the exceptions and returns none if it fails.
@@ -553,7 +563,8 @@ namespace InCube.Core.Collections
         /// <param name="self">The enumerable to aggregate over.</param>
         /// <param name="aggregator">The aggregating function to use.</param>
         /// <returns>An option of the aggregated value.</returns>
-        public static Option<T> AggregateOption<T>(this IEnumerable<T> self, Func<IEnumerable<T>, T> aggregator) => self.IsEmpty() ? Option<T>.None : Try.Do(() => aggregator.Invoke(self)).AsOption;
+        public static Option<T> AggregateOption<T>(this IEnumerable<T> self, Func<IEnumerable<T>, T> aggregator) =>
+            self.IsEmpty() ? Option<T>.None : Try.Do(() => aggregator.Invoke(self)).AsOption;
 
         /// <summary>
         /// Splits an enumerable in two depending on whether or not <paramref name="isLeft"/> is true.
@@ -562,9 +573,7 @@ namespace InCube.Core.Collections
         /// <param name="isLeft">The predicate to use to check whether element goes into the left collection.</param>
         /// <typeparam name="T">The type of the input and outputs.</typeparam>
         /// <returns>Two <see cref="IEnumerable{T}"/>s.</returns>
-        public static (IEnumerable<T> Left, IEnumerable<T> Right) Split<T>(
-            this IEnumerable<T> self,
-            Func<T, bool> isLeft)
+        public static (IEnumerable<T> Left, IEnumerable<T> Right) Split<T>(this IEnumerable<T> self, Func<T, bool> isLeft)
         {
             var groups = self.GroupBy(isLeft).ToDictionary();
             return (groups.GetOption(true).GetValueOrDefault(Enumerable.Empty<T>()),
@@ -582,9 +591,7 @@ namespace InCube.Core.Collections
         public static bool IsSorted<T>(this IEnumerable<T> self, IComparer<T>? comparer = null, bool strict = false)
         {
             comparer ??= Comparer<T>.Default;
-            var outOfOrder = strict
-                ? (Func<T, T, bool>)((x, y) => comparer.Compare(x, y) >= 0)
-                : (x, y) => comparer.Compare(x, y) > 0;
+            var outOfOrder = strict ? (Func<T, T, bool>)((x, y) => comparer.Compare(x, y) >= 0) : (x, y) => comparer.Compare(x, y) > 0;
             using var enumerator = self.GetEnumerator();
             if (!enumerator.MoveNext())
                 return true;
@@ -630,5 +637,34 @@ namespace InCube.Core.Collections
         /// <param name="ys">Second enumerable.</param>
         /// <returns>An enumerable of booleans.</returns>
         public static IEnumerable<bool> Or(this IEnumerable<bool> xs, IEnumerable<bool> ys) => xs.Zip(ys, (x, y) => x || y);
+
+        /// <summary>
+        /// Splits the input <see cref="IEnumerable{T}"/> into chunks.
+        /// </summary>
+        /// <param name="self">The <see cref="IEnumerable{T}"/> to split.</param>
+        /// <param name="chunkSize">The size of each chunk.</param>
+        /// <typeparam name="T">The type of the <see cref="IEnumerable{T}"/>.</typeparam>
+        /// <returns>An <see cref="IEnumerable{T}"/> of <see cref="IEnumerable{T}"/>s.</returns>
+        public static IEnumerable<IReadOnlyList<T>> Chunk<T>(this IEnumerable<T> self, int chunkSize)
+        {
+            var enumerator = self.GetEnumerator();
+
+            IEnumerable<T> NextChunk()
+            {
+                var index = 1;
+                while (index < chunkSize && enumerator.MoveNext())
+                {
+                    index++;
+                    yield return enumerator.Current;
+                }
+            }
+
+            while (enumerator.MoveNext())
+            {
+                var current = enumerator.Current;
+                var nextChunk = NextChunk();
+                yield return nextChunk.Prepend(current).ToList();
+            }
+        }
     }
 }
