@@ -219,7 +219,7 @@ namespace InCube.Core.Functional
             input is null ? null : map(input.Value);
 
         /// <summary>
-        /// Gets first element of sequence that satisfies given predicate, or null if no such element exists.
+        /// Gets first element of the sequence that satisfies given predicate, or null if no such element exists.
         /// </summary>
         /// <param name="inputs">Input enumerable to look through.</param>
         /// <param name="predicate">Predicate to check elements against.</param>
@@ -233,6 +233,24 @@ namespace InCube.Core.Functional
             {
                 if (predicate(enumerator.Current))
                     return enumerator.Current;
+            }
+
+            return null;
+        }
+
+        /// <summary>
+        /// Gets first element of the sequence, or null if no such element exists.
+        /// </summary>
+        /// <param name="inputs">Input enumerable to look through.</param>
+        /// <typeparam name="TIn">Type of input enumerable.</typeparam>
+        /// <returns>A nullable value type object.</returns>
+        public static TIn? FirstNullable<TIn>(this IEnumerable<TIn> inputs)
+            where TIn : struct
+        {
+            using var enumerator = inputs.GetEnumerator();
+            while (enumerator.MoveNext())
+            {
+                return enumerator.Current;
             }
 
             return null;
