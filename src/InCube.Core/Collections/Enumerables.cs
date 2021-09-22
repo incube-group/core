@@ -455,6 +455,24 @@ namespace InCube.Core.Collections
         }
 
         /// <summary>
+        /// Gets the first element of an enumerable, none if empty.
+        /// </summary>
+        /// <typeparam name="T">Type of the enumerable.</typeparam>
+        /// <param name="self">Enumerable to source element from.</param>
+        /// <returns>A <see cref="Maybes"/> of the type of the input enumerable.</returns>
+        public static Maybe<T> FirstMaybe<T>(this IEnumerable<T> self)
+            where T : class
+        {
+            using var enumerator = self.GetEnumerator();
+            while (enumerator.MoveNext())
+            {
+                return Maybes.Some(enumerator.Current);
+            }
+
+            return Maybes.None;
+        }
+
+        /// <summary>
         /// Gets the single element of an enumerable, none if enumerable has no element.
         /// Throws if enumerable has more than one element.
         /// </summary>
